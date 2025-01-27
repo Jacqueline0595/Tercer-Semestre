@@ -8,6 +8,8 @@ void muestraDato(int *ptr);
 void aumentaDato(int *ptr);
 void liberaMem(int *ptr);
 
+//prueba
+
 int main()
 {
     int *apuntador;
