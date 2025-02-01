@@ -19,3 +19,5 @@ enum
 
 void printMainMenu();
 void processUserSelection(int usSelec);
+FILE * CreateFile(const char* fileName);
+REGISTER createNewDataBlock();
