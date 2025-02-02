@@ -107,8 +107,10 @@ void calculoComi(VENDE *ptrVen)
         ptrVen->comision = 0.13;
     else if(ptrVen->totVen >= 3001 && ptrVen->totVen <= 7000)
         ptrVen->comision = 0.18;
-    else 
+    else if(ptrVen->comision > 7000)
         ptrVen->comision = 0.21;
+    else 
+        ptrVen->comision = 0;
 }
 
 void claculoSueldo(VENDE *ptrVen)
