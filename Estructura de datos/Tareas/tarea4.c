@@ -44,7 +44,7 @@ int main()
     return 0;
 }
 
-int asignaMem(VENDE **ptrVen)
+int asignaMem(VENDE **ptrVen) // Porque modifica la direccion de memoria del puntero
 {
     int res = 0;
     *ptrVen = (VENDE *)malloc(sizeof(VENDE));
@@ -53,7 +53,7 @@ int asignaMem(VENDE **ptrVen)
     return res;
 }
 
-void asignaDatos(VENDE *ptrVen, char clav[], char nom[], float total, float sueldo)
+void asignaDatos(VENDE *ptrVen, char clav[], char nom[], float total, float sueldo) // Un asterisco porque se quiere modificar la estructura
 {
     strcpy(ptrVen->clave, clav);
     strcpy(ptrVen->nombre, nom);
@@ -63,7 +63,7 @@ void asignaDatos(VENDE *ptrVen, char clav[], char nom[], float total, float suel
     ptrVen->suelNet = 0;
 }
 
-void captura(VENDE *ptrVen)
+void captura(VENDE *ptrVen) 
 {
     do{
         printf("Introduce tu clave: \n");

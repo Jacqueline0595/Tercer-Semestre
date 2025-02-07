@@ -19,6 +19,7 @@ int main()
     res = asignaMem(&apuntador);
     if(res)
     {
+        // Implicitamente ya tiene los 3 '*'
         asignaDato(apuntador, 25);
         muestraDato(apuntador);
         pideDato(apuntador);
@@ -31,6 +32,7 @@ int main()
     return 0;
 }
 
+// el cuarto '*' es porque pasa por referencia el puntero
 int asignaMem(unsigned ****ptr)
  
 {
