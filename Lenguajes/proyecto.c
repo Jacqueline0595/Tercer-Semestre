@@ -22,11 +22,12 @@ void printMainMenu()
 
 void processUserSelection(int usSelec)
 {
+    FILE *dataFile;
     switch (usSelec)
     {
     case NEW_FILE:
         // TODO: ask for a new file name
-        FILE *dataFile = CreateFile("test.dat");
+        dataFile = CreateFile("test.dat");
         long header = -1;
 
         fwrite(&header, sizeof(long), 1, dataFile);
@@ -40,10 +41,18 @@ void processUserSelection(int usSelec)
         break;
     case OPEN_FILE:
         printf("Openning existing file \n");
+        dataFile = OpenFile("test.dat");
+        fseek(dataFile, 0, SEEK_END);
+        for(int i = 0; i < 1; i++)
+        {
+            REGISTER dataBlock = createNewDataBlock();
+            fwrite(&dataBlock, sizeof(REGISTER), 1, dataFile);
+        }
         break;
     default:
         printf("Wrong option \n");
         break;
+
     }
 }
 
@@ -51,6 +60,14 @@ FILE *CreateFile(const char *fileName)
 {
     printf("Creating a new file... \n");
     FILE *dataFile = fopen(fileName, "wb+");
+
+    return dataFile;
+}
+
+FILE * OpenFile(const char* fileName)
+{
+    printf("Creating a new file... \n");
+    FILE *dataFile = fopen(fileName, "rb+");
 
     return dataFile;
 }
