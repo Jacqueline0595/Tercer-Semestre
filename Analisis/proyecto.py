@@ -1,63 +1,51 @@
-import numpy as np
-def leer_matriz(nombre_archivo):
+import numpy as np 
+
+def leer_matriz_desde_archivo(nombre_archivo):
+    # Abrimos el archivo en modo lectura
     with open(nombre_archivo, 'r') as f:
         lineas = f.readlines()
     
-    n = int(lineas[0].strip())
+    n = int(lineas[0].strip()) 
     matriz = [list(map(float, linea.split())) for linea in lineas[1:n+1]]
     
-    return np.array(matriz)
+    return np.array(matriz)  
 
-def gauss_jordan(matriz):
+def gauss_jordan(matriz, archivo):
     n, m = matriz.shape 
-    
-    with open(matriz, 'w') as f:
+    with open(archivo, 'w') as f:
         f.write("Matriz original:\n")
         for fila in matriz:
             f.write(" ".join(map(str, fila)) + "\n")
         f.write("\n")
         
-        for i in range(n):  # Recorremos cada fila
-            pivote = matriz[i, i]  # Obtenemos el elemento de la diagonal
+        for i in range(n): 
+            pivote = matriz[i, i]  
             f.write(f"Multiplicamos la fila {i + 1} por {1 / pivote} para hacer el pivote 1\n")
-            matriz[i] /= pivote  # Normalizamos la fila dividiendo todos sus elementos por el pivote
+            matriz[i] /= pivote  
             
-            for j in range(n):  # Recorremos nuevamente todas las filas
-                if i != j:  # Evitamos la fila actual
-                    factor = matriz[j, i]  # Obtenemos el factor a eliminar
+            for j in range(n):  
+                if i != j:  
+                    factor = matriz[j, i]  
                     f.write(f"Restamos {factor} veces la fila {i + 1} de la fila {j + 1}\n")
-                    matriz[j] -= factor * matriz[i]  # Restamos la fila actual multiplicada por el factor
-            
-            f.write("Matriz después de este paso:\n")
+                    matriz[j] -= factor * matriz[i]  
+            f.write("Matriz despues de este paso:\n")
             for fila in matriz:
                 f.write(" ".join(map(str, fila)) + "\n")
             f.write("\n")
-    
-    return matriz  # Retornamos la matriz transformada
-
-def escribir_matriz_en_archivo(nombre_archivo, matriz):
-    # Abrimos el archivo en modo escritura
-    with open(nombre_archivo, 'w') as f:
-        f.write(f"{matriz.shape[0]}\n")  # Escribimos el tamaño de la matriz
         
-        # Escribimos cada fila de la matriz en el archivo
+        f.write("Matriz final:\n")
         for fila in matriz:
             f.write(" ".join(map(str, fila)) + "\n")
+    
+    return matriz  
 
 def main():
-    # Nombre del archivo de entrada y archivo de registro
     archivo = r"C:\Users\jacqu\3\Tercer-Semestre\Analisis\matriz.txt"
     
-    # Leer la matriz desde el archivo
-    datos = leer_matriz(archivo)
+    datos = leer_matriz_desde_archivo(archivo)
+    matriz_reducida = gauss_jordan(datos, archivo)
     
-    # Aplicar el método de Gauss-Jordan con registro de operaciones
-    matriz_reducida = gauss_jordan(datos)
-    
-    # Escribir la matriz transformada de vuelta al archivo
-    escribir_matriz_en_archivo(archivo, matriz_reducida)
-    
-    print("Proceso completado. Revisa los archivos.")  # Mensaje de confirmación
+    print("Listo :D")
 
 if __name__ == "__main__":
     main()
