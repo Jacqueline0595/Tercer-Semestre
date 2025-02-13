@@ -60,5 +60,10 @@
   "files.associations": {
     "typeinfo": "c",
     "stdio.h": "c"
-  }
+  },
+  "python.testing.pytestArgs": [
+    "Analisis"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
