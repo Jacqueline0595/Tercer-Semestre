@@ -1,7 +1,6 @@
 import numpy as np 
 
-def leer_matriz_desde_archivo(nombre_archivo):
-    # Abrimos el archivo en modo lectura
+def leer_matriz(nombre_archivo):
     with open(nombre_archivo, 'r') as f:
         lineas = f.readlines()
     
@@ -13,7 +12,7 @@ def leer_matriz_desde_archivo(nombre_archivo):
 def gauss_jordan(matriz, archivo):
     n, m = matriz.shape 
     with open(archivo, 'w') as f:
-        f.write("Matriz original:\n")
+        f.write("La matriz original es:\n")
         for fila in matriz:
             f.write(" ".join(map(str, fila)) + "\n")
         f.write("\n")
@@ -42,7 +41,7 @@ def gauss_jordan(matriz, archivo):
 def main():
     archivo = r"C:\Users\jacqu\3\Tercer-Semestre\Analisis\matriz.txt"
     
-    datos = leer_matriz_desde_archivo(archivo)
+    datos = leer_matriz(archivo)
     matriz_reducida = gauss_jordan(datos, archivo)
     
     print("Listo :D")
