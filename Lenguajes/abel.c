@@ -8,12 +8,20 @@ int sumar(int a, int b)
 
 int factorial(int a)
 {
-    if(a > 0)
+    if (a > 0)
     {
-        return factorial(a) * factorial(a-1);
+        return a * factorial(a - 1);
+    } 
+    else if(a < 0)
+    {
+        return 0;
     }
-    else return 1;
+    else 
+    {
+        return 1; // Caso base: factorial de 0 es 1
+    }
 }
+
 
 void test_sumar()
 {
@@ -21,7 +29,7 @@ void test_sumar()
     assert(sumar(5, 0)==5);
     assert(sumar(-1, -1)==-2);
     assert(sumar(10, -4)==6);
-    printf("Todas las pruebas pasaron");
+    printf("Todas las pruebas pasaron\n");
 }
 
 void test_factorial()
@@ -31,7 +39,7 @@ void test_factorial()
     assert(factorial(5) == 120);
     assert(factorial(10) == 3628800);
     assert(factorial(-5) == 0);
-    printf("Todas las pruebas pasaron");
+    printf("Todas las pruebas pasaron\n");
 }
 
 int main()

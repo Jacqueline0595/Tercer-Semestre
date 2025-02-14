@@ -64,6 +64,7 @@ int main()
         muestraDatos(ptrEscuela, nElem);
         totalSueldo=calculaTotSueldoProf(ptrEscuela, nElem);
         muestraTotalSueldo(totalSueldo);
+        porcentajeProf(ptrEscuela, nElem);
         liberaMem(ptrEscuela, nElem);
     }
     else
@@ -226,10 +227,23 @@ void calculaProms(GEN *ptr, int n)
 }
 
 // Función para calcular el porcentaje de profesores en cada sección (p, s, b).
-/* void porcentajeProf(GEN *ptr, int n)
+void porcentajeProf(GEN *ptr, int n) 
 {
+    int cont, contTotal = 0;
+    float contP=0,contS=0,contB=0;
+    for(cont = 0; cont < n; cont++) {
+        if((ptr + cont)->tipo == 2) {
+            contTotal++;
+            if(((PROF *)(ptr + cont)->ptrGen)->sec == 'p') contP++;
+            else if(((PROF *)(ptr + cont)->ptrGen)->sec == 's') contS++;
+            else if(((PROF *)(ptr + cont)->ptrGen)->sec == 'b') contB++;
+        }
+    }
+    printf("Porcentaje de primaria: %.2f%% \n", (contP/contTotal) * 100);
+    printf("Porcentaje de secundaria: %.2f%% \n", (contS/contTotal) * 100);
+    printf("Porcentaje de bachillerato: %.2f%% \n", (contB/contTotal) * 100);
+}
 
-} */
 
 /* Funión para calcular el total pagado por concepto de sueldo a profesores */
 float calculaTotSueldoProf(GEN *ptr, int n)
