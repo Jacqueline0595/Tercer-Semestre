@@ -1,3 +1,6 @@
+// Función para calcular el porcentaje de profesores en cada sección (p, s, b).
+// Función para determinar que departamento tiene la mayor cantidad de empleados.
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -38,6 +41,9 @@ void capturaTipos(GEN *ptr, int n);
 void capturaDatos(GEN *ptr, int n);
 void muestraDatos(GEN *ptr, int n);
 void calculaProms(GEN *ptr, int n);
+// Función para calcular el porcentaje de profesores en cada sección (p, s, b).
+void porcentajeProf(GEN *ptr, int n);
+// Función para determinar que departamento tiene la mayor cantidad de empleados.
 float calculaTotSueldoProf(GEN *ptr, int n);
 void muestraTotalSueldo(float total);
 void liberaMem(GEN *ptr, int n);
@@ -218,6 +224,12 @@ void calculaProms(GEN *ptr, int n)
         if( (ptr+i)->tipo == 1) //¿Alumno?
             ( (ALU *) (ptr+i)->ptrGen)->prom = ( ((ALU *) (ptr+i)->ptrGen)->cal1 + ((ALU *) (ptr+i)->ptrGen)->cal2 + ((ALU *) (ptr+i)->ptrGen)->cal3 )/3;
 }
+
+// Función para calcular el porcentaje de profesores en cada sección (p, s, b).
+/* void porcentajeProf(GEN *ptr, int n)
+{
+
+} */
 
 /* Funión para calcular el total pagado por concepto de sueldo a profesores */
 float calculaTotSueldoProf(GEN *ptr, int n)
