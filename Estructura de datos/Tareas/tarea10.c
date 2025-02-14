@@ -44,6 +44,8 @@ void calculaProms(GEN *ptr, int n);
 // Función para calcular el porcentaje de profesores en cada sección (p, s, b).
 void porcentajeProf(GEN *ptr, int n);
 // Función para determinar que departamento tiene la mayor cantidad de empleados.
+int determinaDepa(GEN *ptr, int n);
+
 float calculaTotSueldoProf(GEN *ptr, int n);
 void muestraTotalSueldo(float total);
 void liberaMem(GEN *ptr, int n);
@@ -51,7 +53,7 @@ void liberaMem(GEN *ptr, int n);
 int main()
 {
     GEN *ptrEscuela;
-    int res, nElem;
+    int res, nElem, may;
     float totalSueldo;
 
     nElem = pideN();
@@ -65,10 +67,13 @@ int main()
         totalSueldo=calculaTotSueldoProf(ptrEscuela, nElem);
         muestraTotalSueldo(totalSueldo);
         porcentajeProf(ptrEscuela, nElem);
+        may = determinaDepa(ptrEscuela, nElem);
+        printf("El depa con mas empleados es el n°: %d \n", may);
         liberaMem(ptrEscuela, nElem);
     }
     else
         printf("Lastima, no hay memoria\n");
+    return 0;
 }
 
 /* Función para capturar el No. de elementos */
@@ -231,19 +236,58 @@ void porcentajeProf(GEN *ptr, int n)
 {
     int cont, contTotal = 0;
     float contP=0,contS=0,contB=0;
-    for(cont = 0; cont < n; cont++) {
-        if((ptr + cont)->tipo == 2) {
+
+    for(cont = 0; cont < n; cont++) 
+    {
+        if((ptr + cont)->tipo == 2) 
+        {
             contTotal++;
-            if(((PROF *)(ptr + cont)->ptrGen)->sec == 'p') contP++;
-            else if(((PROF *)(ptr + cont)->ptrGen)->sec == 's') contS++;
-            else if(((PROF *)(ptr + cont)->ptrGen)->sec == 'b') contB++;
+            if(((PROF *)(ptr + cont)->ptrGen)->sec == 'p') 
+                contP++;
+            else if(((PROF *)(ptr + cont)->ptrGen)->sec == 's') 
+                contS++;
+            else if(((PROF *)(ptr + cont)->ptrGen)->sec == 'b') 
+                contB++;
         }
     }
-    printf("Porcentaje de primaria: %.2f%% \n", (contP/contTotal) * 100);
-    printf("Porcentaje de secundaria: %.2f%% \n", (contS/contTotal) * 100);
-    printf("Porcentaje de bachillerato: %.2f%% \n", (contB/contTotal) * 100);
+    printf("Porcentaje de primaria: %.2f%% \n", (contP/contTotal)*100);
+    printf("Porcentaje de secundaria: %.2f%% \n", (contS/contTotal)*100);
+    printf("Porcentaje de bachillerato: %.2f%% \n", (contB/contTotal)*100);
 }
 
+// Función para determinar que departamento tiene la mayor cantidad de empleados.
+int determinaDepa(GEN *ptr, int n)
+{
+    int cont, mayor=0;
+    int cont1=0, cont2=0, cont3=0;
+
+    for(cont = 0; cont < n; cont++)
+    {
+        if((ptr + cont)->tipo == 3)
+        {
+            switch(((EMPLE *)(ptr + cont)->ptrGen)->dpto)
+            {
+                case 1:
+                    cont1++;
+                break;
+                case 2:
+                    cont2++;
+                break;
+                case 3:
+                    cont3++;
+                break;
+            }
+        }
+    }
+    if(cont1 > cont2 && cont1 > cont3)
+        mayor = 1;
+    else if(cont2 > cont1 && cont2 > cont3)
+        mayor = 2;
+    else if(cont3 > cont1 && cont3 > cont2)
+        mayor = 3;
+
+    return mayor;
+}
 
 /* Funión para calcular el total pagado por concepto de sueldo a profesores */
 float calculaTotSueldoProf(GEN *ptr, int n)
