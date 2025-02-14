@@ -1,33 +1,36 @@
 La matriz original es:
--31.0 11.0 9.0 23.0
-11.0 -28.0 5.0 41.0
-9.0 5.0 -42.0 62.0
+-3.0 2.0 5.0 15.0
+2.0 -7.0 1.0 18.0
+5.0 1.0 -4.0 12.0
 
-Multiplicamos la fila 1 por -0.03225806451612903 para hacer el pivote 1
-Restamos 11.0 veces la fila 1 de la fila 2
-Restamos 9.0 veces la fila 1 de la fila 3
-Matriz despues de este paso:
-1.0 -0.3548387096774194 -0.2903225806451613 -0.7419354838709677
-0.0 -24.096774193548388 8.193548387096774 49.16129032258065
-0.0 8.193548387096774 -39.38709677419355 68.6774193548387
+Dividimos la fila 1 por -3.0 para hacer el pivote
+A la fila 2 le restamos 2.0  y multiplicamos por la fila 1
+A la fila 3 le restamos 5.0  y multiplicamos por la fila 1
 
-Multiplicamos la fila 2 por -0.04149933065595716 para hacer el pivote 1
-Restamos -0.3548387096774194 veces la fila 2 de la fila 1
-Restamos 8.193548387096774 veces la fila 2 de la fila 3
-Matriz despues de este paso:
-1.0 0.0 -0.4109772423025435 -1.465863453815261
--0.0 1.0 -0.34002677376171353 -2.040160642570281
-0.0 0.0 -36.60107095046855 85.39357429718875
+Despues de la operacion:
+1.0 -0.6666666666666666 -1.6666666666666667 -5.0
+0.0 -5.666666666666667 4.333333333333334 28.0
+0.0 4.333333333333333 4.333333333333334 37.0
 
-Multiplicamos la fila 3 por -0.027321604915694374 para hacer el pivote 1
-Restamos -0.4109772423025435 veces la fila 3 de la fila 1
-Restamos -0.34002677376171353 veces la fila 3 de la fila 2
-Matriz despues de este paso:
-1.0 0.0 0.0 -2.424710142277166
--0.0 1.0 0.0 -2.8334735379100984
--0.0 -0.0 1.0 -2.333089499286785
+Dividimos la fila 2 por -5.666666666666667 para hacer el pivote
+A la fila 1 le restamos -0.6666666666666666  y multiplicamos por la fila 2
+A la fila 3 le restamos 4.333333333333333  y multiplicamos por la fila 2
 
-Matriz final:
-1.0 0.0 0.0 -2.424710142277166
--0.0 1.0 0.0 -2.8334735379100984
--0.0 -0.0 1.0 -2.333089499286785
+Despues de la operacion:
+1.0 0.0 -2.1764705882352944 -8.294117647058822
+-0.0 1.0 -0.7647058823529412 -4.941176470588235
+0.0 0.0 7.647058823529413 58.41176470588235
+
+Dividimos la fila 3 por 7.647058823529413 para hacer el pivote
+A la fila 1 le restamos -2.1764705882352944  y multiplicamos por la fila 3
+A la fila 2 le restamos -0.7647058823529412  y multiplicamos por la fila 3
+
+Despues de la operacion:
+1.0 0.0 0.0 8.330769230769228
+0.0 1.0 0.0 0.8999999999999995
+0.0 0.0 1.0 7.638461538461536
+
+Resultado: 
+1.0 0.0 0.0 8.330769230769228
+0.0 1.0 0.0 0.8999999999999995
+0.0 0.0 1.0 7.638461538461536

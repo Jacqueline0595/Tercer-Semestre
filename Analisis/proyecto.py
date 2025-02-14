@@ -1,6 +1,6 @@
 import numpy as np 
 
-def leer_matriz(nombre_archivo):
+def leerMatriz(nombre_archivo):
     with open(nombre_archivo, 'r') as f:
         lineas = f.readlines()
     
@@ -9,7 +9,7 @@ def leer_matriz(nombre_archivo):
     
     return np.array(matriz)  
 
-def gauss_jordan(matriz, archivo):
+def gaussJordan(matriz, archivo):
     n, m = matriz.shape 
     with open(archivo, 'w') as f:
         f.write("La matriz original es:\n")
@@ -18,21 +18,21 @@ def gauss_jordan(matriz, archivo):
         f.write("\n")
         
         for i in range(n): 
-            pivote = matriz[i, i]  
-            f.write(f"Multiplicamos la fila {i + 1} por {1 / pivote} para hacer el pivote 1\n")
-            matriz[i] /= pivote  
+            piv = matriz[i, i]  
+            f.write(f"Dividimos la fila {i + 1} por {piv} para hacer el pivote\n")
+            matriz[i] /= piv  
             
             for j in range(n):  
                 if i != j:  
                     factor = matriz[j, i]  
-                    f.write(f"Restamos {factor} veces la fila {i + 1} de la fila {j + 1}\n")
+                    f.write(f"A la fila {j + 1} le restamos {factor}  y multiplicamos por la fila {i + 1}\n")
                     matriz[j] -= factor * matriz[i]  
-            f.write("Matriz despues de este paso:\n")
+            f.write("\nDespues de la operacion:\n")
             for fila in matriz:
                 f.write(" ".join(map(str, fila)) + "\n")
             f.write("\n")
         
-        f.write("Matriz final:\n")
+        f.write("Resultado: \n")
         for fila in matriz:
             f.write(" ".join(map(str, fila)) + "\n")
     
@@ -41,10 +41,10 @@ def gauss_jordan(matriz, archivo):
 def main():
     archivo = r"C:\Users\jacqu\3\Tercer-Semestre\Analisis\matriz.txt"
     
-    datos = leer_matriz(archivo)
-    matriz_reducida = gauss_jordan(datos, archivo)
+    datos = leerMatriz(archivo)
+    matriz_reducida = gaussJordan(datos, archivo)
     
-    print("Listo :D")
+    print("Listooo :D")
 
 if __name__ == "__main__":
     main()
