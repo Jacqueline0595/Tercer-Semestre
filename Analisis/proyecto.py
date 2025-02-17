@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np  # type: ignore
 
 def leerMatriz(nombre_archivo):
     with open(nombre_archivo, 'r') as f:
