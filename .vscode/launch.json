@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/jacqu/3/Tercer-Semestre/Lenguajes",
-      "program": "c:/Users/jacqu/3/Tercer-Semestre/Lenguajes/build/Debug/outDebug",
+      "cwd": "c:/Users/jacqu/3/Tercer-Semestre/Estudio Alan",
+      "program": "c:/Users/jacqu/3/Tercer-Semestre/Estudio Alan/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
