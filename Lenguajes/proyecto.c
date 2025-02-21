@@ -17,7 +17,7 @@ void printMainMenu()
     printf("-------Main menu------- \n");
     printf("--- %d Create new file \n", NEW_FILE);
     printf("--- %d Open existing file \n", OPEN_FILE);
-    printf("--- %d Exir \n", EXIT);
+    printf("--- %d Exit \n", EXIT);
 }
 
 void processUserSelection(int usSelec)
@@ -66,8 +66,13 @@ FILE *CreateFile(const char *fileName)
 
 FILE * OpenFile(const char* fileName)
 {
-    printf("Creating a new file... \n");
+    printf("Opening a new file... \n");
     FILE *dataFile = fopen(fileName, "rb+");
+    
+    if(dataFile)
+    {
+        printf("Dictionary name: \n", );
+    }
 
     return dataFile;
 }
