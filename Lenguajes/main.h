@@ -17,8 +17,30 @@ enum
     OPEN_FILE
 }OPTION;
 
+enum
+{
+    RETURN,
+    PRINT,
+    CREATE_ENTITY,
+    DELETE_ENTITY,
+    MODIFY_ENTITY,
+    SELECT_ENTITY
+}OPTIONEntity;
+
+enum
+{
+    RETURN2,
+    PRINT,
+    CREATE_ATTRIBUTE,
+    DELETE_ATTRIBUTE,
+    MODIFY_ATTRIBUTE,
+    SELECT_ATTRIBUTE
+}OPTIONAttribute;
+
 void printMainMenu();
 void processUserSelection(int usSelec);
 FILE * CreateFile(const char* fileName);
 FILE * OpenFile(const char* fileName);
 REGISTER createNewDataBlock();
+void printDictionaryMenu(); // Data dictionary menu
+void printEntityMenu();

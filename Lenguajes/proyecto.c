@@ -5,16 +5,18 @@
 int main()
 {
     int userSelection;
-    printMainMenu();
-    scanf("%d", &userSelection);
-    processUserSelection(userSelection);
+    do{
+        printMainMenu();
+        scanf("%d", &userSelection);
+        processUserSelection(userSelection);
+    } while(userSelection != 0);
 
     return 0;
 }
 
 void printMainMenu()
 {
-    printf("-------Main menu------- \n");
+    printf("---------Main menu--------- \n");
     printf("--- %d Create new file \n", NEW_FILE);
     printf("--- %d Open existing file \n", OPEN_FILE);
     printf("--- %d Exit \n", EXIT);
@@ -31,27 +33,22 @@ void processUserSelection(int usSelec)
         long header = -1;
 
         fwrite(&header, sizeof(long), 1, dataFile);
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 1; i++)
         {
             REGISTER dataBlock = createNewDataBlock();
             fwrite(&dataBlock, sizeof(REGISTER), 1, dataFile);
         }
 
         fclose(dataFile);
-        break;
+    break;
     case OPEN_FILE:
         printf("Openning existing file \n");
         dataFile = OpenFile("test.dat");
-        fseek(dataFile, 0, SEEK_END);
-        for(int i = 0; i < 1; i++)
-        {
-            REGISTER dataBlock = createNewDataBlock();
-            fwrite(&dataBlock, sizeof(REGISTER), 1, dataFile);
-        }
-        break;
+        fclose(dataFile);
+    break;
     default:
         printf("Wrong option \n");
-        break;
+    break;
 
     }
 }
@@ -64,16 +61,11 @@ FILE *CreateFile(const char *fileName)
     return dataFile;
 }
 
-FILE * OpenFile(const char* fileName)
+FILE *OpenFile(const char *fileName)
 {
-    printf("Opening a new file... \n");
     FILE *dataFile = fopen(fileName, "rb+");
-    
-    if(dataFile)
-    {
-        printf("Dictionary name: \n", );
-    }
-
+    printf("Dictionary name: %s \n", *fileName);
+    printDictionaryMenu();
     return dataFile;
 }
 
@@ -95,4 +87,26 @@ REGISTER createNewDataBlock()
     scanf("%d", &dataBlock.semester);
 
     return dataBlock;
+}
+
+void printDictionaryMenu()
+{
+    printf("--------Dictionary menu-------- \n");
+    printf("--- %d Print data dictionary \n", PRINT);
+    printf("--- %d Create an entity \n", CREATE_ENTITY);
+    printf("--- %d Delete an entity \n", DELETE_ENTITY);
+    printf("--- %d Modify an entity \n", MODIFY_ENTITY);
+    printf("--- %d Select an entity \n", SELECT_ENTITY);
+    printf("--- %d Exit \n", RETURN);
+}
+
+void printEntityMenu()
+{
+    printf("--------Dictionary menu-------- \n");
+    printf("--- %d Print data dictionary \n", PRINT);
+    printf("--- %d Create an entity \n", CREATE_ENTITY);
+    printf("--- %d Delete an entity \n", DELETE_ENTITY);
+    printf("--- %d Modify an entity \n", MODIFY_ENTITY);
+    printf("--- %d Select an entity \n", SELECT_ENTITY);
+    printf("--- %d Exit \n", RETURN);
 }
