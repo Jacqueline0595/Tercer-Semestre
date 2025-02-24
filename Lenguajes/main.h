@@ -30,7 +30,7 @@ enum
 enum
 {
     RETURN2,
-    PRINT,
+    PRINT2,
     CREATE_ATTRIBUTE,
     DELETE_ATTRIBUTE,
     MODIFY_ATTRIBUTE,

@@ -25,6 +25,7 @@ void printMainMenu()
 void processUserSelection(int usSelec)
 {
     FILE *dataFile;
+    int userSelec;
     switch (usSelec)
     {
     case NEW_FILE:
@@ -43,8 +44,12 @@ void processUserSelection(int usSelec)
     break;
     case OPEN_FILE:
         printf("Openning existing file \n");
-        dataFile = OpenFile("test.dat");
-        fclose(dataFile);
+        /* dataFile = OpenFile("test.dat");
+        fclose(dataFile); */
+        do{
+            printDictionaryMenu();
+            scanf("%d", &userSelec);
+        } while(userSelec != 0);
     break;
     default:
         printf("Wrong option \n");
@@ -64,7 +69,7 @@ FILE *CreateFile(const char *fileName)
 FILE *OpenFile(const char *fileName)
 {
     FILE *dataFile = fopen(fileName, "rb+");
-    printf("Dictionary name: %s \n", *fileName);
+    printf("Dictionary name: %c \n", *fileName);
     printDictionaryMenu();
     return dataFile;
 }
@@ -102,11 +107,11 @@ void printDictionaryMenu()
 
 void printEntityMenu()
 {
-    printf("--------Dictionary menu-------- \n");
-    printf("--- %d Print data dictionary \n", PRINT);
-    printf("--- %d Create an entity \n", CREATE_ENTITY);
-    printf("--- %d Delete an entity \n", DELETE_ENTITY);
-    printf("--- %d Modify an entity \n", MODIFY_ENTITY);
-    printf("--- %d Select an entity \n", SELECT_ENTITY);
-    printf("--- %d Exit \n", RETURN);
+    printf("--------Entity menu-------- \n");
+    printf("--- %d Print data dictionary \n", PRINT2);
+    printf("--- %d Create an attribute \n", CREATE_ATTRIBUTE);
+    printf("--- %d Delete an attribute \n", DELETE_ATTRIBUTE);
+    printf("--- %d Modify an attribute \n", MODIFY_ATTRIBUTE);
+    printf("--- %d Select an attribute \n", SELECT_ATTRIBUTE);
+    printf("--- %d Exit \n", RETURN2);
 }
