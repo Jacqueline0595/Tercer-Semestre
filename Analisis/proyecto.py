@@ -1,10 +1,10 @@
-import numpy as np  # type: ignore
+import numpy as np  
 
 def leerMatriz(nombre_archivo):
     with open(nombre_archivo, 'r') as f:
         lineas = f.readlines()
     
-    n = int(lineas[0].strip()) 
+    n, m = map(int, lineas[0].strip().split()) 
     matriz = [list(map(float, linea.split())) for linea in lineas[1:n+1]]
     
     return np.array(matriz)  
@@ -23,7 +23,7 @@ def gaussJordan(matriz, archivo):
             matriz[i] /= piv  
             
             for j in range(n):  
-                if i != j:  
+                if i != j and j < n:
                     factor = matriz[j, i]  
                     f.write(f"A la fila {j + 1} le restamos {factor}  y multiplicamos por la fila {i + 1}\n")
                     matriz[j] -= factor * matriz[i]  
@@ -42,7 +42,7 @@ def main():
     archivo = r"C:\Users\jacqu\3\Tercer-Semestre\Analisis\matriz.txt"
     
     datos = leerMatriz(archivo)
-    matriz_reducida = gaussJordan(datos, archivo)
+    gaussJordan(datos, archivo)
     
     print("Listooo :D")
 
