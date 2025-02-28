@@ -25,36 +25,34 @@ void printMainMenu()
 void processUserSelection(int usSelec)
 {
     FILE *dataFile;
-    int userSelec;
     switch (usSelec)
     {
-    case NEW_FILE:
-        // TODO: ask for a new file name
-        dataFile = CreateFile("test.dat");
-        long header = -1;
+        case NEW_FILE:
+            // TODO: ask for a new file name
+            dataFile = CreateFile("test.dat");
+            long header = -1;
 
-        fwrite(&header, sizeof(long), 1, dataFile);
-        for (int i = 0; i < 1; i++)
-        {
-            REGISTER dataBlock = createNewDataBlock();
-            fwrite(&dataBlock, sizeof(REGISTER), 1, dataFile);
-        }
+            fwrite(&header, sizeof(long), 1, dataFile);
+            for (int i = 0; i < 1; i++)
+            {
+                REGISTER dataBlock = createNewDataBlock();
+                fwrite(&dataBlock, sizeof(REGISTER), 1, dataFile);
+            }
 
-        fclose(dataFile);
-    break;
-    case OPEN_FILE:
-        printf("Openning existing file \n");
-        /* dataFile = OpenFile("test.dat");
-        fclose(dataFile); */
-        do{
-            printDictionaryMenu();
-            scanf("%d", &userSelec);
-        } while(userSelec != 0);
-    break;
-    default:
-        printf("Wrong option \n");
-    break;
-
+            fclose(dataFile);
+        break;
+        case OPEN_FILE:
+            printf("Openning existing file \n");
+            /* dataFile = OpenFile("test.dat");
+            fclose(dataFile); */
+            processInputDictonary();
+        break;
+        case EXIT:
+            printf("Bye bye \n");
+        break;
+        default:
+            printf("Wrong option \n");
+        break;
     }
 }
 
@@ -94,6 +92,35 @@ REGISTER createNewDataBlock()
     return dataBlock;
 }
 
+void processInputDictonary()
+{
+    int userSelec;
+    do{
+        printDictionaryMenu();
+        scanf("%d", &userSelec);
+        switch(userSelec)
+        {
+            case PRINT:
+            break;
+            case CREATE_ENTITY:
+            break;
+            case DELETE_ENTITY:
+            break;
+            case MODIFY_ENTITY:
+            break;
+            case SELECT_ENTITY:
+                processInputEntity();
+            break;
+            case RETURN:
+                printf("Back to the main menu \n");
+            break;
+            default:
+                printf("Wrong option \n");
+            break;
+        }
+    } while(userSelec != 0);
+}
+
 void printDictionaryMenu()
 {
     printf("--------Dictionary menu-------- \n");
@@ -103,6 +130,35 @@ void printDictionaryMenu()
     printf("--- %d Modify an entity \n", MODIFY_ENTITY);
     printf("--- %d Select an entity \n", SELECT_ENTITY);
     printf("--- %d Exit \n", RETURN);
+}
+
+
+void processInputEntity()
+{
+    int userSelec;
+    do{
+        printEntityMenu();
+        scanf("%d", &userSelec);
+        switch(userSelec)
+        {
+            case PRINT2:
+            break;
+            case CREATE_ATTRIBUTE:
+            break;
+            case DELETE_ATTRIBUTE:
+            break;
+            case MODIFY_ATTRIBUTE:
+            break;
+            case SELECT_ATTRIBUTE:
+            break;
+            case RETURN2:
+                printf("Back to the dictionary menu \n");
+            break;
+            default:
+                printf("Wrong option \n");
+            break;
+        }
+    } while(userSelec != 0);
 }
 
 void printEntityMenu()

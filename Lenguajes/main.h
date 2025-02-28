@@ -42,5 +42,8 @@ void processUserSelection(int usSelec);
 FILE * CreateFile(const char* fileName);
 FILE * OpenFile(const char* fileName);
 REGISTER createNewDataBlock();
+void processInputDictonary();
 void printDictionaryMenu(); // Data dictionary menu
+void processInputEntity();
 void printEntityMenu();
+
