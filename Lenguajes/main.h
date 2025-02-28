@@ -10,6 +10,22 @@ typedef struct Register
     int semester;
 }REGISTER;
 
+typedef struct Entity
+{
+    char name[STRING_LENGHT];
+    long ptrData;
+    long ptrAttribute;
+    long ptrFEntity;
+} ENTITY;
+
+typedef struct Attribute
+{
+    char name[STRING_LENGHT];
+    int type;
+    int size;
+    long *folAttribute;
+} ATTRIBUTE;
+
 enum
 {
     EXIT,

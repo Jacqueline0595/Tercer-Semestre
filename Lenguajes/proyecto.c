@@ -16,7 +16,7 @@ int main()
 
 void printMainMenu()
 {
-    printf("---------Main menu--------- \n");
+    printf("\t ---------Main menu--------- \n");
     printf("--- %d Create new file \n", NEW_FILE);
     printf("--- %d Open existing file \n", OPEN_FILE);
     printf("--- %d Exit \n", EXIT);
@@ -123,7 +123,7 @@ void processInputDictonary()
 
 void printDictionaryMenu()
 {
-    printf("--------Dictionary menu-------- \n");
+    printf("\t --------Dictionary menu-------- \n");
     printf("--- %d Print data dictionary \n", PRINT);
     printf("--- %d Create an entity \n", CREATE_ENTITY);
     printf("--- %d Delete an entity \n", DELETE_ENTITY);
@@ -163,7 +163,7 @@ void processInputEntity()
 
 void printEntityMenu()
 {
-    printf("--------Entity menu-------- \n");
+    printf("\t --------Entity menu-------- \n");
     printf("--- %d Print data dictionary \n", PRINT2);
     printf("--- %d Create an attribute \n", CREATE_ATTRIBUTE);
     printf("--- %d Delete an attribute \n", DELETE_ATTRIBUTE);
