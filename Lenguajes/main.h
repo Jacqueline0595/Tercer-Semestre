@@ -15,7 +15,7 @@ typedef struct Entity
     char name[STRING_LENGHT];
     long ptrData;
     long ptrAttribute;
-    long ptrFEntity;
+    long ptrNextEntity;
 } ENTITY;
 
 typedef struct Attribute
@@ -23,7 +23,7 @@ typedef struct Attribute
     char name[STRING_LENGHT];
     int type;
     int size;
-    long *folAttribute;
+    long *nextAttribute;
 } ATTRIBUTE;
 
 enum
