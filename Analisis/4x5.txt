@@ -1,0 +1,55 @@
+La matriz original es:
+6 27 159 1053 88
+27 159 1053 7395 544
+159 1053 7395 53757 3676
+1053 7395 53757 399579 26056
+
+Dividimos la fila 1 por 6 para hacer el pivote
+A la fila 2 le restamos 27 y multiplicamos por la fila 1
+A la fila 3 le restamos 159 y multiplicamos por la fila 1
+A la fila 4 le restamos 1053 y multiplicamos por la fila 1
+
+Despues de la operacion:
+1 9/2 53/2 351/2 44/3
+0 75/2 675/2 5313/2 148
+0 675/2 6363/2 51705/2 1344
+0 5313/2 51705/2 429555/2 10612
+
+Dividimos la fila 2 por 75/2 para hacer el pivote
+A la fila 1 le restamos 9/2 y multiplicamos por la fila 2
+A la fila 3 le restamos 675/2 y multiplicamos por la fila 2
+A la fila 4 le restamos 5313/2 y multiplicamos por la fila 2
+
+Despues de la operacion:
+1 0 -14 -3582/25 -232/75
+0 1 9 1771/25 296/75
+0 0 144 1944 12
+0 0 1944 664776/25 3192/25
+
+Dividimos la fila 3 por 144 para hacer el pivote
+A la fila 1 le restamos -14 y multiplicamos por la fila 3
+A la fila 2 le restamos 9 y multiplicamos por la fila 3
+A la fila 4 le restamos 1944 y multiplicamos por la fila 3
+
+Despues de la operacion:
+1 0 0 1143/25 -289/150
+0 1 0 -2533/50 959/300
+0 0 1 27/2 1/12
+0 0 0 8676/25 -858/25
+
+Dividimos la fila 4 por 8676/25 para hacer el pivote
+A la fila 1 le restamos 1143/25 y multiplicamos por la fila 4
+A la fila 2 le restamos -2533/50 y multiplicamos por la fila 4
+A la fila 3 le restamos 27/2 y multiplicamos por la fila 4
+
+Despues de la operacion:
+1 0 0 0 1876/723
+0 1 0 0 -437/241
+0 0 1 0 2051/1446
+0 0 0 1 -143/1446
+
+Resultado: 
+1 0 0 0 1876/723
+0 1 0 0 -437/241
+0 0 1 0 2051/1446
+0 0 0 1 -143/1446
