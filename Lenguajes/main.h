@@ -62,4 +62,3 @@ void processInputDictonary();
 void printDictionaryMenu(); // Data dictionary menu
 void processInputEntity();
 void printEntityMenu();
-
