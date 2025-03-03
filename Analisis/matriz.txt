@@ -1,78 +1,78 @@
 La matriz original es:
-6 27 159 1053 7395 88
-27 159 1053 7395 53757 544
-159 1053 7395 53757 399579 3676
-1053 7395 53757 399579 3015333 26056
-7395 53757 399579 3015333 22998435 190252
+10 79 845 10231 131813 589
+79 845 10231 131813 1760839 4565
+845 10231 131813 1760839 24077285 47415
+10231 131813 1760839 24077285 334607191 560945
+131813 1760839 24077285 334607191 4706018693 7109415
 
-Dividimos la fila 1 por 6 para hacer el pivote
-A la fila 2 le restamos 27 y multiplicamos por la fila 1
-A la fila 3 le restamos 159 y multiplicamos por la fila 1
-A la fila 4 le restamos 1053 y multiplicamos por la fila 1
-A la fila 5 le restamos 7395 y multiplicamos por la fila 1
-
-Despues de la operacion:
-1 9/2 53/2 351/2 2465/2 44/3
-0 75/2 675/2 5313/2 40959/2 148
-0 675/2 6363/2 51705/2 407223/2 1344
-0 5313/2 51705/2 429555/2 3435021/2 10612
-0 40959/2 407223/2 3435021/2 27768195/2 81792
-
-Dividimos la fila 2 por 75/2 para hacer el pivote
-A la fila 1 le restamos 9/2 y multiplicamos por la fila 2
-A la fila 3 le restamos 675/2 y multiplicamos por la fila 2
-A la fila 4 le restamos 5313/2 y multiplicamos por la fila 2
-A la fila 5 le restamos 40959/2 y multiplicamos por la fila 2
+Dividimos la fila 1 por 10 para hacer el pivote
+A la fila 2 le restamos 79 y multiplicamos por la fila 1
+A la fila 3 le restamos 845 y multiplicamos por la fila 1
+A la fila 4 le restamos 10231 y multiplicamos por la fila 1
+A la fila 5 le restamos 131813 y multiplicamos por la fila 1
 
 Despues de la operacion:
-1 0 -14 -3582/25 -30626/25 -232/75
-0 1 9 1771/25 13653/25 296/75
-0 0 144 1944 19296 12
-0 0 1944 664776/25 6668568/25 3192/25
-0 0 19296 6668568/25 67495824/25 24156/25
+1 79/10 169/2 10231/10 131813/10 589/10
+0 2209/10 7111/2 509881/10 7195163/10 -881/10
+0 7111/2 120821/2 1792639/2 25878173/2 -4711/2
+0 509881/10 1792639/2 136099489/10 1997493107/10 -416609/10
+0 7195163/10 25878173/2 1997493107/10 29685519961/10 -6543707/10
 
-Dividimos la fila 3 por 144 para hacer el pivote
-A la fila 1 le restamos -14 y multiplicamos por la fila 3
-A la fila 2 le restamos 9 y multiplicamos por la fila 3
-A la fila 4 le restamos 1944 y multiplicamos por la fila 3
-A la fila 5 le restamos 19296 y multiplicamos por la fila 3
-
-Despues de la operacion:
-1 0 0 1143/25 16274/25 -289/150
-0 1 0 -2533/50 -16497/25 959/300
-0 0 1 27/2 134 1/12
-0 0 0 8676/25 156168/25 -858/25
-0 0 0 156168/25 2854224/25 -16044/25
-
-Dividimos la fila 4 por 8676/25 para hacer el pivote
-A la fila 1 le restamos 1143/25 y multiplicamos por la fila 4
-A la fila 2 le restamos -2533/50 y multiplicamos por la fila 4
-A la fila 3 le restamos 27/2 y multiplicamos por la fila 4
-A la fila 5 le restamos 156168/25 y multiplicamos por la fila 4
+Dividimos la fila 2 por 2209/10 para hacer el pivote
+A la fila 1 le restamos 79/10 y multiplicamos por la fila 2
+A la fila 3 le restamos 7111/2 y multiplicamos por la fila 2
+A la fila 4 le restamos 509881/10 y multiplicamos por la fila 2
+A la fila 5 le restamos 7195163/10 y multiplicamos por la fila 2
 
 Despues de la operacion:
-1 0 0 0 -172 1876/723
-0 1 0 0 252 -437/241
-0 0 1 0 -109 2051/1446
-0 0 0 1 18 -143/1446
-0 0 0 0 1728 -24
+1 0 -94224/2209 -1768032/2209 -27724296/2209 137070/2209
+0 1 35555/2209 509881/2209 7195163/2209 -881/2209
+0 0 7030992/2209 167087880/2209 3000040032/2209 -2070904/2209
+0 0 167087880/2209 4066513704/2209 74378536776/2209 -47108412/2209
+0 0 3000040032/2209 74378536776/2209 1380494299728/2209 -811611016/2209
 
-Dividimos la fila 5 por 1728 para hacer el pivote
-A la fila 1 le restamos -172 y multiplicamos por la fila 5
-A la fila 2 le restamos 252 y multiplicamos por la fila 5
-A la fila 3 le restamos -109 y multiplicamos por la fila 5
-A la fila 4 le restamos 18 y multiplicamos por la fila 5
+Dividimos la fila 3 por 7030992/2209 para hacer el pivote
+A la fila 1 le restamos -94224/2209 y multiplicamos por la fila 3
+A la fila 2 le restamos 35555/2209 y multiplicamos por la fila 3
+A la fila 4 le restamos 167087880/2209 y multiplicamos por la fila 3
+A la fila 5 le restamos 3000040032/2209 y multiplicamos por la fila 3
 
 Despues de la operacion:
-1 0 0 0 0 893/4338
-0 1 0 0 0 813/482
-0 0 1 0 0 -1657/17352
-0 0 0 1 0 437/2892
-0 0 0 0 1 -1/72
+1 0 0 31242168/146479 827547048/146479 7248842/146479
+0 1 0 -44436403/292958 -528871377/146479 3816019/878874
+0 0 1 6961995/292958 62500834/146479 -258863/878874
+0 0 0 6349646124/146479 204509659176/146479 139619088/146479
+0 0 0 204509659176/146479 6658406743536/146479 4775580408/146479
+
+Dividimos la fila 4 por 6349646124/146479 para hacer el pivote
+A la fila 1 le restamos 31242168/146479 y multiplicamos por la fila 4
+A la fila 2 le restamos -44436403/292958 y multiplicamos por la fila 4
+A la fila 3 le restamos 6961995/292958 y multiplicamos por la fila 4
+A la fila 5 le restamos 204509659176/146479 y multiplicamos por la fila 4
+
+Despues de la operacion:
+1 0 0 0 -215179541064/176379059 7901318146/176379059
+0 1 0 0 224850343964/176379059 8124577667/1058274354
+0 0 1 0 -59743003351/176379059 -864699343/1058274354
+0 0 0 1 5680823866/176379059 3878308/176379059
+0 0 0 0 86156808754752/176379059 335617605816/176379059
+
+Dividimos la fila 5 por 86156808754752/176379059 para hacer el pivote
+A la fila 1 le restamos -215179541064/176379059 y multiplicamos por la fila 5
+A la fila 2 le restamos 224850343964/176379059 y multiplicamos por la fila 5
+A la fila 3 le restamos -59743003351/176379059 y multiplicamos por la fila 5
+A la fila 4 le restamos 5680823866/176379059 y multiplicamos por la fila 5
+
+Despues de la operacion:
+1 0 0 0 0 7411539006499/149577792977
+0 1 0 0 0 1216629216380/448733378931
+0 0 1 0 0 1803450368485/3589867031448
+0 0 0 1 0 -185731830595/1794933515724
+0 0 0 0 1 13984066909/3589867031448
 
 Resultado: 
-1 0 0 0 0 893/4338
-0 1 0 0 0 813/482
-0 0 1 0 0 -1657/17352
-0 0 0 1 0 437/2892
-0 0 0 0 1 -1/72
+1 0 0 0 0 7411539006499/149577792977
+0 1 0 0 0 1216629216380/448733378931
+0 0 1 0 0 1803450368485/3589867031448
+0 0 0 1 0 -185731830595/1794933515724
+0 0 0 0 1 13984066909/3589867031448
