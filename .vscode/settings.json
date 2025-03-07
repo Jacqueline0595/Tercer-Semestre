@@ -59,7 +59,8 @@
   "C_Cpp.errorSquiggles": "disabled",
   "files.associations": {
     "typeinfo": "c",
-    "stdio.h": "c"
+    "stdio.h": "c",
+    "stdlib.h": "c"
   },
   "python.testing.pytestArgs": [
     "Analisis"

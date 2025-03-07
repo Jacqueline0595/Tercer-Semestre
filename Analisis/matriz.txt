@@ -1,78 +1,36 @@
 La matriz original es:
-10 79 845 10231 131813 589
-79 845 10231 131813 1760839 4565
-845 10231 131813 1760839 24077285 47415
-10231 131813 1760839 24077285 334607191 560945
-131813 1760839 24077285 334607191 4706018693 7109415
+-21 11 9 -13
+11 -27 5 -17
+9 5 -18 9
 
-Dividimos la fila 1 por 10 para hacer el pivote
-A la fila 2 le restamos 79 y multiplicamos por la fila 1
-A la fila 3 le restamos 845 y multiplicamos por la fila 1
-A la fila 4 le restamos 10231 y multiplicamos por la fila 1
-A la fila 5 le restamos 131813 y multiplicamos por la fila 1
+Dividimos la fila 1 por -21 para hacer el pivote
+A la fila 2 le restamos 11 y multiplicamos por la fila 1
+A la fila 3 le restamos 9 y multiplicamos por la fila 1
 
 Despues de la operacion:
-1 79/10 169/2 10231/10 131813/10 589/10
-0 2209/10 7111/2 509881/10 7195163/10 -881/10
-0 7111/2 120821/2 1792639/2 25878173/2 -4711/2
-0 509881/10 1792639/2 136099489/10 1997493107/10 -416609/10
-0 7195163/10 25878173/2 1997493107/10 29685519961/10 -6543707/10
+1 -11/21 -3/7 13/21
+0 -446/21 68/7 -500/21
+0 68/7 -99/7 24/7
 
-Dividimos la fila 2 por 2209/10 para hacer el pivote
-A la fila 1 le restamos 79/10 y multiplicamos por la fila 2
-A la fila 3 le restamos 7111/2 y multiplicamos por la fila 2
-A la fila 4 le restamos 509881/10 y multiplicamos por la fila 2
-A la fila 5 le restamos 7195163/10 y multiplicamos por la fila 2
+Dividimos la fila 2 por -446/21 para hacer el pivote
+A la fila 1 le restamos -11/21 y multiplicamos por la fila 2
+A la fila 3 le restamos 68/7 y multiplicamos por la fila 2
 
 Despues de la operacion:
-1 0 -94224/2209 -1768032/2209 -27724296/2209 137070/2209
-0 1 35555/2209 509881/2209 7195163/2209 -881/2209
-0 0 7030992/2209 167087880/2209 3000040032/2209 -2070904/2209
-0 0 167087880/2209 4066513704/2209 74378536776/2209 -47108412/2209
-0 0 3000040032/2209 74378536776/2209 1380494299728/2209 -811611016/2209
+1 0 -149/223 269/223
+0 1 -102/223 250/223
+0 0 -2163/223 -1664/223
 
-Dividimos la fila 3 por 7030992/2209 para hacer el pivote
-A la fila 1 le restamos -94224/2209 y multiplicamos por la fila 3
-A la fila 2 le restamos 35555/2209 y multiplicamos por la fila 3
-A la fila 4 le restamos 167087880/2209 y multiplicamos por la fila 3
-A la fila 5 le restamos 3000040032/2209 y multiplicamos por la fila 3
+Dividimos la fila 3 por -2163/223 para hacer el pivote
+A la fila 1 le restamos -149/223 y multiplicamos por la fila 3
+A la fila 2 le restamos -102/223 y multiplicamos por la fila 3
 
 Despues de la operacion:
-1 0 0 31242168/146479 827547048/146479 7248842/146479
-0 1 0 -44436403/292958 -528871377/146479 3816019/878874
-0 0 1 6961995/292958 62500834/146479 -258863/878874
-0 0 0 6349646124/146479 204509659176/146479 139619088/146479
-0 0 0 204509659176/146479 6658406743536/146479 4775580408/146479
-
-Dividimos la fila 4 por 6349646124/146479 para hacer el pivote
-A la fila 1 le restamos 31242168/146479 y multiplicamos por la fila 4
-A la fila 2 le restamos -44436403/292958 y multiplicamos por la fila 4
-A la fila 3 le restamos 6961995/292958 y multiplicamos por la fila 4
-A la fila 5 le restamos 204509659176/146479 y multiplicamos por la fila 4
-
-Despues de la operacion:
-1 0 0 0 -215179541064/176379059 7901318146/176379059
-0 1 0 0 224850343964/176379059 8124577667/1058274354
-0 0 1 0 -59743003351/176379059 -864699343/1058274354
-0 0 0 1 5680823866/176379059 3878308/176379059
-0 0 0 0 86156808754752/176379059 335617605816/176379059
-
-Dividimos la fila 5 por 86156808754752/176379059 para hacer el pivote
-A la fila 1 le restamos -215179541064/176379059 y multiplicamos por la fila 5
-A la fila 2 le restamos 224850343964/176379059 y multiplicamos por la fila 5
-A la fila 3 le restamos -59743003351/176379059 y multiplicamos por la fila 5
-A la fila 4 le restamos 5680823866/176379059 y multiplicamos por la fila 5
-
-Despues de la operacion:
-1 0 0 0 0 7411539006499/149577792977
-0 1 0 0 0 1216629216380/448733378931
-0 0 1 0 0 1803450368485/3589867031448
-0 0 0 1 0 -185731830595/1794933515724
-0 0 0 0 1 13984066909/3589867031448
+1 0 0 3721/2163
+0 1 0 1062/721
+0 0 1 1664/2163
 
 Resultado: 
-1 0 0 0 0 7411539006499/149577792977
-0 1 0 0 0 1216629216380/448733378931
-0 0 1 0 0 1803450368485/3589867031448
-0 0 0 1 0 -185731830595/1794933515724
-0 0 0 0 1 13984066909/3589867031448
+1 0 0 3721/2163
+0 1 0 1062/721
+0 0 1 1664/2163
