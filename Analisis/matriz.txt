@@ -1,36 +1,36 @@
 La matriz original es:
--21 11 9 -13
-11 -27 5 -17
-9 5 -18 9
+30 20 20 340
+20 30 20 340
+10 10 10 140
 
-Dividimos la fila 1 por -21 para hacer el pivote
-A la fila 2 le restamos 11 y multiplicamos por la fila 1
-A la fila 3 le restamos 9 y multiplicamos por la fila 1
-
-Despues de la operacion:
-1 -11/21 -3/7 13/21
-0 -446/21 68/7 -500/21
-0 68/7 -99/7 24/7
-
-Dividimos la fila 2 por -446/21 para hacer el pivote
-A la fila 1 le restamos -11/21 y multiplicamos por la fila 2
-A la fila 3 le restamos 68/7 y multiplicamos por la fila 2
+Dividimos la fila 1 por 30 para hacer el pivote
+A la fila 2 le restamos 20 y multiplicamos por la fila 1
+A la fila 3 le restamos 10 y multiplicamos por la fila 1
 
 Despues de la operacion:
-1 0 -149/223 269/223
-0 1 -102/223 250/223
-0 0 -2163/223 -1664/223
+1 2/3 2/3 34/3
+0 50/3 20/3 340/3
+0 10/3 10/3 80/3
 
-Dividimos la fila 3 por -2163/223 para hacer el pivote
-A la fila 1 le restamos -149/223 y multiplicamos por la fila 3
-A la fila 2 le restamos -102/223 y multiplicamos por la fila 3
+Dividimos la fila 2 por 50/3 para hacer el pivote
+A la fila 1 le restamos 2/3 y multiplicamos por la fila 2
+A la fila 3 le restamos 10/3 y multiplicamos por la fila 2
 
 Despues de la operacion:
-1 0 0 3721/2163
-0 1 0 1062/721
-0 0 1 1664/2163
+1 0 2/5 34/5
+0 1 2/5 34/5
+0 0 2 4
 
-Resultado: 
-1 0 0 3721/2163
-0 1 0 1062/721
-0 0 1 1664/2163
+Dividimos la fila 3 por 2 para hacer el pivote
+A la fila 1 le restamos 2/5 y multiplicamos por la fila 3
+A la fila 2 le restamos 2/5 y multiplicamos por la fila 3
+
+Despues de la operacion:
+1 0 0 6
+0 1 0 6
+0 0 1 2
+
+Resultado:  
+1 0 0 6
+0 1 0 6
+0 0 1 2

@@ -60,7 +60,9 @@
   "files.associations": {
     "typeinfo": "c",
     "stdio.h": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "cmath": "c",
+    "complex": "c"
   },
   "python.testing.pytestArgs": [
     "Analisis"
