@@ -62,3 +62,5 @@ void processInputDictonary();
 void printDictionaryMenu(); // Data dictionary menu
 void processInputEntity();
 void printEntityMenu();
+
+int openDataDictionary(const char * fileName);

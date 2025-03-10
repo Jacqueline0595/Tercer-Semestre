@@ -54,6 +54,7 @@ void processUserSelection(int usSelec)
             printf("Wrong option \n");
         break;
     }
+    fclose(dataFile);
 }
 
 FILE *CreateFile(const char *fileName)
@@ -119,6 +120,30 @@ void processInputDictonary()
             break;
         }
     } while(userSelec != 0);
+}
+
+int openDataDictionary(const char * fileName)
+{
+    int operationResult = EXIT_SUCCESS;
+    long header;
+    FILE *file = fopen(fileName, "rb");
+
+    if(file)
+    {
+        if(fread(&header, sizeof(header), 1, file) != 1)
+        {
+            fprintf(stderr, "Failed to read data. \n");
+            operationResult = EXIT_FAILURE;
+        } else {
+            printf("The header value is: %d \n", header);
+        }
+    } else {
+        fprintf(stderr, "Failed to open the data dictionary \n");
+        operationResult = EXIT_FAILURE;
+    }
+
+    fclose(file);
+    return operationResult;
 }
 
 void printDictionaryMenu()
