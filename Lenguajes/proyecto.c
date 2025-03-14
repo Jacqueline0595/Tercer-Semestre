@@ -1,6 +1,6 @@
 #include "main.h"
+#include "entity.h"
 
-// Hola
 
 int main()
 {
@@ -129,6 +129,17 @@ void processInputDictonary()
     } while(userSelec != RETURN);
 }
 
+void printDictionaryMenu()
+{
+    printf("\t --------Dictionary menu-------- \n");
+    printf("--- %d Print data dictionary \n", PRINT);
+    printf("--- %d Create an entity \n", CREATE_ENTITY);
+    printf("--- %d Delete an entity \n", DELETE_ENTITY);
+    printf("--- %d Modify an entity \n", MODIFY_ENTITY);
+    printf("--- %d Select an entity \n", SELECT_ENTITY);
+    printf("--- %d Exit \n", RETURN);
+}
+
 int openDataDictionary(const char * fileName)
 {
     int operationResult = EXIT_SUCCESS;
@@ -150,17 +161,6 @@ int openDataDictionary(const char * fileName)
         operationResult = EXIT_FAILURE;
     }
     return operationResult;
-}
-
-void printDictionaryMenu()
-{
-    printf("\t --------Dictionary menu-------- \n");
-    printf("--- %d Print data dictionary \n", PRINT);
-    printf("--- %d Create an entity \n", CREATE_ENTITY);
-    printf("--- %d Delete an entity \n", DELETE_ENTITY);
-    printf("--- %d Modify an entity \n", MODIFY_ENTITY);
-    printf("--- %d Select an entity \n", SELECT_ENTITY);
-    printf("--- %d Exit \n", RETURN);
 }
 
 
