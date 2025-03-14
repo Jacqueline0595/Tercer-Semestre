@@ -10,13 +10,6 @@ typedef struct Register
     int semester;
 }REGISTER;
 
-typedef struct Entity
-{
-    char name[STRING_LENGHT];
-    long ptrData;
-    long ptrAttribute;
-    long ptrNextEntity;
-} ENTITY;
 
 typedef struct Attribute
 {
