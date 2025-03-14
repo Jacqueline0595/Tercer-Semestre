@@ -9,7 +9,7 @@ int main()
         printMainMenu();
         scanf("%d", &userSelection);
         processUserSelection(userSelection);
-    } while(userSelection != 0);
+    } while(userSelection != EXIT);
 
     return 0;
 }
@@ -24,22 +24,24 @@ void printMainMenu()
 
 void processUserSelection(int usSelec)
 {
-    FILE *dataFile;
+    FILE *dataFile = NULL;
     switch (usSelec)
     {
         case NEW_FILE:
             // TODO: ask for a new file name
             dataFile = CreateFile("test.dat");
-            long header = -1;
-
-            fwrite(&header, sizeof(long), 1, dataFile);
-            for (int i = 0; i < 1; i++)
+            if(dataFile)
             {
-                REGISTER dataBlock = createNewDataBlock();
-                fwrite(&dataBlock, sizeof(REGISTER), 1, dataFile);
-            }
+                long header = -1;
+                fwrite(&header, sizeof(long), 1, dataFile);
+                for (int i = 0; i < 1; i++)
+                {
+                    REGISTER dataBlock = createNewDataBlock();
+                    fwrite(&dataBlock, sizeof(REGISTER), 1, dataFile);
+                }
 
-            fclose(dataFile);
+                fclose(dataFile);
+            }
         break;
         case OPEN_FILE:
             printf("Openning existing file \n");
@@ -62,14 +64,20 @@ FILE *CreateFile(const char *fileName)
     printf("Creating a new file... \n");
     FILE *dataFile = fopen(fileName, "wb+");
 
+    if(!dataFile)
+        fprintf(stderr, "Error creating file\n");
+
     return dataFile;
 }
 
 FILE *OpenFile(const char *fileName)
 {
     FILE *dataFile = fopen(fileName, "rb+");
-    printf("Dictionary name: %c \n", *fileName);
-    printDictionaryMenu();
+    if(dataFile)
+    {
+        printf("Dictionary name: %s \n", fileName);
+        printDictionaryMenu();
+    }
     return dataFile;
 }
 
@@ -78,7 +86,6 @@ REGISTER createNewDataBlock()
     REGISTER dataBlock;
 
     printf("Enter the name: ");
-    fflush(stdin);
     fgets(dataBlock.name, STRING_LENGHT, stdin);
     // search the end of the line and insted put '\0'
     // send the direction of '\n'
@@ -119,7 +126,7 @@ void processInputDictonary()
                 printf("Wrong option \n");
             break;
         }
-    } while(userSelec != 0);
+    } while(userSelec != RETURN);
 }
 
 int openDataDictionary(const char * fileName)
@@ -135,14 +142,13 @@ int openDataDictionary(const char * fileName)
             fprintf(stderr, "Failed to read data. \n");
             operationResult = EXIT_FAILURE;
         } else {
-            printf("The header value is: %d \n", header);
+            printf("The header value is: %ld \n", header);
         }
+        fclose(file);
     } else {
         fprintf(stderr, "Failed to open the data dictionary \n");
         operationResult = EXIT_FAILURE;
     }
-
-    fclose(file);
     return operationResult;
 }
 
@@ -183,7 +189,7 @@ void processInputEntity()
                 printf("Wrong option \n");
             break;
         }
-    } while(userSelec != 0);
+    } while(userSelec != RETURN2);
 }
 
 void printEntityMenu()
