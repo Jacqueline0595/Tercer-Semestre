@@ -25,6 +25,7 @@ void printMainMenu()
 void processUserSelection(int usSelec)
 {
     FILE *dataFile = NULL;
+    /* char fileName[STRING_LENGHT]; */
     switch (usSelec)
     {
         case NEW_FILE:
@@ -44,10 +45,14 @@ void processUserSelection(int usSelec)
             }
         break;
         case OPEN_FILE:
-            printf("Openning existing file \n");
-            /* dataFile = OpenFile("test.dat");
-            fclose(dataFile); */
-            processInputDictonary();
+            printf("Opening existing file \n");
+            dataFile = OpenFile("test.dat");
+            if(dataFile)
+            {
+                openDataDictionary("test.dat");
+                processInputDictonary();
+                fclose(dataFile);
+            }
         break;
         case EXIT:
             printf("Bye bye \n");
@@ -56,6 +61,8 @@ void processUserSelection(int usSelec)
             printf("Wrong option \n");
         break;
     }
+
+    /* if(openDataDictionary()) */
     fclose(dataFile);
 }
 
@@ -76,7 +83,6 @@ FILE *OpenFile(const char *fileName)
     if(dataFile)
     {
         printf("Dictionary name: %s \n", fileName);
-        printDictionaryMenu();
     }
     return dataFile;
 }
@@ -85,17 +91,19 @@ REGISTER createNewDataBlock()
 {
     REGISTER dataBlock;
 
+    fflush(stdin);
     printf("Enter the name: ");
     fgets(dataBlock.name, STRING_LENGHT, stdin);
     // search the end of the line and insted put '\0'
     // send the direction of '\n'
     *(strchr(dataBlock.name, '\n')) = '\0';
 
-    printf("Enter the generation: ");
+    /* printf("Enter the generation: ");
     scanf("%d", &dataBlock.generation);
+    fflush(stdin);
 
     printf("Enter the current semester: ");
-    scanf("%d", &dataBlock.semester);
+    scanf("%d", &dataBlock.semester); */
 
     return dataBlock;
 }
@@ -150,6 +158,7 @@ int openDataDictionary(const char * fileName)
     {
         if(fread(&header, sizeof(header), 1, file) != 1)
         {
+            printf("Dictionary name: %s \n", fileName);
             fprintf(stderr, "Failed to read data. \n");
             operationResult = EXIT_FAILURE;
         } else {

@@ -17,6 +17,6 @@ typedef struct Entity
 } ENTITY;
 
 long getDataDictionaryHeader(FILE *dataDictionary);
-int appendEntity(FILE *dataDictionary, Entity dataEntity);
+int appendEntity(FILE *dataDictionary, ENTITY dataEntity);
 
 #endif
