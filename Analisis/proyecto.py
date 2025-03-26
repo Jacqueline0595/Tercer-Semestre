@@ -6,7 +6,7 @@ def leer_matriz(nombre_archivo):
         lineas = f.readlines()
 
     if not lineas:
-        raise ValueError("Error: El archivo está vacío.")
+        raise ValueError("Error: El archivo esta vacio.")
 
     try:
         n, m = map(int, lineas[0].strip().split())  # Tamaño de la matriz
@@ -50,7 +50,7 @@ def gauss_jordan(matriz, archivo):
                     f.write(f"A la fila {j+1} le restamos {factor} veces la fila {i+1}\n")
                     matriz[j] = matriz[j] - factor * matriz[i]  # Eliminación de Gauss-Jordan
 
-            f.write("\nDespués de la operación:\n")
+            f.write("\nDespues de la operacion:\n")
             for fila in matriz:
                 f.write(" ".join(map(str, fila)) + "\n")
             f.write("\n")

@@ -1,150 +1,924 @@
+20 21
+420	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+420	1	0	0	-480	-1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+343000	4900	70	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	48.225238
+512000	6400	80	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	66.846833
+0	0	0	0	48	1	0	0	-540	-1	0	0	0	0	0	0	0	0	0	0	0
+14700	140	1	0	-19200	-160	-1	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+0	0	0	0	512000	6400	80	1	0	0	0	0	0	0	0	0	0	0	0	0	66.846833
+0	0	0	0	729000	8100	90	1	0	0	0	0	0	0	0	0	0	0	0	0	81.249645
+0	0	0	0	0	0	0	0	540	1	0	0	-600	-1	0	0	0	0	0	0	0
+0	0	0	0	19200	160	1	0	-24300	-180	-1	0	0	0	0	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	729000	8100	90	1	0	0	0	0	0	0	0	0	81.249645
+0	0	0	0	0	0	0	0	1000000	10000	100	1	0	0	0	0	0	0	0	0	97.483412
+0	0	0	0	0	0	0	0	0	0	0	0	600	1	0	0	-660	-1	0	0	0
+0	0	0	0	0	0	0	0	24300	180	1	0	-30000	-200	-1	0	0	0	0	0	0
+0	0	0	0	0	0	0	0	0	0	0	0	1000000	10000	100	1	0	0	0	0	97.483412
+0	0	0	0	0	0	0	0	0	0	0	0	1331000	12100	110	1	0	0	0	0	112.336538
+0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	720	1	0	0	0
+0	0	0	0	0	0	0	0	0	0	0	0	30000	200	1	0	-36300	-220	-1	0	0
+0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1331000	12100	110	1	112.336538
+0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	1728000	14400	120	1	126.014024
 La matriz original es:
-18 2 0 0 0 0 0 0 0 0 0 0 0
-27 6 1 0 -243/4 -9 -1 0 0 0 0 0 0
-27 9 3 1 0 0 0 0 0 0 0 0 5/2
-729/8 81/4 9/2 1 0 0 0 0 0 0 0 0 1
-0 0 0 0 27 2 0 0 -42 -2 0 0 0
-18 2 0 0 -27 -2 0 0 0 0 0 0 0
-0 0 0 0 729/8 81/4 9/2 1 0 0 0 0 1
-0 0 0 0 343 49 7 1 0 0 0 0 5/2
-0 0 0 0 0 0 0 0 54 2 0 0 0
-0 0 0 0 243/4 9 1 0 -147 -14 -1 0 0
-0 0 0 0 0 0 0 0 343 49 7 1 5/2
-0 0 0 0 0 0 0 0 729 81 9 1 1/2
+420 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+420 1 0 0 -480 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+343000 4900 70 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 24112619/500000
+512000 6400 80 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
+0 0 0 0 48 1 0 0 -540 -1 0 0 0 0 0 0 0 0 0 0 0
+14700 140 1 0 -19200 -160 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 512000 6400 80 1 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
+0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
+0 0 0 0 19200 160 1 0 -24300 -180 -1 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
 
-Dividimos la fila 1 por 18 para hacer el pivote
-A la fila 2 le restamos 27 y multiplicamos por la fila 1
-A la fila 3 le restamos 27 y multiplicamos por la fila 1
-A la fila 4 le restamos 729/8 y multiplicamos por la fila 1
-A la fila 5 le restamos 0 y multiplicamos por la fila 1
-A la fila 6 le restamos 18 y multiplicamos por la fila 1
-A la fila 7 le restamos 0 y multiplicamos por la fila 1
-A la fila 8 le restamos 0 y multiplicamos por la fila 1
-A la fila 9 le restamos 0 y multiplicamos por la fila 1
-A la fila 10 le restamos 0 y multiplicamos por la fila 1
-A la fila 11 le restamos 0 y multiplicamos por la fila 1
-A la fila 12 le restamos 0 y multiplicamos por la fila 1
+Dividimos la fila 1 por 420 para hacer el pivote 1
+A la fila 2 le restamos 420 veces la fila 1
+A la fila 3 le restamos 343000 veces la fila 1
+A la fila 4 le restamos 512000 veces la fila 1
+A la fila 5 le restamos 0 veces la fila 1
+A la fila 6 le restamos 14700 veces la fila 1
+A la fila 7 le restamos 0 veces la fila 1
+A la fila 8 le restamos 0 veces la fila 1
+A la fila 9 le restamos 0 veces la fila 1
+A la fila 10 le restamos 0 veces la fila 1
+A la fila 11 le restamos 0 veces la fila 1
+A la fila 12 le restamos 0 veces la fila 1
+A la fila 13 le restamos 0 veces la fila 1
+A la fila 14 le restamos 0 veces la fila 1
+A la fila 15 le restamos 0 veces la fila 1
+A la fila 16 le restamos 0 veces la fila 1
+A la fila 17 le restamos 0 veces la fila 1
+A la fila 18 le restamos 0 veces la fila 1
+A la fila 19 le restamos 0 veces la fila 1
+A la fila 20 le restamos 0 veces la fila 1
 
-Despues de la operacion:
-1 1/9 0 0 0 0 0 0 0 0 0 0 0
-0 3 1 0 -243/4 -9 -1 0 0 0 0 0 0
-0 6 3 1 0 0 0 0 0 0 0 0 5/2
-0 81/8 9/2 1 0 0 0 0 0 0 0 0 1
-0 0 0 0 27 2 0 0 -42 -2 0 0 0
-0 0 0 0 -27 -2 0 0 0 0 0 0 0
-0 0 0 0 729/8 81/4 9/2 1 0 0 0 0 1
-0 0 0 0 343 49 7 1 0 0 0 0 5/2
-0 0 0 0 0 0 0 0 54 2 0 0 0
-0 0 0 0 243/4 9 1 0 -147 -14 -1 0 0
-0 0 0 0 0 0 0 0 343 49 7 1 5/2
-0 0 0 0 0 0 0 0 729 81 9 1 1/2
+Despu�s de la operaci�n:
+1 1/420 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 -480 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 12250/3 70 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 24112619/500000
+0 108800/21 80 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
+0 0 0 0 48 1 0 0 -540 -1 0 0 0 0 0 0 0 0 0 0 0
+0 105 1 0 -19200 -160 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 512000 6400 80 1 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
+0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
+0 0 0 0 19200 160 1 0 -24300 -180 -1 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
 
-Dividimos la fila 2 por 3 para hacer el pivote
-A la fila 1 le restamos 1/9 y multiplicamos por la fila 2
-A la fila 3 le restamos 6 y multiplicamos por la fila 2
-A la fila 4 le restamos 81/8 y multiplicamos por la fila 2
-A la fila 5 le restamos 0 y multiplicamos por la fila 2
-A la fila 6 le restamos 0 y multiplicamos por la fila 2
-A la fila 7 le restamos 0 y multiplicamos por la fila 2
-A la fila 8 le restamos 0 y multiplicamos por la fila 2
-A la fila 9 le restamos 0 y multiplicamos por la fila 2
-A la fila 10 le restamos 0 y multiplicamos por la fila 2
-A la fila 11 le restamos 0 y multiplicamos por la fila 2
-A la fila 12 le restamos 0 y multiplicamos por la fila 2
+Dividimos la fila 2 por 12250/3 para hacer el pivote 1
+A la fila 1 le restamos 1/420 veces la fila 2
+A la fila 3 le restamos 0 veces la fila 2
+A la fila 4 le restamos 108800/21 veces la fila 2
+A la fila 5 le restamos 0 veces la fila 2
+A la fila 6 le restamos 105 veces la fila 2
+A la fila 7 le restamos 0 veces la fila 2
+A la fila 8 le restamos 0 veces la fila 2
+A la fila 9 le restamos 0 veces la fila 2
+A la fila 10 le restamos 0 veces la fila 2
+A la fila 11 le restamos 0 veces la fila 2
+A la fila 12 le restamos 0 veces la fila 2
+A la fila 13 le restamos 0 veces la fila 2
+A la fila 14 le restamos 0 veces la fila 2
+A la fila 15 le restamos 0 veces la fila 2
+A la fila 16 le restamos 0 veces la fila 2
+A la fila 17 le restamos 0 veces la fila 2
+A la fila 18 le restamos 0 veces la fila 2
+A la fila 19 le restamos 0 veces la fila 2
+A la fila 20 le restamos 0 veces la fila 2
 
-Despues de la operacion:
-1 0 -1/27 0 9/4 1/3 1/27 0 0 0 0 0 0
-0 1 1/3 0 -81/4 -3 -1/3 0 0 0 0 0 0
-0 0 1 1 243/2 18 2 0 0 0 0 0 5/2
-0 0 9/8 1 6561/32 243/8 27/8 0 0 0 0 0 1
-0 0 0 0 27 2 0 0 -42 -2 0 0 0
-0 0 0 0 -27 -2 0 0 0 0 0 0 0
-0 0 0 0 729/8 81/4 9/2 1 0 0 0 0 1
-0 0 0 0 343 49 7 1 0 0 0 0 5/2
-0 0 0 0 0 0 0 0 54 2 0 0 0
-0 0 0 0 243/4 9 1 0 -147 -14 -1 0 0
-0 0 0 0 0 0 0 0 343 49 7 1 5/2
-0 0 0 0 0 0 0 0 729 81 9 1 1/2
+Despu�s de la operaci�n:
+1 0 -1/24500 -1/1715000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -24112619/857500000000
+0 1 3/175 3/12250 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 72337857/6125000000
+0 0 0 0 -480 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 -432/49 -461/1715 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9704200707/1715000000
+0 0 0 0 48 1 0 0 -540 -1 0 0 0 0 0 0 0 0 0 0 0
+0 0 -4/5 -9/350 -19200 -160 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 -217013571/175000000
+0 0 0 0 512000 6400 80 1 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
+0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
+0 0 0 0 19200 160 1 0 -24300 -180 -1 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
 
-Dividimos la fila 3 por 1 para hacer el pivote
-A la fila 1 le restamos -1/27 y multiplicamos por la fila 3
-A la fila 2 le restamos 1/3 y multiplicamos por la fila 3
-A la fila 4 le restamos 9/8 y multiplicamos por la fila 3
-A la fila 5 le restamos 0 y multiplicamos por la fila 3
-A la fila 6 le restamos 0 y multiplicamos por la fila 3
-A la fila 7 le restamos 0 y multiplicamos por la fila 3
-A la fila 8 le restamos 0 y multiplicamos por la fila 3
-A la fila 9 le restamos 0 y multiplicamos por la fila 3
-A la fila 10 le restamos 0 y multiplicamos por la fila 3
-A la fila 11 le restamos 0 y multiplicamos por la fila 3
-A la fila 12 le restamos 0 y multiplicamos por la fila 3
+Dividimos la fila 3 por -432/49 para hacer el pivote 1
+A la fila 1 le restamos -1/24500 veces la fila 3
+A la fila 2 le restamos 3/175 veces la fila 3
+A la fila 4 le restamos 0 veces la fila 3
+A la fila 5 le restamos 0 veces la fila 3
+A la fila 6 le restamos -4/5 veces la fila 3
+A la fila 7 le restamos 0 veces la fila 3
+A la fila 8 le restamos 0 veces la fila 3
+A la fila 9 le restamos 0 veces la fila 3
+A la fila 10 le restamos 0 veces la fila 3
+A la fila 11 le restamos 0 veces la fila 3
+A la fila 12 le restamos 0 veces la fila 3
+A la fila 13 le restamos 0 veces la fila 3
+A la fila 14 le restamos 0 veces la fila 3
+A la fila 15 le restamos 0 veces la fila 3
+A la fila 16 le restamos 0 veces la fila 3
+A la fila 17 le restamos 0 veces la fila 3
+A la fila 18 le restamos 0 veces la fila 3
+A la fila 19 le restamos 0 veces la fila 3
+A la fila 20 le restamos 0 veces la fila 3
 
-Despues de la operacion:
-1 0 0 1/27 27/4 1 1/9 0 0 0 0 0 5/54
-0 1 0 -1/3 -243/4 -9 -1 0 0 0 0 0 -5/6
-0 0 1 1 243/2 18 2 0 0 0 0 0 5/2
-0 0 0 -1/8 2187/32 81/8 9/8 0 0 0 0 0 -29/16
-0 0 0 0 27 2 0 0 -42 -2 0 0 0
-0 0 0 0 -27 -2 0 0 0 0 0 0 0
-0 0 0 0 729/8 81/4 9/2 1 0 0 0 0 1
-0 0 0 0 343 49 7 1 0 0 0 0 5/2
-0 0 0 0 0 0 0 0 54 2 0 0 0
-0 0 0 0 243/4 9 1 0 -147 -14 -1 0 0
-0 0 0 0 0 0 0 0 343 49 7 1 5/2
-0 0 0 0 0 0 0 0 729 81 9 1 1/2
+Despu�s de la operaci�n:
+1 0 0 1/1512000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -3041701/56000000000
+0 1 0 -1/3600 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9125103/400000000
+0 0 1 461/15120 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -359414841/560000000
+0 0 0 0 -480 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 48 1 0 0 -540 -1 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 -1/756 -19200 -160 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 -9819753/5600000
+0 0 0 0 512000 6400 80 1 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
+0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
+0 0 0 0 19200 160 1 0 -24300 -180 -1 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
 
-Dividimos la fila 4 por -1/8 para hacer el pivote
-A la fila 1 le restamos 1/27 y multiplicamos por la fila 4
-A la fila 2 le restamos -1/3 y multiplicamos por la fila 4
-A la fila 3 le restamos 1 y multiplicamos por la fila 4
-A la fila 5 le restamos 0 y multiplicamos por la fila 4
-A la fila 6 le restamos 0 y multiplicamos por la fila 4
-A la fila 7 le restamos 0 y multiplicamos por la fila 4
-A la fila 8 le restamos 0 y multiplicamos por la fila 4
-A la fila 9 le restamos 0 y multiplicamos por la fila 4
-A la fila 10 le restamos 0 y multiplicamos por la fila 4
-A la fila 11 le restamos 0 y multiplicamos por la fila 4
-A la fila 12 le restamos 0 y multiplicamos por la fila 4
+Dividimos la fila 4 por -1/756 para hacer el pivote 1
+A la fila 1 le restamos 1/1512000 veces la fila 4
+A la fila 2 le restamos -1/3600 veces la fila 4
+A la fila 3 le restamos 461/15120 veces la fila 4
+A la fila 5 le restamos 0 veces la fila 4
+A la fila 6 le restamos 0 veces la fila 4
+A la fila 7 le restamos 0 veces la fila 4
+A la fila 8 le restamos 0 veces la fila 4
+A la fila 9 le restamos 0 veces la fila 4
+A la fila 10 le restamos 0 veces la fila 4
+A la fila 11 le restamos 0 veces la fila 4
+A la fila 12 le restamos 0 veces la fila 4
+A la fila 13 le restamos 0 veces la fila 4
+A la fila 14 le restamos 0 veces la fila 4
+A la fila 15 le restamos 0 veces la fila 4
+A la fila 16 le restamos 0 veces la fila 4
+A la fila 17 le restamos 0 veces la fila 4
+A la fila 18 le restamos 0 veces la fila 4
+A la fila 19 le restamos 0 veces la fila 4
+A la fila 20 le restamos 0 veces la fila 4
 
-Despues de la operacion:
-1 0 0 0 27 4 4/9 0 0 0 0 0 -4/9
-0 1 0 0 -243 -36 -4 0 0 0 0 0 4
-0 0 1 0 2673/4 99 11 0 0 0 0 0 -12
-0 0 0 1 -2187/4 -81 -9 0 0 0 0 0 29/2
-0 0 0 0 27 2 0 0 -42 -2 0 0 0
-0 0 0 0 -27 -2 0 0 0 0 0 0 0
-0 0 0 0 729/8 81/4 9/2 1 0 0 0 0 1
-0 0 0 0 343 49 7 1 0 0 0 0 5/2
-0 0 0 0 0 0 0 0 54 2 0 0 0
-0 0 0 0 243/4 9 1 0 -147 -14 -1 0 0
-0 0 0 0 0 0 0 0 343 49 7 1 5/2
-0 0 0 0 0 0 0 0 729 81 9 1 1/2
+Despu�s de la operaci�n:
+1 0 0 0 -48/5 -2/25 -1/2000 0 0 0 0 0 0 0 0 0 0 0 0 0 -3724319/4000000000
+0 1 0 0 4032 168/5 21/100 0 0 0 0 0 0 0 0 0 0 0 0 0 78210699/200000000
+0 0 1 0 -442560 -3688 -461/20 0 0 0 0 0 0 0 0 0 0 0 0 0 -1642424679/40000000
+0 0 0 1 14515200 120960 756 0 0 0 0 0 0 0 0 0 0 0 0 0 265133331/200000
+0 0 0 0 48 1 0 0 -540 -1 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 -480 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 512000 6400 80 1 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
+0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
+0 0 0 0 19200 160 1 0 -24300 -180 -1 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
 
-Dividimos la fila 5 por 27 para hacer el pivote
-A la fila 1 le restamos 27 y multiplicamos por la fila 5
-A la fila 2 le restamos -243 y multiplicamos por la fila 5
-A la fila 3 le restamos 2673/4 y multiplicamos por la fila 5
-A la fila 4 le restamos -2187/4 y multiplicamos por la fila 5
-A la fila 6 le restamos -27 y multiplicamos por la fila 5
-A la fila 7 le restamos 729/8 y multiplicamos por la fila 5
-A la fila 8 le restamos 343 y multiplicamos por la fila 5
-A la fila 9 le restamos 0 y multiplicamos por la fila 5
-A la fila 10 le restamos 243/4 y multiplicamos por la fila 5
-A la fila 11 le restamos 0 y multiplicamos por la fila 5
-A la fila 12 le restamos 0 y multiplicamos por la fila 5
+Dividimos la fila 5 por 48 para hacer el pivote 1
+A la fila 1 le restamos -48/5 veces la fila 5
+A la fila 2 le restamos 4032 veces la fila 5
+A la fila 3 le restamos -442560 veces la fila 5
+A la fila 4 le restamos 14515200 veces la fila 5
+A la fila 6 le restamos -480 veces la fila 5
+A la fila 7 le restamos 512000 veces la fila 5
+A la fila 8 le restamos 729000 veces la fila 5
+A la fila 9 le restamos 0 veces la fila 5
+A la fila 10 le restamos 19200 veces la fila 5
+A la fila 11 le restamos 0 veces la fila 5
+A la fila 12 le restamos 0 veces la fila 5
+A la fila 13 le restamos 0 veces la fila 5
+A la fila 14 le restamos 0 veces la fila 5
+A la fila 15 le restamos 0 veces la fila 5
+A la fila 16 le restamos 0 veces la fila 5
+A la fila 17 le restamos 0 veces la fila 5
+A la fila 18 le restamos 0 veces la fila 5
+A la fila 19 le restamos 0 veces la fila 5
+A la fila 20 le restamos 0 veces la fila 5
 
-Despues de la operacion:
-1 0 0 0 0 2 4/9 0 42 2 0 0 -4/9
-0 1 0 0 0 -18 -4 0 -378 -18 0 0 4
-0 0 1 0 0 99/2 11 0 2079/2 99/2 0 0 -12
-0 0 0 1 0 -81/2 -9 0 -1701/2 -81/2 0 0 29/2
-0 0 0 0 1 2/27 0 0 -14/9 -2/27 0 0 0
-0 0 0 0 0 0 0 0 -42 -2 0 0 0
-0 0 0 0 0 27/2 9/2 1 567/4 27/4 0 0 1
-0 0 0 0 0 637/27 7 1 4802/9 686/27 0 0 5/2
-0 0 0 0 0 0 0 0 54 2 0 0 0
-0 0 0 0 0 9/2 1 0 -105/2 -19/2 -1 0 0
-0 0 0 0 0 0 0 0 343 49 7 1 5/2
-0 0 0 0 0 0 0 0 729 81 9 1 1/2
+Despu�s de la operaci�n:
+1 0 0 0 0 3/25 -1/2000 0 -108 -1/5 0 0 0 0 0 0 0 0 0 0 -3724319/4000000000
+0 1 0 0 0 -252/5 21/100 0 45360 84 0 0 0 0 0 0 0 0 0 0 78210699/200000000
+0 0 1 0 0 5532 -461/20 0 -4978800 -9220 0 0 0 0 0 0 0 0 0 0 -1642424679/40000000
+0 0 0 1 0 -181440 756 0 163296000 302400 0 0 0 0 0 0 0 0 0 0 265133331/200000
+0 0 0 0 1 1/48 0 0 -45/4 -1/48 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 9 0 0 -5400 -10 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 -12800/3 80 1 5760000 32000/3 0 0 0 0 0 0 0 0 0 0 66846833/1000000
+0 0 0 0 0 -14175/2 90 1 8201250 30375/2 0 0 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
+0 0 0 0 0 -240 1 0 191700 220 -1 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
 
-Dividimos la fila 6 por 0 para hacer el pivote
+Dividimos la fila 6 por 9 para hacer el pivote 1
+A la fila 1 le restamos 3/25 veces la fila 6
+A la fila 2 le restamos -252/5 veces la fila 6
+A la fila 3 le restamos 5532 veces la fila 6
+A la fila 4 le restamos -181440 veces la fila 6
+A la fila 5 le restamos 1/48 veces la fila 6
+A la fila 7 le restamos -12800/3 veces la fila 6
+A la fila 8 le restamos -14175/2 veces la fila 6
+A la fila 9 le restamos 0 veces la fila 6
+A la fila 10 le restamos -240 veces la fila 6
+A la fila 11 le restamos 0 veces la fila 6
+A la fila 12 le restamos 0 veces la fila 6
+A la fila 13 le restamos 0 veces la fila 6
+A la fila 14 le restamos 0 veces la fila 6
+A la fila 15 le restamos 0 veces la fila 6
+A la fila 16 le restamos 0 veces la fila 6
+A la fila 17 le restamos 0 veces la fila 6
+A la fila 18 le restamos 0 veces la fila 6
+A la fila 19 le restamos 0 veces la fila 6
+A la fila 20 le restamos 0 veces la fila 6
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 -1/2000 0 -36 -1/15 0 0 0 0 0 0 0 0 0 0 -3724319/4000000000
+0 1 0 0 0 0 21/100 0 15120 28 0 0 0 0 0 0 0 0 0 0 78210699/200000000
+0 0 1 0 0 0 -461/20 0 -1659600 -9220/3 0 0 0 0 0 0 0 0 0 0 -1642424679/40000000
+0 0 0 1 0 0 756 0 54432000 100800 0 0 0 0 0 0 0 0 0 0 265133331/200000
+0 0 0 0 1 0 0 0 5/4 1/432 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 1 0 0 -600 -10/9 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 80 1 3200000 160000/27 0 0 0 0 0 0 0 0 0 0 66846833/1000000
+0 0 0 0 0 0 90 1 3948750 14625/2 0 0 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
+0 0 0 0 0 0 1 0 47700 -140/3 -1 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 7 por 80 para hacer el pivote 1
+A la fila 1 le restamos -1/2000 veces la fila 7
+A la fila 2 le restamos 21/100 veces la fila 7
+A la fila 3 le restamos -461/20 veces la fila 7
+A la fila 4 le restamos 756 veces la fila 7
+A la fila 5 le restamos 0 veces la fila 7
+A la fila 6 le restamos 0 veces la fila 7
+A la fila 8 le restamos 90 veces la fila 7
+A la fila 9 le restamos 0 veces la fila 7
+A la fila 10 le restamos 1 veces la fila 7
+A la fila 11 le restamos 0 veces la fila 7
+A la fila 12 le restamos 0 veces la fila 7
+A la fila 13 le restamos 0 veces la fila 7
+A la fila 14 le restamos 0 veces la fila 7
+A la fila 15 le restamos 0 veces la fila 7
+A la fila 16 le restamos 0 veces la fila 7
+A la fila 17 le restamos 0 veces la fila 7
+A la fila 18 le restamos 0 veces la fila 7
+A la fila 19 le restamos 0 veces la fila 7
+A la fila 20 le restamos 0 veces la fila 7
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 1/160000 -16 -4/135 0 0 0 0 0 0 0 0 0 0 -82125927/160000000000
+0 1 0 0 0 0 0 -21/8000 6720 112/9 0 0 0 0 0 0 0 0 0 0 1724644467/8000000000
+0 0 1 0 0 0 0 461/1600 -737600 -36880/27 0 0 0 0 0 0 0 0 0 0 -34880597147/1600000000
+0 0 0 1 0 0 0 -189/20 24192000 44800 0 0 0 0 0 0 0 0 0 0 13879281663/20000000
+0 0 0 0 1 0 0 0 5/4 1/432 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 1 0 0 -600 -10/9 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 1 1/80 40000 2000/27 0 0 0 0 0 0 0 0 0 0 66846833/80000000
+0 0 0 0 0 0 0 -1/8 348750 3875/6 0 0 0 0 0 0 0 0 0 0 48375663/8000000
+0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 -1/80 7700 -3260/27 -1 0 0 0 0 0 0 0 0 0 -66846833/80000000
+0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 8 por -1/8 para hacer el pivote 1
+A la fila 1 le restamos 1/160000 veces la fila 8
+A la fila 2 le restamos -21/8000 veces la fila 8
+A la fila 3 le restamos 461/1600 veces la fila 8
+A la fila 4 le restamos -189/20 veces la fila 8
+A la fila 5 le restamos 0 veces la fila 8
+A la fila 6 le restamos 0 veces la fila 8
+A la fila 7 le restamos 1/80 veces la fila 8
+A la fila 9 le restamos 0 veces la fila 8
+A la fila 10 le restamos -1/80 veces la fila 8
+A la fila 11 le restamos 0 veces la fila 8
+A la fila 12 le restamos 0 veces la fila 8
+A la fila 13 le restamos 0 veces la fila 8
+A la fila 14 le restamos 0 veces la fila 8
+A la fila 15 le restamos 0 veces la fila 8
+A la fila 16 le restamos 0 veces la fila 8
+A la fila 17 le restamos 0 veces la fila 8
+A la fila 18 le restamos 0 veces la fila 8
+A la fila 19 le restamos 0 veces la fila 8
+A la fila 20 le restamos 0 veces la fila 8
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 23/16 23/8640 0 0 0 0 0 0 0 0 0 0 -4218783/20000000000
+0 1 0 0 0 0 0 0 -2415/4 -161/144 0 0 0 0 0 0 0 0 0 0 88594443/1000000000
+0 0 1 0 0 0 0 0 265075/4 53015/432 0 0 0 0 0 0 0 0 0 0 -1572427063/200000000
+0 0 0 1 0 0 0 0 -2173500 -4025 0 0 0 0 0 0 0 0 0 0 1184070339/5000000
+0 0 0 0 1 0 0 0 5/4 1/432 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 1 0 0 -600 -10/9 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 1 0 74875 14975/108 0 0 0 0 0 0 0 0 0 0 3600703/2500000
+0 0 0 0 0 0 0 1 -2790000 -15500/3 0 0 0 0 0 0 0 0 0 0 -48375663/1000000
+0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 -27175 -20015/108 -1 0 0 0 0 0 0 0 0 0 -3600703/2500000
+0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 9 por 540 para hacer el pivote 1
+A la fila 1 le restamos 23/16 veces la fila 9
+A la fila 2 le restamos -2415/4 veces la fila 9
+A la fila 3 le restamos 265075/4 veces la fila 9
+A la fila 4 le restamos -2173500 veces la fila 9
+A la fila 5 le restamos 5/4 veces la fila 9
+A la fila 6 le restamos -600 veces la fila 9
+A la fila 7 le restamos 74875 veces la fila 9
+A la fila 8 le restamos -2790000 veces la fila 9
+A la fila 10 le restamos -27175 veces la fila 9
+A la fila 11 le restamos 729000 veces la fila 9
+A la fila 12 le restamos 1000000 veces la fila 9
+A la fila 13 le restamos 0 veces la fila 9
+A la fila 14 le restamos 24300 veces la fila 9
+A la fila 15 le restamos 0 veces la fila 9
+A la fila 16 le restamos 0 veces la fila 9
+A la fila 17 le restamos 0 veces la fila 9
+A la fila 18 le restamos 0 veces la fila 9
+A la fila 19 le restamos 0 veces la fila 9
+A la fila 20 le restamos 0 veces la fila 9
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 115/72 23/8640 0 0 0 0 0 0 -4218783/20000000000
+0 1 0 0 0 0 0 0 0 0 0 0 -4025/6 -161/144 0 0 0 0 0 0 88594443/1000000000
+0 0 1 0 0 0 0 0 0 0 0 0 1325375/18 53015/432 0 0 0 0 0 0 -1572427063/200000000
+0 0 0 1 0 0 0 0 0 0 0 0 -2415000 -4025 0 0 0 0 0 0 1184070339/5000000
+0 0 0 0 1 0 0 0 0 0 0 0 25/18 1/432 0 0 0 0 0 0 0
+0 0 0 0 0 1 0 0 0 0 0 0 -2000/3 -10/9 0 0 0 0 0 0 0
+0 0 0 0 0 0 1 0 0 0 0 0 748750/9 14975/108 0 0 0 0 0 0 3600703/2500000
+0 0 0 0 0 0 0 1 0 0 0 0 -3100000 -15500/3 0 0 0 0 0 0 -48375663/1000000
+0 0 0 0 0 0 0 0 1 1/540 0 0 -10/9 -1/540 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 -135 -1 0 -271750/9 -5435/108 0 0 0 0 0 0 -3600703/2500000
+0 0 0 0 0 0 0 0 0 6750 90 1 810000 1350 0 0 0 0 0 0 16249929/200000
+0 0 0 0 0 0 0 0 0 220000/27 100 1 10000000/9 50000/27 0 0 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 0 135 1 0 -3000 -155 -1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 10 por -135 para hacer el pivote 1
+A la fila 1 le restamos 0 veces la fila 10
+A la fila 2 le restamos 0 veces la fila 10
+A la fila 3 le restamos 0 veces la fila 10
+A la fila 4 le restamos 0 veces la fila 10
+A la fila 5 le restamos 0 veces la fila 10
+A la fila 6 le restamos 0 veces la fila 10
+A la fila 7 le restamos 0 veces la fila 10
+A la fila 8 le restamos 0 veces la fila 10
+A la fila 9 le restamos 1/540 veces la fila 10
+A la fila 11 le restamos 6750 veces la fila 10
+A la fila 12 le restamos 220000/27 veces la fila 10
+A la fila 13 le restamos 0 veces la fila 10
+A la fila 14 le restamos 135 veces la fila 10
+A la fila 15 le restamos 0 veces la fila 10
+A la fila 16 le restamos 0 veces la fila 10
+A la fila 17 le restamos 0 veces la fila 10
+A la fila 18 le restamos 0 veces la fila 10
+A la fila 19 le restamos 0 veces la fila 10
+A la fila 20 le restamos 0 veces la fila 10
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 115/72 23/8640 0 0 0 0 0 0 -4218783/20000000000
+0 1 0 0 0 0 0 0 0 0 0 0 -4025/6 -161/144 0 0 0 0 0 0 88594443/1000000000
+0 0 1 0 0 0 0 0 0 0 0 0 1325375/18 53015/432 0 0 0 0 0 0 -1572427063/200000000
+0 0 0 1 0 0 0 0 0 0 0 0 -2415000 -4025 0 0 0 0 0 0 1184070339/5000000
+0 0 0 0 1 0 0 0 0 0 0 0 25/18 1/432 0 0 0 0 0 0 0
+0 0 0 0 0 1 0 0 0 0 0 0 -2000/3 -10/9 0 0 0 0 0 0 0
+0 0 0 0 0 0 1 0 0 0 0 0 748750/9 14975/108 0 0 0 0 0 0 3600703/2500000
+0 0 0 0 0 0 0 1 0 0 0 0 -3100000 -15500/3 0 0 0 0 0 0 -48375663/1000000
+0 0 0 0 0 0 0 0 1 0 -1/72900 0 -20015/13122 -4003/1574640 0 0 0 0 0 0 -3600703/182250000000
+0 0 0 0 0 0 0 0 0 1 1/135 0 54350/243 1087/2916 0 0 0 0 0 0 3600703/337500000
+0 0 0 0 0 0 0 0 0 0 40 1 -6297500/9 -62975/54 0 0 0 0 0 0 1847117/200000
+0 0 0 0 0 0 0 0 0 0 28900/729 1 -4667000000/6561 -23335000/19683 0 0 0 0 0 0 1923258637/182250000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 -298750/9 -22175/108 -1 0 0 0 0 0 -3600703/2500000
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 11 por 40 para hacer el pivote 1
+A la fila 1 le restamos 0 veces la fila 11
+A la fila 2 le restamos 0 veces la fila 11
+A la fila 3 le restamos 0 veces la fila 11
+A la fila 4 le restamos 0 veces la fila 11
+A la fila 5 le restamos 0 veces la fila 11
+A la fila 6 le restamos 0 veces la fila 11
+A la fila 7 le restamos 0 veces la fila 11
+A la fila 8 le restamos 0 veces la fila 11
+A la fila 9 le restamos -1/72900 veces la fila 11
+A la fila 10 le restamos 1/135 veces la fila 11
+A la fila 12 le restamos 28900/729 veces la fila 11
+A la fila 13 le restamos 0 veces la fila 11
+A la fila 14 le restamos 0 veces la fila 11
+A la fila 15 le restamos 0 veces la fila 11
+A la fila 16 le restamos 0 veces la fila 11
+A la fila 17 le restamos 0 veces la fila 11
+A la fila 18 le restamos 0 veces la fila 11
+A la fila 19 le restamos 0 veces la fila 11
+A la fila 20 le restamos 0 veces la fila 11
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 115/72 23/8640 0 0 0 0 0 0 -4218783/20000000000
+0 1 0 0 0 0 0 0 0 0 0 0 -4025/6 -161/144 0 0 0 0 0 0 88594443/1000000000
+0 0 1 0 0 0 0 0 0 0 0 0 1325375/18 53015/432 0 0 0 0 0 0 -1572427063/200000000
+0 0 0 1 0 0 0 0 0 0 0 0 -2415000 -4025 0 0 0 0 0 0 1184070339/5000000
+0 0 0 0 1 0 0 0 0 0 0 0 25/18 1/432 0 0 0 0 0 0 0
+0 0 0 0 0 1 0 0 0 0 0 0 -2000/3 -10/9 0 0 0 0 0 0 0
+0 0 0 0 0 0 1 0 0 0 0 0 748750/9 14975/108 0 0 0 0 0 0 3600703/2500000
+0 0 0 0 0 0 0 1 0 0 0 0 -3100000 -15500/3 0 0 0 0 0 0 -48375663/1000000
+0 0 0 0 0 0 0 0 1 0 0 1/2916000 -10295/5832 -2059/699840 0 0 0 0 0 0 -16125221/972000000000
+0 0 0 0 0 0 0 0 0 1 0 -1/5400 19075/54 763/1296 0 0 0 0 0 0 16125221/1800000000
+0 0 0 0 0 0 0 0 0 0 1 1/40 -314875/18 -12595/432 0 0 0 0 0 0 1847117/8000000
+0 0 0 0 0 0 0 0 0 0 0 13/1458 -13006250/729 -260125/8748 0 0 0 0 0 0 680216257/486000000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 -298750/9 -22175/108 -1 0 0 0 0 0 -3600703/2500000
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 12 por 13/1458 para hacer el pivote 1
+A la fila 1 le restamos 0 veces la fila 12
+A la fila 2 le restamos 0 veces la fila 12
+A la fila 3 le restamos 0 veces la fila 12
+A la fila 4 le restamos 0 veces la fila 12
+A la fila 5 le restamos 0 veces la fila 12
+A la fila 6 le restamos 0 veces la fila 12
+A la fila 7 le restamos 0 veces la fila 12
+A la fila 8 le restamos 0 veces la fila 12
+A la fila 9 le restamos 1/2916000 veces la fila 12
+A la fila 10 le restamos -1/5400 veces la fila 12
+A la fila 11 le restamos 1/40 veces la fila 12
+A la fila 13 le restamos 0 veces la fila 12
+A la fila 14 le restamos 0 veces la fila 12
+A la fila 15 le restamos 0 veces la fila 12
+A la fila 16 le restamos 0 veces la fila 12
+A la fila 17 le restamos 0 veces la fila 12
+A la fila 18 le restamos 0 veces la fila 12
+A la fila 19 le restamos 0 veces la fila 12
+A la fila 20 le restamos 0 veces la fila 12
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 115/72 23/8640 0 0 0 0 0 0 -4218783/20000000000
+0 1 0 0 0 0 0 0 0 0 0 0 -4025/6 -161/144 0 0 0 0 0 0 88594443/1000000000
+0 0 1 0 0 0 0 0 0 0 0 0 1325375/18 53015/432 0 0 0 0 0 0 -1572427063/200000000
+0 0 0 1 0 0 0 0 0 0 0 0 -2415000 -4025 0 0 0 0 0 0 1184070339/5000000
+0 0 0 0 1 0 0 0 0 0 0 0 25/18 1/432 0 0 0 0 0 0 0
+0 0 0 0 0 1 0 0 0 0 0 0 -2000/3 -10/9 0 0 0 0 0 0 0
+0 0 0 0 0 0 1 0 0 0 0 0 748750/9 14975/108 0 0 0 0 0 0 3600703/2500000
+0 0 0 0 0 0 0 1 0 0 0 0 -3100000 -15500/3 0 0 0 0 0 0 -48375663/1000000
+0 0 0 0 0 0 0 0 1 0 0 0 -505/468 -101/56160 0 0 0 0 0 0 -366191/5200000000
+0 0 0 0 0 0 0 0 0 1 0 0 -225/13 -3/104 0 0 0 0 0 0 9887157/260000000
+0 0 0 0 0 0 0 0 0 0 1 0 3806125/117 152245/2808 0 0 0 0 0 0 -960293083/260000000
+0 0 0 0 0 0 0 0 0 0 0 1 -26012500/13 -260125/78 0 0 0 0 0 0 2040648771/13000000
+0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 -298750/9 -22175/108 -1 0 0 0 0 0 -3600703/2500000
+0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 13 por 600 para hacer el pivote 1
+A la fila 1 le restamos 115/72 veces la fila 13
+A la fila 2 le restamos -4025/6 veces la fila 13
+A la fila 3 le restamos 1325375/18 veces la fila 13
+A la fila 4 le restamos -2415000 veces la fila 13
+A la fila 5 le restamos 25/18 veces la fila 13
+A la fila 6 le restamos -2000/3 veces la fila 13
+A la fila 7 le restamos 748750/9 veces la fila 13
+A la fila 8 le restamos -3100000 veces la fila 13
+A la fila 9 le restamos -505/468 veces la fila 13
+A la fila 10 le restamos -225/13 veces la fila 13
+A la fila 11 le restamos 3806125/117 veces la fila 13
+A la fila 12 le restamos -26012500/13 veces la fila 13
+A la fila 14 le restamos -298750/9 veces la fila 13
+A la fila 15 le restamos 1000000 veces la fila 13
+A la fila 16 le restamos 1331000 veces la fila 13
+A la fila 17 le restamos 0 veces la fila 13
+A la fila 18 le restamos 30000 veces la fila 13
+A la fila 19 le restamos 0 veces la fila 13
+A la fila 20 le restamos 0 veces la fila 13
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 253/144 23/8640 0 0 -4218783/20000000000
+0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -8855/12 -161/144 0 0 88594443/1000000000
+0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 2915825/36 53015/432 0 0 -1572427063/200000000
+0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 -2656500 -4025 0 0 1184070339/5000000
+0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 55/36 1/432 0 0 0
+0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 -2200/3 -10/9 0 0 0
+0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 823625/9 14975/108 0 0 3600703/2500000
+0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 -3410000 -15500/3 0 0 -48375663/1000000
+0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 -1111/936 -101/56160 0 0 -366191/5200000000
+0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 -495/26 -3/104 0 0 9887157/260000000
+0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 8373475/234 152245/2808 0 0 -960293083/260000000
+0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 -28613750/13 -260125/78 0 0 2040648771/13000000
+0 0 0 0 0 0 0 0 0 0 0 0 1 1/600 0 0 -11/10 -1/600 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 -150 -1 0 -328625/9 -5975/108 0 0 -3600703/2500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 25000/3 100 1 1100000 5000/3 0 0 24370853/250000
+0 0 0 0 0 0 0 0 0 0 0 0 0 29645/3 110 1 1464100 6655/3 0 0 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 150 1 0 -3300 -170 -1 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 14 por -150 para hacer el pivote 1
+A la fila 1 le restamos 0 veces la fila 14
+A la fila 2 le restamos 0 veces la fila 14
+A la fila 3 le restamos 0 veces la fila 14
+A la fila 4 le restamos 0 veces la fila 14
+A la fila 5 le restamos 0 veces la fila 14
+A la fila 6 le restamos 0 veces la fila 14
+A la fila 7 le restamos 0 veces la fila 14
+A la fila 8 le restamos 0 veces la fila 14
+A la fila 9 le restamos 0 veces la fila 14
+A la fila 10 le restamos 0 veces la fila 14
+A la fila 11 le restamos 0 veces la fila 14
+A la fila 12 le restamos 0 veces la fila 14
+A la fila 13 le restamos 1/600 veces la fila 14
+A la fila 15 le restamos 25000/3 veces la fila 14
+A la fila 16 le restamos 29645/3 veces la fila 14
+A la fila 17 le restamos 0 veces la fila 14
+A la fila 18 le restamos 150 veces la fila 14
+A la fila 19 le restamos 0 veces la fila 14
+A la fila 20 le restamos 0 veces la fila 14
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 253/144 23/8640 0 0 -4218783/20000000000
+0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -8855/12 -161/144 0 0 88594443/1000000000
+0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 2915825/36 53015/432 0 0 -1572427063/200000000
+0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 -2656500 -4025 0 0 1184070339/5000000
+0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 55/36 1/432 0 0 0
+0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 -2200/3 -10/9 0 0 0
+0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 823625/9 14975/108 0 0 3600703/2500000
+0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 -3410000 -15500/3 0 0 -48375663/1000000
+0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 -1111/936 -101/56160 0 0 -366191/5200000000
+0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 -495/26 -3/104 0 0 9887157/260000000
+0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 8373475/234 152245/2808 0 0 -960293083/260000000
+0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 -28613750/13 -260125/78 0 0 2040648771/13000000
+0 0 0 0 0 0 0 0 0 0 0 0 1 0 -1/90000 0 -9757/6480 -887/388800 0 0 -3600703/225000000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 1/150 0 13145/54 239/648 0 0 3600703/375000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 400/9 1 -75212500/81 -341875/243 0 0 39302527/2250000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 3971/90 1 -152499325/162 -2772715/1944 0 0 3927152963/225000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -358325/9 -24335/108 -1 0 -3600703/2500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 15 por 400/9 para hacer el pivote 1
+A la fila 1 le restamos 0 veces la fila 15
+A la fila 2 le restamos 0 veces la fila 15
+A la fila 3 le restamos 0 veces la fila 15
+A la fila 4 le restamos 0 veces la fila 15
+A la fila 5 le restamos 0 veces la fila 15
+A la fila 6 le restamos 0 veces la fila 15
+A la fila 7 le restamos 0 veces la fila 15
+A la fila 8 le restamos 0 veces la fila 15
+A la fila 9 le restamos 0 veces la fila 15
+A la fila 10 le restamos 0 veces la fila 15
+A la fila 11 le restamos 0 veces la fila 15
+A la fila 12 le restamos 0 veces la fila 15
+A la fila 13 le restamos -1/90000 veces la fila 15
+A la fila 14 le restamos 1/150 veces la fila 15
+A la fila 16 le restamos 3971/90 veces la fila 15
+A la fila 17 le restamos 0 veces la fila 15
+A la fila 18 le restamos 0 veces la fila 15
+A la fila 19 le restamos 0 veces la fila 15
+A la fila 20 le restamos 0 veces la fila 15
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 253/144 23/8640 0 0 -4218783/20000000000
+0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -8855/12 -161/144 0 0 88594443/1000000000
+0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 2915825/36 53015/432 0 0 -1572427063/200000000
+0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 -2656500 -4025 0 0 1184070339/5000000
+0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 55/36 1/432 0 0 0
+0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 -2200/3 -10/9 0 0 0
+0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 823625/9 14975/108 0 0 3600703/2500000
+0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 -3410000 -15500/3 0 0 -48375663/1000000
+0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 -1111/936 -101/56160 0 0 -366191/5200000000
+0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 -495/26 -3/104 0 0 9887157/260000000
+0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 8373475/234 152245/2808 0 0 -960293083/260000000
+0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 -28613750/13 -260125/78 0 0 2040648771/13000000
+0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1/4000000 -1001/576 -91/34560 0 0 -11636177/1000000000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 -3/20000 9185/24 167/288 0 0 34908531/5000000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 9/400 -752125/36 -13675/432 0 0 39302527/100000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 29/4000 -468875/24 -8525/288 0 0 112864867/1000000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -358325/9 -24335/108 -1 0 -3600703/2500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 16 por 29/4000 para hacer el pivote 1
+A la fila 1 le restamos 0 veces la fila 16
+A la fila 2 le restamos 0 veces la fila 16
+A la fila 3 le restamos 0 veces la fila 16
+A la fila 4 le restamos 0 veces la fila 16
+A la fila 5 le restamos 0 veces la fila 16
+A la fila 6 le restamos 0 veces la fila 16
+A la fila 7 le restamos 0 veces la fila 16
+A la fila 8 le restamos 0 veces la fila 16
+A la fila 9 le restamos 0 veces la fila 16
+A la fila 10 le restamos 0 veces la fila 16
+A la fila 11 le restamos 0 veces la fila 16
+A la fila 12 le restamos 0 veces la fila 16
+A la fila 13 le restamos 1/4000000 veces la fila 16
+A la fila 14 le restamos -3/20000 veces la fila 16
+A la fila 15 le restamos 9/400 veces la fila 16
+A la fila 17 le restamos 0 veces la fila 16
+A la fila 18 le restamos 0 veces la fila 16
+A la fila 19 le restamos 0 veces la fila 16
+A la fila 20 le restamos 0 veces la fila 16
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 253/144 23/8640 0 0 -4218783/20000000000
+0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -8855/12 -161/144 0 0 88594443/1000000000
+0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 2915825/36 53015/432 0 0 -1572427063/200000000
+0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 -2656500 -4025 0 0 1184070339/5000000
+0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 55/36 1/432 0 0 0
+0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 -2200/3 -10/9 0 0 0
+0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 823625/9 14975/108 0 0 3600703/2500000
+0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 -3410000 -15500/3 0 0 -48375663/1000000
+0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 -1111/936 -101/56160 0 0 -366191/5200000000
+0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 -495/26 -3/104 0 0 9887157/260000000
+0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 8373475/234 152245/2808 0 0 -960293083/260000000
+0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 -28613750/13 -260125/78 0 0 2040648771/13000000
+0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -1111/1044 -101/62640 0 0 -225157/14500000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 -1870/87 -17/522 0 0 675471/72500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 10371625/261 188575/3132 0 0 3099737/72500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -234437500/87 -1065625/261 0 0 112864867/7250000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -358325/9 -24335/108 -1 0 -3600703/2500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+
+Dividimos la fila 17 por 720 para hacer el pivote 1
+A la fila 1 le restamos 253/144 veces la fila 17
+A la fila 2 le restamos -8855/12 veces la fila 17
+A la fila 3 le restamos 2915825/36 veces la fila 17
+A la fila 4 le restamos -2656500 veces la fila 17
+A la fila 5 le restamos 55/36 veces la fila 17
+A la fila 6 le restamos -2200/3 veces la fila 17
+A la fila 7 le restamos 823625/9 veces la fila 17
+A la fila 8 le restamos -3410000 veces la fila 17
+A la fila 9 le restamos -1111/936 veces la fila 17
+A la fila 10 le restamos -495/26 veces la fila 17
+A la fila 11 le restamos 8373475/234 veces la fila 17
+A la fila 12 le restamos -28613750/13 veces la fila 17
+A la fila 13 le restamos -1111/1044 veces la fila 17
+A la fila 14 le restamos -1870/87 veces la fila 17
+A la fila 15 le restamos 10371625/261 veces la fila 17
+A la fila 16 le restamos -234437500/87 veces la fila 17
+A la fila 18 le restamos -358325/9 veces la fila 17
+A la fila 19 le restamos 1331000 veces la fila 17
+A la fila 20 le restamos 1728000 veces la fila 17
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 23/103680 0 0 -4218783/20000000000
+0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -161/1728 0 0 88594443/1000000000
+0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 53015/5184 0 0 -1572427063/200000000
+0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 -4025/12 0 0 1184070339/5000000
+0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 1/5184 0 0 0
+0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 -5/54 0 0 0
+0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 14975/1296 0 0 3600703/2500000
+0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 -3875/9 0 0 -48375663/1000000
+0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 -101/673920 0 0 -366191/5200000000
+0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 -1/416 0 0 9887157/260000000
+0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 152245/33696 0 0 -960293083/260000000
+0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 -260125/936 0 0 2040648771/13000000
+0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 -101/751680 0 0 -225157/14500000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -17/6264 0 0 675471/72500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 188575/37584 0 0 3099737/72500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 -1065625/3132 0 0 112864867/7250000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1/720 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -220355/1296 -1 0 -3600703/2500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 184525/18 110 1 56168269/500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 12000 120 1 15751753/125000
+
+Dividimos la fila 18 por -220355/1296 para hacer el pivote 1
+A la fila 1 le restamos 23/103680 veces la fila 18
+A la fila 2 le restamos -161/1728 veces la fila 18
+A la fila 3 le restamos 53015/5184 veces la fila 18
+A la fila 4 le restamos -4025/12 veces la fila 18
+A la fila 5 le restamos 1/5184 veces la fila 18
+A la fila 6 le restamos -5/54 veces la fila 18
+A la fila 7 le restamos 14975/1296 veces la fila 18
+A la fila 8 le restamos -3875/9 veces la fila 18
+A la fila 9 le restamos -101/673920 veces la fila 18
+A la fila 10 le restamos -1/416 veces la fila 18
+A la fila 11 le restamos 152245/33696 veces la fila 18
+A la fila 12 le restamos -260125/936 veces la fila 18
+A la fila 13 le restamos -101/751680 veces la fila 18
+A la fila 14 le restamos -17/6264 veces la fila 18
+A la fila 15 le restamos 188575/37584 veces la fila 18
+A la fila 16 le restamos -1065625/3132 veces la fila 18
+A la fila 17 le restamos 1/720 veces la fila 18
+A la fila 19 le restamos 184525/18 veces la fila 18
+A la fila 20 le restamos 12000 veces la fila 18
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -23/17628400 0 -187582308973/881420000000000
+0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 483/881420 0 3939228488433/44071000000000
+0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -10603/176284 0 -70061998171653/8814200000000
+0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 86940/44071 0 52809254147709/220355000000
+0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 -1/881420 0 -3600703/2203550000000
+0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 24/44071 0 10802109/13772187500
+0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 -2995/44071 0 36975619107/27544375000
+0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 111600/44071 0 -1971228462153/44071000000
+0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 101/114584600 0 -79237333793/1145846000000000
+0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 81/5729230 0 2179851108507/57292300000000
+0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 -30449/1145846 0 -42759627683481/11458460000000
+0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 936450/572923 0 91282183316481/572923000000
+0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 101/127805900 0 -9195552141/639029500000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 102/6390295 0 149210683911/15975737500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -37715/1278059 0 403997841/1597573750000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 2557500/1278059 0 5894947345807/319514750000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 -9/1101775 0 -32406327/2754437500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1296/220355 0 291656943/34430468750
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2190650/44071 1 561862986403/22035500000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2178120/44071 1 134214175903/5508875000
+
+Dividimos la fila 19 por 2190650/44071 para hacer el pivote 1
+A la fila 1 le restamos -23/17628400 veces la fila 19
+A la fila 2 le restamos 483/881420 veces la fila 19
+A la fila 3 le restamos -10603/176284 veces la fila 19
+A la fila 4 le restamos 86940/44071 veces la fila 19
+A la fila 5 le restamos -1/881420 veces la fila 19
+A la fila 6 le restamos 24/44071 veces la fila 19
+A la fila 7 le restamos -2995/44071 veces la fila 19
+A la fila 8 le restamos 111600/44071 veces la fila 19
+A la fila 9 le restamos 101/114584600 veces la fila 19
+A la fila 10 le restamos 81/5729230 veces la fila 19
+A la fila 11 le restamos -30449/1145846 veces la fila 19
+A la fila 12 le restamos 936450/572923 veces la fila 19
+A la fila 13 le restamos 101/127805900 veces la fila 19
+A la fila 14 le restamos 102/6390295 veces la fila 19
+A la fila 15 le restamos -37715/1278059 veces la fila 19
+A la fila 16 le restamos 2557500/1278059 veces la fila 19
+A la fila 17 le restamos -9/1101775 veces la fila 19
+A la fila 18 le restamos 1296/220355 veces la fila 19
+A la fila 20 le restamos 2178120/44071 veces la fila 19
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 23/876260000 -185897710641/876260000000000
+0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -69/6259000 557693131923/6259000000000
+0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10603/8762600 -69381485770801/8762600000000
+0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1242/31295 7468345489149/31295000000
+0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1/43813000 -23047197/21906500000000
+0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 -12/1095325 69141591/136915625000
+0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 599/438130 12068397203/8762600000
+0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 -2232/43813 -2016600235611/43813000000
+0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 -101/5695690000 -396442623281/5695690000000000
+0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 -81/284784500 10833383886939/284784500000000
+0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 30449/56956900 -211770132430301/56956900000000
+0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 -18729/569569 90270246509049/569569000000
+0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 -101/6352885000 -11749062827/794110625000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 -51/158822125 370517840061/39705531250000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 7543/12705770 97772547391/6352885000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 -4650/115507 251562749143/14438375000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 9/54766250 -207424773/27383125000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 -648/5476625 1866822957/342289062500
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 44071/2190650 561862986403/1095325000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 179/31295 -483593339/488984375
+
+Dividimos la fila 20 por 179/31295 para hacer el pivote 1
+A la fila 1 le restamos 23/876260000 veces la fila 20
+A la fila 2 le restamos -69/6259000 veces la fila 20
+A la fila 3 le restamos 10603/8762600 veces la fila 20
+A la fila 4 le restamos -1242/31295 veces la fila 20
+A la fila 5 le restamos 1/43813000 veces la fila 20
+A la fila 6 le restamos -12/1095325 veces la fila 20
+A la fila 7 le restamos 599/438130 veces la fila 20
+A la fila 8 le restamos -2232/43813 veces la fila 20
+A la fila 9 le restamos -101/5695690000 veces la fila 20
+A la fila 10 le restamos -81/284784500 veces la fila 20
+A la fila 11 le restamos 30449/56956900 veces la fila 20
+A la fila 12 le restamos -18729/569569 veces la fila 20
+A la fila 13 le restamos -101/6352885000 veces la fila 20
+A la fila 14 le restamos -51/158822125 veces la fila 20
+A la fila 15 le restamos 7543/12705770 veces la fila 20
+A la fila 16 le restamos -4650/115507 veces la fila 20
+A la fila 17 le restamos 9/54766250 veces la fila 20
+A la fila 18 le restamos -648/5476625 veces la fila 20
+A la fila 19 le restamos 44071/2190650 veces la fila 20
+
+Despu�s de la operaci�n:
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -743246087/3580000000000
+0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15608167827/179000000000
+0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -275971136007/35800000000
+0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 207444316221/895000000
+0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 51809/17900000000
+0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -155427/111875000
+0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1444219629/895000000
+0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 -9815620557/179000000
+0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 -338206363/4654000000000
+0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 8840612457/232700000000
+0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 -1349899179/372320000
+0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 355572822399/2327000000
+0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 -11383953/648875000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 300952143/32443750000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 3063682281/25955000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 6788867659/648875000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 466281/22375000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 -4196529/279687500
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 3572326113/895000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -483593339/2796875
+
+Resultado:
+1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -743246087/3580000000000
+0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15608167827/179000000000
+0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -275971136007/35800000000
+0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 207444316221/895000000
+0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 51809/17900000000
+0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -155427/111875000
+0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 1444219629/895000000
+0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 -9815620557/179000000
+0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 -338206363/4654000000000
+0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 8840612457/232700000000
+0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 -1349899179/372320000
+0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 355572822399/2327000000
+0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 -11383953/648875000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 300952143/32443750000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 3063682281/25955000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 6788867659/648875000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 466281/22375000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 -4196529/279687500
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 3572326113/895000000
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 -483593339/2796875

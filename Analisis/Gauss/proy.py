@@ -41,7 +41,7 @@ def gaussJordan(matriz, archivo):
     return matriz  
 
 def main():
-    archivo = r"C:\\Users\\jacqu\\3\\Tercer-Semestre\\Analisis\\matriz.txt"
+    archivo = r"C:\\Users\\jacqu\\3\\Tercer-Semestre\\Analisis\\Gauss\\matriz.txt"
     
     datos = leerMatriz(archivo)
     gaussJordan(datos, archivo)
