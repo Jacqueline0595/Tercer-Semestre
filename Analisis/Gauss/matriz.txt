@@ -1,66 +1,36 @@
 La matriz original es:
-420 1 0 0 -480 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-420 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-343000 4900 70 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 24112619/500000
-512000 6400 80 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
-0 0 0 0 48 1 0 0 -540 -1 0 0 0 0 0 0 0 0 0 0 0
-14700 140 1 0 -19200 -160 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 512000 6400 80 1 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
-0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 0 0 0 0 16249929/200000
-0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
-0 0 0 0 19200 160 1 0 -24300 -180 -1 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
-0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
-0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
-0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
-0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+15 1 -4 47/2
+-1 10 -1 7/4
+0 3 -25 2
 
-Dividimos la fila 1 por 420 para hacer el pivote
-A la fila 2 le restamos 420 y multiplicamos por la fila 1
-A la fila 3 le restamos 343000 y multiplicamos por la fila 1
-A la fila 4 le restamos 512000 y multiplicamos por la fila 1
-A la fila 5 le restamos 0 y multiplicamos por la fila 1
-A la fila 6 le restamos 14700 y multiplicamos por la fila 1
-A la fila 7 le restamos 0 y multiplicamos por la fila 1
-A la fila 8 le restamos 0 y multiplicamos por la fila 1
-A la fila 9 le restamos 0 y multiplicamos por la fila 1
-A la fila 10 le restamos 0 y multiplicamos por la fila 1
-A la fila 11 le restamos 0 y multiplicamos por la fila 1
-A la fila 12 le restamos 0 y multiplicamos por la fila 1
-A la fila 13 le restamos 0 y multiplicamos por la fila 1
-A la fila 14 le restamos 0 y multiplicamos por la fila 1
-A la fila 15 le restamos 0 y multiplicamos por la fila 1
-A la fila 16 le restamos 0 y multiplicamos por la fila 1
-A la fila 17 le restamos 0 y multiplicamos por la fila 1
-A la fila 18 le restamos 0 y multiplicamos por la fila 1
-A la fila 19 le restamos 0 y multiplicamos por la fila 1
-A la fila 20 le restamos 0 y multiplicamos por la fila 1
+Dividimos la fila 1 por 15 para hacer el pivote
+A la fila 2 le restamos -1 y multiplicamos por la fila 1
+A la fila 3 le restamos 0 y multiplicamos por la fila 1
 
 Despues de la operacion:
-1 1/420 0 0 -8/7 -1/420 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 480 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-0 12250/3 70 1 392000 2450/3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 24112619/500000
-0 108800/21 80 1 4096000/7 25600/21 0 0 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
-0 0 0 0 48 1 0 0 -540 -1 0 0 0 0 0 0 0 0 0 0 0
-0 105 1 0 -2400 -125 -1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 512000 6400 80 1 0 0 0 0 0 0 0 0 0 0 0 0 66846833/1000000
-0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 0 0 0 0 16249929/200000
-0 0 0 0 0 0 0 0 540 1 0 0 -600 -1 0 0 0 0 0 0 0
-0 0 0 0 19200 160 1 0 -24300 -180 -1 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 729000 8100 90 1 0 0 0 0 0 0 0 0 16249929/200000
-0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 0 0 0 0 24370853/250000
-0 0 0 0 0 0 0 0 0 0 0 0 600 1 0 0 -660 -1 0 0 0
-0 0 0 0 0 0 0 0 24300 180 1 0 -30000 -200 -1 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 1000000 10000 100 1 0 0 0 0 24370853/250000
-0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 0 0 0 0 56168269/500000
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 720 1 0 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 30000 200 1 0 -36300 -220 -1 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1331000 12100 110 1 56168269/500000
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1728000 14400 120 1 15751753/125000
+1 1/15 -4/15 47/30
+0 151/15 -19/15 199/60
+0 3 -25 2
 
-Dividimos la fila 2 por 0 para hacer el pivote
+Dividimos la fila 2 por 151/15 para hacer el pivote
+A la fila 1 le restamos 1/15 y multiplicamos por la fila 2
+A la fila 3 le restamos 3 y multiplicamos por la fila 2
+
+Despues de la operacion:
+1 0 -39/151 933/604
+0 1 -19/151 199/604
+0 0 -3718/151 611/604
+
+Dividimos la fila 3 por -3718/151 para hacer el pivote
+A la fila 1 le restamos -39/151 y multiplicamos por la fila 3
+A la fila 2 le restamos -19/151 y multiplicamos por la fila 3
+
+Despues de la operacion:
+1 0 0 135/88
+0 1 0 371/1144
+0 0 1 -47/1144
+
+Resultado: 
+1 0 0 135/88
+0 1 0 371/1144
+0 0 1 -47/1144
