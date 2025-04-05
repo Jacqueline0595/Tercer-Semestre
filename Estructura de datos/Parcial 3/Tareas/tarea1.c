@@ -15,7 +15,7 @@ typedef struct nodoEdo
 {
     float egEdo;
     int pobEdo;
-    float dpEdo;
+    float promPob;
     char *capEdo;
     char *numEdo;
     float promDp;
@@ -100,3 +100,65 @@ suponga que la estructura de estado tiene un campo llamado promEg
 que representa el promedio de extensión geográfica del estado. 
 Escriba una(s) función(es) recursiva(s)  para calcular y asignar 
 el promedio de extensión geográfica de cada estado. */
+
+void calculaPromGe(EDO cab)
+{
+    float prom;
+    int num;
+    if(cab)
+    {
+        num = 0;
+        prom = calculaProm(cab->cabMun, &num);
+        prom /= num;
+        calculaPromGe(cab->sigEdo);
+    }
+}
+
+int calculaProm(MUN cabM, int *cont)
+{
+    int sum;
+    if(!cab)
+    {
+        sum=0;
+        *cont=0;
+    }
+    else if(cab)
+    {
+        sum += cabM->egMun;
+        (*cont)++;
+        calculaProm(cabM->sigMun);
+    }
+    return sum;
+}
+
+/* Con base en las estructuras de los  estados-municipios, suponga que la 
+estructura de estado tiene un campo llamado promPob que representa el 
+promedio de población del estado. Escriba dos funciones iterativas  
+para calcular y asignar el promedio de población de cada estado. */
+
+void calculaPromPobEst(EDO cabE)
+{
+    float prom;
+    int num;
+    while(cabE)
+    {
+        num=0;
+        prom = calculaPromPobMun(cabE->cabMun, &num);
+        prom /= num;
+        cabE->promPob = prom;
+        cabE=cabE->sigEdo;
+    }
+}
+
+int calculaPromPobMun(MUN cabM, int *num)
+{
+    int sum = 0;
+    *num = 0;
+    while(cabM)
+    {
+        sum += cabM->pobMun;
+        (*num)++;
+        cabM=cabM->sigMun;
+    }
+    return sum;
+}
