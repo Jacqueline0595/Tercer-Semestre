@@ -3,7 +3,7 @@ INSTRUCCIONES
 1.- Escribir el código correspondiente a cada función.
 2.- ** Solo ** implementar las partes de código faltantes, ** no ** modificar el código ya escrito.
 
-Nombre del alumno: "Escriba aquí su nombre completo"
+Nombre del alumno: "Jacqueline Gomez Benitez"
 */
 
 #include <stdio.h>
@@ -155,31 +155,57 @@ int main()
 /* Función para inicualizar la estructura principal */
 void iniRecetario(RECETARIO *r)
 {
-
+    *r = NULL;
 }
 
 /* Función para crear un nodo ingrediente */
 int creaNodoIngre(LISTA_INGRE *nuevo, char *ingre)
 {
-
+    int res=0;
+    *nuevo = (LISTA_INGRE)malloc(sizeof(strcut nodoIngre));
+    if(*nuevo)
+    {
+        strcpy((*nuevo)->nomIngre, ingre);
+        (*nuevo)->sigIngre = NULL;
+        res = 1;
+    }
+    return(res);
 }
 
 /* Función para crear un nodo receta */
 int creaNodoRece(LISTA_RECE *nuevo, char *rece)
 {
-
+    int res=0;
+    *nuevo = (LISTA_RECE)malloc(sizeof(strcut nodoRece));
+    if(*nuevo)
+    {
+        strcpy((*nuevo)->nomRece, rece);
+        (*nuevo)->sigRece = NULL;
+        (*nuevo)->cabIngre = NULL;
+        res = 1;
+    }
+    return(res);
 }
 
 /* Función para crear un nodo tipo */
 int creaNodoTipo(RECETARIO *nuevo, char *tipo)
 {
-
+    int res=0;
+    *nuevo = (RECETARIO)malloc(sizeof(strcut nodoTipo));
+    if(*nuevo)
+    {
+        strcpy((*nuevo)->nomTipo, tipo);
+        (*nuevo)->sigTipo = NULL;
+        (*nuevo)->cabRece = NULL;
+        res = 1;
+    }
+    return(res);
 }
 
 /* Inserta ingrediente: Función para insertar el ingrediente */
 int insIngre(LISTA_INGRE *li, char *ingre)
 {
-
+    
 }
 
 /* Inserta ingrediente: Función para buscar la receta */
