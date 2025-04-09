@@ -162,7 +162,7 @@ void iniRecetario(RECETARIO *r)
 int creaNodoIngre(LISTA_INGRE *nuevo, char *ingre)
 {
     int res=0;
-    *nuevo = (LISTA_INGRE)malloc(sizeof(strcut nodoIngre));
+    *nuevo = (LISTA_INGRE)malloc(sizeof(struct nodoIngre));
     if(*nuevo)
     {
         strcpy((*nuevo)->nomIngre, ingre);
@@ -176,7 +176,7 @@ int creaNodoIngre(LISTA_INGRE *nuevo, char *ingre)
 int creaNodoRece(LISTA_RECE *nuevo, char *rece)
 {
     int res=0;
-    *nuevo = (LISTA_RECE)malloc(sizeof(strcut nodoRece));
+    *nuevo = (LISTA_RECE)malloc(sizeof(struct nodoRece));
     if(*nuevo)
     {
         strcpy((*nuevo)->nomRece, rece);
@@ -191,7 +191,7 @@ int creaNodoRece(LISTA_RECE *nuevo, char *rece)
 int creaNodoTipo(RECETARIO *nuevo, char *tipo)
 {
     int res=0;
-    *nuevo = (RECETARIO)malloc(sizeof(strcut nodoTipo));
+    *nuevo = (RECETARIO)malloc(sizeof(struct nodoTipo));
     if(*nuevo)
     {
         strcpy((*nuevo)->nomTipo, tipo);
@@ -205,14 +205,43 @@ int creaNodoTipo(RECETARIO *nuevo, char *tipo)
 /* Inserta ingrediente: Función para insertar el ingrediente */
 int insIngre(LISTA_INGRE *li, char *ingre)
 {
-    
+    int res=0;
+    LISTA_INGRE aux, ant, nuevo;
+    aux = *li;
+    while(aux || strcmp(ingre, aux->nomIngre) > 0)
+    {
+        ant = aux;
+        aux = aux->sigIngre;
+    }
+    if(!aux || strcmp(ingre, aux->nomIngre) < 0)
+    {
+        res = creaNodoIngre(&nuevo, ingre);
+        if(res)
+        {
+            nuevo->sigIngre=aux;
+            if(aux == *li)
+                (*li) = nuevo;
+            else    
+                ant->sigIngre = nuevo;
+        }
+    }
+    return(res);
 }
 
 /* Inserta ingrediente: Función para buscar la receta */
 int insIngreBuscaRece(LISTA_RECE lr, char *rece, char *ingre)
 {
-
-
+    int res = 0;
+    while(lr)
+    {
+        if(strcmp(lr->nomRece, rece) == 0)
+        {
+            insIngre(&(lr->cabIngre), ingre);
+            res = 1;
+        }
+        lr = lr->sigRece;
+    }
+    return(res);
 }
 
 /* Inserta ingrediente: Función para buscar el tipo */
@@ -274,7 +303,7 @@ void muestraIngredientesReceta(RECETARIO r, char *tipo, char *rece);
 /* Esta función muestra el No. de receta que tiene cada tipo de receta */
 void muestraNoReceXtipo(RECETARIO r);
 
-/* Esta función muestra el No. de ingredientes de cadad receta */
+/* Esta función muestra el No. de ingredientes de cada receta */
 void muestraNoIngreXrece(RECETARIO r);
 
 /* Función para contar el No. de tipos de recetas */
