@@ -7,14 +7,16 @@
 
 #define MAIN_HEADER_POSSITION 0L
 #define ENTITY_NAME_LENGHT 50
+#define empty -1
 
 typedef struct Entity
 {
     char name[ENTITY_NAME_LENGHT];
-    long dataPointer;
-    long attributesPointer;
-    long entityPointer;
+    long listDat;
+    long listAttr;
+    long sig;
 } ENTITY;
+
 
 long getDataDictionaryHeader(FILE *dataDictionary);
 int appendEntity(FILE *dataDictionary, ENTITY dataEntity);

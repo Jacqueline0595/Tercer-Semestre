@@ -47,7 +47,7 @@ enum
 }OPTIONAttribute;
 
 void printMainMenu();
-void processUserSelection(int usSelec);
+void processUserSelection();
 
 FILE * CreateFile(const char* fileName);
 FILE * OpenFile(const char* fileName);

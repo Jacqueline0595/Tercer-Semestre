@@ -64,7 +64,8 @@
     "cmath": "c",
     "complex": "c",
     "string.h": "c",
-    "tAREA9.C": "cpp"
+    "tAREA9.C": "cpp",
+    "stdbool.h": "c"
   },
   "python.testing.pytestArgs": [
     "Analisis"

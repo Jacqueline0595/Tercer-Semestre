@@ -4,14 +4,7 @@
 
 int main()
 {
-    int userSelection;
-    do{
-        printMainMenu();
-        scanf("%d", &userSelection);
-        processUserSelection(userSelection);
-    } while(userSelection != EXIT);
-
-    return 0;
+    processUserSelection();
 }
 
 void printMainMenu()
@@ -22,90 +15,59 @@ void printMainMenu()
     printf("--- %d Exit \n", EXIT);
 }
 
-void processUserSelection(int usSelec)
+void processUserSelection()
 {
     FILE *dataFile = NULL;
-    /* char fileName[STRING_LENGHT]; */
-    switch (usSelec)
+    int userSelection;
+    long num = empty;
+    char name[ENTITY_NAME_LENGHT];
+    do
     {
-        case NEW_FILE:
-            // TODO: ask for a new file name
-            dataFile = CreateFile("test.dat");
-            if(dataFile)
-            {
-                long header = -1;
-                fwrite(&header, sizeof(long), 1, dataFile);
-                for (int i = 0; i < 1; i++)
+        printMainMenu();
+        scanf("%d", &userSelection);
+        switch (userSelection)
+        {
+            case NEW_FILE:
+                printf("Name of the dictionary: ");
+                scanf("%s", name);
+                if (!(dataFile = fopen(name, "wb")))
                 {
-                    REGISTER dataBlock = createNewDataBlock();
-                    fwrite(&dataBlock, sizeof(REGISTER), 1, dataFile);
+                    printf("File didn't found\n");
+                    break;
                 }
-
-                fclose(dataFile);
-            }
-        break;
-        case OPEN_FILE:
-            printf("Opening existing file \n");
-            dataFile = OpenFile("test.dat");
-            if(dataFile)
-            {
-                openDataDictionary("test.dat");
-                processInputDictonary();
-                fclose(dataFile);
-            }
-        break;
-        case EXIT:
-            printf("Bye bye \n");
-        break;
-        default:
-            printf("Wrong option \n");
-        break;
-    }
-
-    /* if(openDataDictionary()) */
-    fclose(dataFile);
+                else
+                    fwrite(&num, sizeof(long), 1, dataFile);
+            break;
+            case OPEN_FILE:
+                printf("Name of the dictionary: ");
+                scanf("%s", name);
+                if (!(dataFile = fopen(name, "rb+")))
+                {
+                    printf("File didn't found\n");
+                }
+            break;
+            case EXIT:
+                printf("Ending program, see u later \n");
+            break;
+            default:
+                printf("Wrong option \n");
+            break;
+        }
+        fclose(dataFile);
+        printf("\t We're going to the file...\n");
+        processInputDictonary();
+    } while(userSelection != EXIT);
 }
 
-FILE *CreateFile(const char *fileName)
+void printDictionaryMenu()
 {
-    printf("Creating a new file... \n");
-    FILE *dataFile = fopen(fileName, "wb+");
-
-    if(!dataFile)
-        fprintf(stderr, "Error creating file\n");
-
-    return dataFile;
-}
-
-FILE *OpenFile(const char *fileName)
-{
-    FILE *dataFile = fopen(fileName, "rb+");
-    if(dataFile)
-    {
-        printf("Dictionary name: %s \n", fileName);
-    }
-    return dataFile;
-}
-
-REGISTER createNewDataBlock()
-{
-    REGISTER dataBlock;
-
-    fflush(stdin);
-    printf("Enter the name: ");
-    fgets(dataBlock.name, STRING_LENGHT, stdin);
-    // search the end of the line and insted put '\0'
-    // send the direction of '\n'
-    *(strchr(dataBlock.name, '\n')) = '\0';
-
-    /* printf("Enter the generation: ");
-    scanf("%d", &dataBlock.generation);
-    fflush(stdin);
-
-    printf("Enter the current semester: ");
-    scanf("%d", &dataBlock.semester); */
-
-    return dataBlock;
+    printf("\t --------Dictionary menu-------- \n");
+    printf("--- %d Print data dictionary \n", PRINT);
+    printf("--- %d Create an entity \n", CREATE_ENTITY);
+    printf("--- %d Delete an entity \n", DELETE_ENTITY);
+    printf("--- %d Modify an entity \n", MODIFY_ENTITY);
+    printf("--- %d Select an entity \n", SELECT_ENTITY);
+    printf("--- %d Exit \n", RETURN);
 }
 
 void processInputDictonary()
@@ -137,15 +99,46 @@ void processInputDictonary()
     } while(userSelec != RETURN);
 }
 
-void printDictionaryMenu()
+FILE *CreateFile(const char *fileName)
 {
-    printf("\t --------Dictionary menu-------- \n");
-    printf("--- %d Print data dictionary \n", PRINT);
-    printf("--- %d Create an entity \n", CREATE_ENTITY);
-    printf("--- %d Delete an entity \n", DELETE_ENTITY);
-    printf("--- %d Modify an entity \n", MODIFY_ENTITY);
-    printf("--- %d Select an entity \n", SELECT_ENTITY);
-    printf("--- %d Exit \n", RETURN);
+    printf("Creating a new file... \n");
+    FILE *dataFile = fopen(fileName, "wb+");
+
+    if(!dataFile)
+        fprintf(stderr, "Error creating file\n");
+
+    return dataFile;
+}
+
+FILE *OpenFile(const char *fileName)
+{
+    FILE *dataFile = fopen(fileName, "rb+");
+    if(dataFile)
+    {
+        //printf("Dictionary name: %s \n", fileName);
+    }
+    return dataFile;
+}
+
+REGISTER createNewDataBlock()
+{
+    REGISTER dataBlock;
+
+    fflush(stdin);
+    printf("Enter the name: ");
+    fgets(dataBlock.name, STRING_LENGHT, stdin);
+    // search the end of the line and insted put '\0'
+    // send the direction of '\n'
+    *(strchr(dataBlock.name, '\n')) = '\0';
+
+    /* printf("Enter the generation: ");
+    scanf("%d", &dataBlock.generation);
+    fflush(stdin);
+
+    printf("Enter the current semester: ");
+    scanf("%d", &dataBlock.semester); */
+
+    return dataBlock;
 }
 
 int openDataDictionary(const char * fileName)
