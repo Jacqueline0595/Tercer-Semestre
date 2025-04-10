@@ -3,7 +3,7 @@ INSTRUCCIONES
 1.- Escribir el código correspondiente a cada función.
 2.- ** Solo ** implementar las partes de código faltantes, ** no ** modificar el código ya escrito.
 
-Nombre del alumno: "Janelle Jacqueline Gomez Benitez"
+Nombre del alumno: "Hernández Hernández Eloy Emilio"
 */
 
 #include <stdio.h>
@@ -13,24 +13,24 @@ Nombre del alumno: "Janelle Jacqueline Gomez Benitez"
 /* Estructura ingrediente */
 typedef struct nodoIngre
 { 
-    char nomIngre[25];
-    struct nodoIngre *sigIngre;
+char nomIngre[25];
+struct nodoIngre *sigIngre;
 } *LISTA_INGRE;
 
 /* Estructura receta */
 typedef struct nodoRece
 {
-    char nomRece[25];
-    LISTA_INGRE cabIngre;
-    struct nodoRece *sigRece;
+char nomRece[25];
+LISTA_INGRE cabIngre;
+struct nodoRece *sigRece;
 } *LISTA_RECE;
 
 /* Estructura tipo receta */
 typedef struct nodoTipo
 {
-    char nomTipo[25];
-    LISTA_RECE cabRece;
-    struct nodoTipo *sigTipo;
+char nomTipo[25];
+LISTA_RECE cabRece;
+struct nodoTipo *sigTipo;
 } *RECETARIO;
 
 /* 1.- Esta función inicializa el recetario */
@@ -90,7 +90,9 @@ void muestraNoIngreXrece(RECETARIO r);
 /* 19.- Esta función calcula y retorna cuantos tipos de recta tiene un recetario */
 int cuentaTipos(RECETARIO r);
 
-/* 20.- Esta función busca el tipo de receta para contar cuantas recetas tiene se usa como base para la siguiente función */
+/* 20.- Esta función busca el tipo de receta para contar cuantas recetas tiene
+se usa como base para la siguiente función 
+*/
 int cuentaRecetas(RECETARIO r, char *tipo);
 
 /* 21.- Esta función cuenta el No. de recetas de un tipo previamente buscado */
@@ -99,29 +101,36 @@ int cuentaRece(LISTA_RECE lr);
 /* 22.- Esta función busca el tipo de receta como base para la siguiente función */
 int cuentaIngredientes(RECETARIO r, char *tipo, char *rece);
 
-/* 23.- Esta función busca una receta para poder contar cuantas recetas tiene se usa como base para la siguiente función 
+/* 23.- Esta función busca una receta para poder contar cuantas recetas tiene
+se usa como base para la siguiente función 
 */
 int cuentaIngreBuscaRece(LISTA_RECE lr, char *rece);
 
-/* 24.- Esta función cuenta el No. de ingredientes de una receta previamente buscada, que pertece a un tipo también previamente buscado. */
+/* 24.- Esta función cuenta el No. de ingredientes de una receta previamente buscada,
+que pertece a un tipo también previamente buscado.
+*/
 int cuentaIngre(LISTA_INGRE li);
 
 /* 25.- Esta función encuentra el nombre del tipo de receta con mas recetas(TMR) */
 void encuentraTMR(RECETARIO r, char *nomTMR);
 
-/*26.-  Esta función encuentra el nombre de la receta con mas ingredientes (RMI) así como también el tipo al que pertenece */
+/*26.-  Esta función encuentra el nombre de la receta con mas ingredientes (RMI) 
+así como también el tipo al que pertenece */
 void encuentraRMI(RECETARIO r, char *tipoRMI, char *nomRMI);
 
 /* 27.- Esta función cuenta el número de recetas que usan un ingrediente */
 int cuentaReceIngre(RECETARIO r, char *ingre);
 
-/* 28.- Esta función elimina un ingrediente, despues de haber encontrado sureceta y tipo al que pertenece */
+/* 28.- Esta función elimina un ingrediente, despues de haber encontrado su
+receta y tipo al que pertenece */
 int eliminaIngre(LISTA_INGRE *li, char *ingre);
 
 /* 29.- Esta función busca la receta para poder eliminar el ingrediente */
 int eliminaReceIngre(LISTA_RECE lr, char *rece, char *ingre);
 
-/* 30.- Esta función busca el tipo de receta, para ubicar la lista de recetasdonde se ubica el ingrediente a eliminar */
+/* 30.- Esta función busca el tipo de receta, para ubicar la lista de recetas
+donde se ubica el ingrediente a eliminar 
+*/
 int eliminaIngrediente(RECETARIO r, char *tipo, char *rece, char *ingre);
 
 /* 31.- Esta función elimina todos los ingredientes de una receta */
@@ -130,7 +139,8 @@ void eliminaIngredientes(LISTA_INGRE *li);
 /* 32.- Función para buscar una receta y poder eliminar sus ingredientes */
 int eliminaIngresBuscaReceXreceta(LISTA_RECE *lr, char *rece);
 
-/* 33.- Esta función elimina todas las recetas de un tipo, eliminando previamente todos los ingredientes  */
+/* 33.- Esta función elimina todas las recetas de un tipo, eliminando
+previamente todos los ingredientes  */
 void eliminaRecetas(LISTA_RECE lr);
 
 /* 34.- Esta función elimina un tipo de receta */
@@ -143,12 +153,12 @@ void eliminaRecetario(RECETARIO *r);
 
 int main()
 {
-    /* Puede escribir a continuación código para probar sus funciones
-        aunque no es necesario */ 
-        
-        
-    /* NO BORRAR ESTA LINEA */
-    evaluar();    
+/* Puede escribir a continuación código para probar sus funciones
+    aunque no es necesario */ 
+    
+    
+/* NO BORRAR ESTA LINEA */
+evaluar();    
 }
 
 
@@ -161,7 +171,7 @@ void iniRecetario(RECETARIO *r)
 /* Función para crear un nodo ingrediente */
 int creaNodoIngre(LISTA_INGRE *nuevo, char *ingre)
 {
-    int res=0;
+    int res = 0;
     *nuevo = (LISTA_INGRE)malloc(sizeof(struct nodoIngre));
     if(*nuevo)
     {
@@ -175,13 +185,13 @@ int creaNodoIngre(LISTA_INGRE *nuevo, char *ingre)
 /* Función para crear un nodo receta */
 int creaNodoRece(LISTA_RECE *nuevo, char *rece)
 {
-    int res=0;
+    int res = 0;
     *nuevo = (LISTA_RECE)malloc(sizeof(struct nodoRece));
     if(*nuevo)
     {
         strcpy((*nuevo)->nomRece, rece);
-        (*nuevo)->sigRece = NULL;
         (*nuevo)->cabIngre = NULL;
+        (*nuevo)->sigRece = NULL;
         res = 1;
     }
     return(res);
@@ -190,13 +200,13 @@ int creaNodoRece(LISTA_RECE *nuevo, char *rece)
 /* Función para crear un nodo tipo */
 int creaNodoTipo(RECETARIO *nuevo, char *tipo)
 {
-    int res=0;
+    int res = 0;
     *nuevo = (RECETARIO)malloc(sizeof(struct nodoTipo));
     if(*nuevo)
     {
         strcpy((*nuevo)->nomTipo, tipo);
-        (*nuevo)->sigTipo = NULL;
         (*nuevo)->cabRece = NULL;
+        (*nuevo)->sigTipo = NULL;
         res = 1;
     }
     return(res);
@@ -250,17 +260,19 @@ int insIngrediente(RECETARIO r, char *tipo, char *rece, char *ingre)
 }
 
 /* Inserta receta: Función para insertar la receta */
-int insRece(LISTA_RECE *lr, char *rece) 
+int insRece(LISTA_RECE *lr, char *rece)
 {
-    int res;
+    int res = 0;
     LISTA_RECE nuevo;
-    res = creaNodoRece(&nuevo, rece);
-    if (res)
-      nuevo->sigRece = *lr;
-    *lr = nuevo;
-    return (res);
-  }
-  
+    creaNodoRece(&nuevo, rece);
+    if(nuevo)
+    {
+        nuevo->sigRece = *lr;
+        *lr = nuevo;
+        res = 1;  
+    }
+    return(res);
+}
 
 /* Inserta receta: Función para buscar el tipo de la receta */
 int insReceta(RECETARIO r, char *tipo, char *rece)
@@ -279,105 +291,94 @@ int insReceta(RECETARIO r, char *tipo, char *rece)
 }
 
 /*Función para insertar un tipo de receta */
-int insTipo(RECETARIO *r, char *tipo) 
+int insTipo(RECETARIO *r, char *tipo)
 {
-    int res;
+    int res = 0;
     RECETARIO nuevo;
-    res = creaNodoTipo(&nuevo, tipo);
-    if (res)
-      nuevo->sigTipo = *r;
-    *r = nuevo;
-    return (res);
-  }
+    creaNodoTipo(&nuevo, tipo);
+    if(nuevo)
+    {
+        nuevo->sigTipo = *r;
+        *r = nuevo;
+        res = 1;    
+    }
+    return(res);
+}
 
 /* Función para capturar Tipos de recetas, inserlos en el recetario */
 void capturaTipos(RECETARIO *r)
 {
-    int res;
-    char resp, tipo[30];
-    do 
+    char tipo[25];
+    int i, n;
+    printf("Numero de tipos a insertar:\n");
+    scanf("%d", &n);
+    
+    for(i = 0; i < n; i++)
     {
-        printf("\nTipo: ");
-        fflush(stdin);
+        printf("Escriba el tipo:\n ");
         scanf("%s", tipo);
-        res = insTipo(r, tipo);
-        if (res) 
-        {
-            printf("\n¿Otro tipo? (s/n)");
-            fflush(stdin);
-            scanf("%c", &resp);
-        }
-    } while (res && resp == 's');
+        insTipo(r, tipo);
+    }
 }
 
 /* Función para captura las recetas, insertarlas en recetario en el tipo al que pertenecen */
 void capturaRecetas(RECETARIO r)
 {
-    int res;
-    char resp, rece[30], tipo[30];
-    do 
+    char tipo[25], rece[25];
+    int i, n;
+    printf("Numero de recetas a ingresar:\n");
+    scanf("%d", &n);
+    printf("Escriba el tipo:\n");
+    scanf("%s", tipo);
+    
+    for(i = 0; i<n;i++)
     {
-        printf("\nTipo De Receta: ");
-        fflush(stdin);
-        scanf("%s", tipo);
-        printf("\nReceta: ");
-        fflush(stdin);
+        printf("Escriba el nombre de la receta:\n");
         scanf("%s", rece);
-        res = insReceta(r, tipo, rece);
-        if (res) 
-        {
-            printf("\n¿Otra receta? (s/n)");
-            fflush(stdin);
-            scanf("%c", &resp);
-        }
-    } while (res && resp == 's');
+        insReceta(r,tipo, rece);
+    }        
 }
 
 /* Esta Función captura los ingredientes, para insertarlos en el recetario */
 void capturaIngredientes(RECETARIO r)
 {
-    int res;
-    char resp, ingre[30], rece[30], tipo[30];
-    do 
+    int numIng, i;
+    char ing[50], tipo[50], rece[50];
+    printf("Escriba la cantidad de ingredientes:\n");
+    scanf("%d", &numIng);
+    printf("Nombre del tipo;\n");
+    scanf("%s", tipo);
+    printf("Nombre de la receta:\n");
+    scanf("%s", rece);
+    
+    for(i = 0; i < numIng; i++)
     {
-        printf("\nTipo De Receta: ");
-        fflush(stdin);
-        scanf("%s", rece);
-        printf("\nReceta: ");
-        fflush(stdin);
-        scanf("%s", rece);
-        printf("\nIngrediente: ");
-        fflush(stdin);
-        scanf("%s", ingre);
-        res = insIngrediente(r, tipo, rece, ingre);
-        if (res) 
-        {
-            printf("\n¿Otro ingrediente? (s/n)");
-            fflush(stdin);
-            scanf("%c", &resp);
-        }
-    } while (res && resp == 's');
+        printf("ingresa Nombre del ingrediente:\n");
+        scanf("%s", ing);
+        insIngrediente(r,tipo,rece,ing);    
+    }
+    
 }
 
 /* Función para mostrar el recetario completo */
 void muestraRecetario(RECETARIO r)
 {
-    LISTA_RECE auxRece;
-    LISTA_INGRE auxIngre;
-    while (r) 
+    LISTA_RECE receta;
+    LISTA_INGRE ingrediente;
+    while(r)
     {
-        printf("\nTipo: %s", r->nomTipo);
-        auxRece = r->cabRece;
-        while (auxRece) 
+        printf("Tipo: %s\n", r->nomTipo);
+        receta = r->cabRece;
+        while(receta)
         {
-            printf("\nReceta: %s", auxRece->nomRece);
-            auxIngre = auxRece->cabIngre;
-            while (auxIngre) 
+            printf("\tReceta: %s\n", receta->nomRece);
+            ingrediente = receta->cabIngre;
+            while(ingrediente)
             {
-                printf("\nIngrediente: %s", auxIngre->nomIngre);
-                auxIngre = auxIngre->sigIngre;
+                printf("Ingrediente: %s\n", ingrediente->nomIngre);
+                ingrediente = ingrediente->sigIngre;
             }
-            auxRece = auxRece->sigRece;
+            receta = receta->sigRece;
         }
         r = r->sigTipo;
     }
@@ -386,50 +387,64 @@ void muestraRecetario(RECETARIO r)
 /* Esta función muestra las recetas de un tipo de receta */
 void muestraRecetasTipo(RECETARIO r, char *tipo)
 {
-    LISTA_RECE auxRece;
-    while (r && strcmp(tipo, r->nomTipo) != 0)
-        r = r->sigTipo;
-    if (r) 
+    while(r)
     {
-        auxRece = r->cabRece;
-        while (auxRece) 
+        if(strcmp(r->nomTipo, tipo) == 0)
         {
-            printf("\nReceta: %s", auxRece->nomRece);
-            auxRece = auxRece->sigRece;
+            LISTA_RECE receta = r->cabRece;
+            while(receta)
+            {
+                printf("%s", receta->nomRece);
+                receta = receta->sigRece;
+            }
         }
+        r = r->sigTipo;
     }
 }
 
 /* Esta función muestra los ingredientes de una receta */
 void muestraIngredientesReceta(RECETARIO r, char *tipo, char *rece)
 {
-    LISTA_RECE auxRece;
-    LISTA_INGRE auxIngre;
-    while (r && strcmp(tipo, r->nomTipo) != 0)
-    r = r->sigTipo;
-    if (r) {
-    auxRece = r->cabRece;
-    while (auxRece && strcmp(rece, auxRece->nomRece) != 0)
-        auxRece = auxRece->sigRece;
-    if (auxRece) {
-        auxIngre = auxRece->cabIngre;
-        while (auxIngre) {
-        printf("\nIngrediente: %s", auxIngre->nomIngre);
-        auxIngre = auxIngre->sigIngre;
+    LISTA_RECE receta;
+    LISTA_INGRE ingre;
+    while(r)
+    {
+        if(strcmp(r->nomTipo, tipo)== 0)
+        {
+            receta = r->cabRece;
+            while(receta)
+            {
+                if(strcmp(receta->nomRece, rece)==0)
+                {
+                    ingre = receta->cabIngre;
+                    while(ingre)
+                    {
+                        printf("%s", ingre->nomIngre);
+                        ingre = ingre->sigIngre;
+                    }
+                }
+                receta = receta->sigRece;
+            }
         }
-    }
+        r = r->sigTipo;
     }
 }
 
 /* Esta función muestra el No. de receta que tiene cada tipo de receta */
 void muestraNoReceXtipo(RECETARIO r)
 {
-    int cont;
-    while (r)
+    int NoTipos;
+    LISTA_RECE receta;
+    while(r)
     {
-        cont = 0;
-        cont = cuentaRece(r->cabRece);
-        printf("\nTipo: %s tiene %d recetas", r->nomTipo, cont);
+        NoTipos = 0;
+        receta = r->cabRece;
+        while(receta)
+        {
+            NoTipos++;
+            receta = receta->sigRece;
+        }
+        printf("%s %d", r->nomTipo, NoTipos);
         r = r->sigTipo;
     }
 }
@@ -437,287 +452,392 @@ void muestraNoReceXtipo(RECETARIO r)
 /* Esta función muestra el No. de ingredientes de cadad receta */
 void muestraNoIngreXrece(RECETARIO r)
 {
-    LISTA_RECE auxRece;
-    int cont;
-    while (r) 
+    LISTA_RECE receta;
+    LISTA_INGRE ingre;
+    while(r)
     {
-        printf("Receta: %s\n", r->nomTipo);
-        auxRece = r->cabRece;
-        while (auxRece)
+        receta = r->cabRece;
+        while(receta)
         {
-            cont = cuentaIngreBuscaRece(auxRece, auxRece->nomRece);
-            printf("Receta: %s tiene %d ingredientes", auxRece->nomRece, cont);
-            auxRece = auxRece->sigRece;
+            printf("%s", receta->nomRece);
+            ingre = receta->cabIngre;
+            while(ingre)
+            {
+                printf("%s", ingre->nomIngre);
+                ingre = ingre->sigIngre;
+            }
+            receta = receta->sigRece;
         }
-        r = r->sigTipo;
+        r =  r->sigTipo;
     }
 }
 
 /* Función para contar el No. de tipos de recetas */
 int cuentaTipos(RECETARIO r)
 {
-    int cont = 0;
-    while (r) 
+    int NoTipos = 0;
+    while(r)
     {
-        cont++;
+        NoTipos++;
         r = r->sigTipo;
     }
-    return (cont);
+    return(NoTipos);
 }
 
 /* Cuenta Recetas: Función para contar las recetas */
 int cuentaRece(LISTA_RECE lr)
 {
-    int cont = 0;
-    while (lr) 
+    int Nrece = 0;
+    while(lr)
     {
-        cont++;
-        lr = lr->sigRece;
+        Nrece++;
+        lr=lr->sigRece;
     }
-    return (cont);
+    return(Nrece);
 }
 
-/* Cuenta Recetas: Función para buscar el tipo de las recetas a contar */
-
+/* Cuenta Recetas: Función para buscar el tipo de las recetas a contar*/
 int cuentaRecetas(RECETARIO r, char *tipo)
 {
+    LISTA_RECE lr;
     int cont = 0;
-    LISTA_RECE auxRece;
-    while (r && strcmp(tipo, r->nomTipo) != 0)
-        r = r->sigTipo;
-    if (r) 
+    while(r)
     {
-        auxRece = r->cabRece;
-        cont = cuentaRece(auxRece);
+        if(strcmp(r->nomTipo, tipo) == 0)
+        {
+            lr = r->cabRece;
+            while(lr)
+            {
+            cont++;
+            lr = lr->sigRece;
+            }
+        }
+        r = r->sigTipo;
     }
-    return (cont);
 }
 
 /* Cuenta ingredientes:Función para buscar el tipo */
 int cuentaIngredientes(RECETARIO r, char *tipo, char *rece)
 {
     int cont = 0;
-    LISTA_RECE auxRece;
-    while (r && strcmp(tipo, r->nomTipo) != 0)
-        r = r->sigTipo;
-    if (r) 
+    LISTA_RECE lr;
+    LISTA_INGRE ing;
+    while(r)
     {
-        auxRece = r->cabRece;
-        while (auxRece && strcmp(rece, auxRece->nomRece) != 0)
-            auxRece = auxRece->sigRece;
-        if (auxRece)
-            cont = cuentaIngre(auxRece->cabIngre);
+        if(strcmp(r->nomTipo, tipo)==0)
+        {
+            lr = r->cabRece;
+            while(lr)
+            {
+                if(strcmp(lr->nomRece, rece)==0)
+                {
+                    ing = lr->cabIngre;
+                    while(ing)
+                    {
+                        cont++;
+                        ing = ing->sigIngre;
+                    }
+                }
+                lr = lr->sigRece;
+            }
+        }
+        r = r->sigTipo;
     }
-    return (cont);
+    return(cont);
 }
 
 /* Cuenta ingredientes: Función para buscar la receta */
 int cuentaIngreBuscaRece(LISTA_RECE lr, char *rece)
 {
+    LISTA_INGRE ingre;
     int cont = 0;
-    LISTA_INGRE auxIngre;
-    while (lr && strcmp(rece, lr->nomRece) != 0)
-        lr = lr->sigRece;
-    if (lr) 
+    while(lr)
     {
-        auxIngre = lr->cabIngre;
-        cont = cuentaIngre(auxIngre);
+        if(strcmp(lr->nomRece, rece)==0)
+        {
+            ingre = lr->cabIngre;
+            while(ingre)
+            {
+                cont++;
+                ingre = ingre->sigIngre;
+            }
+        }
+        lr = lr->sigRece;
     }
-    return (cont);
+    return(cont);
 }
 
 /* Función para contar los ingredientes */
 int cuentaIngre(LISTA_INGRE li)
 {
-    int cont = 0;
-    while (li)
+    int NumI = 0;
+    while(li)
     {
-        cont++;
+        NumI++;
         li = li->sigIngre;
     }
-    return (cont);
+    return(NumI);
 }
 
 /* Función para contar y mostrar el No. de recetas en cada tipo */
 void muestraNoRece(RECETARIO r)
 {
-    int cont;
-    while (r)
+    LISTA_RECE receta;
+    while(r)
     {
-        cont = 0;
-        printf("Tipo de receta: %s\n", r->nomTipo);
-        cont = cuentaRecetas(r, r->nomTipo);
-        printf("Número de recetas en este tipo: %d\n", cont);
-        r = r->sigTipo;
+        int n = 0;
+        receta = r->cabRece;
+        while(receta)
+        {
+            n++;
+            receta = receta->sigRece;
+        }
+        printf("TIPO: %s Cant: %d\n", r->nomTipo, n);
     }
 }
 
 /* Función para contar y mostrar el No. de ingredientes por cada receta */
 void muestraNoIngre(RECETARIO r)
 {
-    int cont;
-    while (r)
+    LISTA_RECE lr;
+    LISTA_INGRE li;
+    while(r)
     {
-        cont = 0;
-        printf("Tipo de receta: %s\n", r->nomTipo);
-        cont = cuentaIngreBuscaRece(r->cabRece, r->nomTipo);
-        printf("Número de recetas en este tipo: %d\n", cont);
-        r = r->sigTipo;
+        lr = r->cabRece;
+        while(lr)
+        {
+            li = lr->cabIngre;
+            int contLi = 0;
+            while(li)
+            {
+                printf("%s\n", li->nomIngre);
+                contLi++;
+                li = li->sigIngre;
+            }
+            printf("%d\n", contLi);
+            lr = lr->sigRece;
+        }
     }
 }
 
 /* Función para encontrar el nombre del Tipo de receta con Mas Recetas(TMR) */
 void encuentraTMR(RECETARIO r, char *nomTMR)
 {
-    int cont, contTMR = 0;
-    while (r) 
+    int tmr = 0;
+    LISTA_RECE lr;
+    while(r)
     {
-        cont = 0;
-        cont = cuentaRecetas(r, r->nomTipo);
-        if (cont > contTMR) 
+        int cont = 0;
+        lr= r->cabRece;
+        while(lr)
         {
-            contTMR = cont;
+            cont++;
+            lr=lr->sigRece;
+        }
+        if(cont > tmr)
+        {
             strcpy(nomTMR, r->nomTipo);
         }
         r = r->sigTipo;
     }
 }
 
-/* Función para encontrar el nombre de la Receta con Mas Ingredientes(RMI)
+/* Función para encontrar el nombre de la Receta con Mas Ingredientes(RMI) 
 así como también el tipo al que pertenece */
 void encuentraRMI(RECETARIO r, char *tipoRMI, char *nomRMI)
 {
-    int cont, contRMI = 0;
-    LISTA_RECE auxRece;
-    while (r) 
+    char tipo[30];
+    char nom[30];
+    int MI = 0;
+    LISTA_RECE lr;
+    LISTA_INGRE li;
+    while(r)
     {
-        cont = 0;
-        auxRece = r->cabRece;
-        while (auxRece) 
+        lr = r->cabRece;
+        
+        while(lr)
         {
-            cont = cuentaIngreBuscaRece(auxRece, auxRece->nomRece);
-            if (cont > contRMI) 
+            li = lr->cabIngre;
+            int temp = 0;
+            
+            while(li)
             {
-                contRMI = cont;
-                strcpy(tipoRMI, r->nomTipo);
-                strcpy(nomRMI, auxRece->nomRece);
+                temp++;
+                li = li->sigIngre;
             }
-            auxRece = auxRece->sigRece;
+            
+            if(temp > MI)
+            {
+                MI = temp;
+                strcpy(tipo, r->nomTipo);
+                strcpy(nom, lr->nomRece);
+            }
+            
+            lr = lr->sigRece;
         }
         r = r->sigTipo;
     }
+    strcpy(tipoRMI, tipo);
+    strcpy(nomRMI, nom);
+    printf("%s %s %d", tipoRMI, nomRMI, MI);
 }
 
 /* Función para contar el número de recetas que usan un ingrediente */
 int cuentaReceIngre(RECETARIO r, char *ingre)
 {
-    int cont = 0;
-    LISTA_RECE auxRece;
-    LISTA_INGRE auxIngre;
-    while (r)
+    int numR = 0;
+    LISTA_RECE lr;
+    LISTA_INGRE li;
+    while(r)
     {
-        auxRece = r->cabRece;
-        while (auxRece)
+        lr =  r->cabRece;
+        while(lr)
         {
-            auxIngre = auxRece->cabIngre;
-            while (auxIngre)
+            li = lr->cabIngre;
+            while(li)
             {
-                if (strcmp(auxIngre->nomIngre, ingre) == 0)
-                    cont++;
-                auxIngre = auxIngre->sigIngre;
+                if(strcmp(li->nomIngre, ingre)==0)
+                numR++;
+                li = li->sigIngre;   
             }
-            auxRece = auxRece->sigRece;
+            lr = lr->sigRece;
         }
         r = r->sigTipo;
     }
-    return (cont);
+    return(numR);
 }
 
 /* Función para elimina un ingrediente, despues de haber encontrado su receta
 y tipo al que pertenece */
 int eliminaIngre(LISTA_INGRE *li, char *ingre)
 {
-    int res;
-    LISTA_INGRE aux;
-    if (*li && strcmp((*li)->nomIngre, ingre) == 0)
+    int res = 0;
+    LISTA_INGRE ant, temp;
+    while(*li)
     {
-        aux = *li;
+        ant = *li;
         *li = (*li)->sigIngre;
-        free(aux);
+        
+        if(*li == ant && strcmp((*li)->nomIngre, ingre)==0)
+        {
+            free(li);
+            res = 1;
+        }    
+        else if((*li)->sigIngre == NULL)
+        {
+                temp = *li;
+                ant->sigIngre = NULL;
+                free(temp);
+                res = 1;
+        }
+        ant->sigIngre = (*li)->sigIngre;
         res = 1;
-    } else if (*li && strcmp((*li)->nomIngre, ingre) > 0)
-        res = eliminaIngre(&(*li)->sigIngre, ingre);
-    else
-        res = 0;
-    return (res);
+    }
+    return(res);
 }
 
 /* Función para buscar la receta a la que pertenece el ingrediente a eliminar*/
 int eliminaIngreBuscaRece(LISTA_RECE lr, char *rece, char *ingre)
 {
-    int res;
-    if (lr && strcmp(lr->nomRece, rece) == 0)
-        res = eliminaIngre(&lr->cabIngre, ingre);
-    else if (lr && strcmp(lr->nomRece, rece) > 0)
-        res = eliminaIngreBuscaRece(lr->sigRece, rece, ingre);
-    else
-        res = 0;
-    return (res);
+    int res = 0;
+    LISTA_INGRE li;
+    
+    while(lr)
+    {
+        if(strcmp(lr->nomRece, rece)==0)
+        {
+            li = lr->cabIngre;
+            while(li)
+            {
+                if(strcmp(li->nomIngre, ingre)==0)
+                {
+                    eliminaIngre(&li,ingre);
+                    res = 1;
+                }    
+                li = li->sigIngre;    
+            }
+        }
+        lr = lr->sigRece;
+    }
+    return(res);
 }
 
 /* Esta función busca el tipo de receta, al que pertenece la receta del
 ingrediente a eliminar */
 int eliminaIngrediente(RECETARIO r, char *tipo, char *rece, char *ingre)
 {
-    int res;
-    if (r && strcmp(r->nomTipo, tipo) == 0)
-        res = eliminaIngreBuscaRece(r->cabRece, rece, ingre);
-    else if (r && strcmp(r->nomTipo, tipo) > 0)
-        res = eliminaIngrediente(r->sigTipo, tipo, rece, ingre);
-    else
-        res = 0;
-    return (res);
+    int res = 0;
+    LISTA_RECE lr;
+    LISTA_INGRE li;
+    while(r)
+    {
+        if(strcmp(r->nomTipo, tipo)==0)
+        {
+            lr = r->cabRece;
+            while(lr)
+            {
+                if(strcmp(lr->nomRece, rece)==0)
+                {
+                    li = lr->cabIngre;
+                    while(li)
+                    {
+                        if(strcmp(li->nomIngre, ingre)==0)
+                        {
+                            eliminaIngre(&li, ingre);
+                            res = 1;
+                        }
+                        li = li->sigIngre;
+                    }
+                }
+                lr = lr->sigRece;
+            }
+        }
+        r = r->sigTipo;
+    }
+    return(res);
 }
 
 /* Función para eliminar todos los ingredientes de una receta */
 void eliminaIngredientes(LISTA_INGRE *li)
 {
-    LISTA_INGRE aux;
-    while (*li) 
+    while(*li)
     {
-        aux = *li;
-        *li = (*li)->sigIngre;
-        free(aux);
+        char aux[30];
+        strcpy(aux, (*li)->nomIngre);
+        eliminaIngre(li, aux);
     }
 }
 
 /* Función para buscar una receta y poder eliminar sus ingredientes */
 int eliminaXreceta(LISTA_RECE *lr, char *rece)
 {
-    int res;
-    if (*lr && strcmp((*lr)->nomRece, rece) == 0) 
+    int res = 0; 
+    while(*lr)
     {
-        eliminaIngredientes(&(*lr)->cabIngre);
+        if(strcmp((*lr)->nomRece, rece)==0)
+        {
+            eliminaIngredientes(&(*lr)->cabIngre);
+            res = 1;
+        }
         *lr = (*lr)->sigRece;
-        res = 1;
-    } else if (*lr && strcmp((*lr)->nomRece, rece) > 0)
-        res = eliminaXreceta(&(*lr)->sigRece, rece);
-    else
-        res = 0;
-    return (res);
+    }
+    return(res);
 }
 
 /* Función para buscar tipo de la receta a eliminar */
 int eliminaReceta(RECETARIO r, char *tipo, char *rece)
 {
-    int res;
-    if (r && strcmp(r->nomTipo, tipo) == 0)
-        res = eliminaXreceta(&(r->cabRece), rece);
-    else if (r && strcmp(r->nomTipo, tipo) < 0)
-        res = eliminaReceta(r->sigTipo, tipo, rece);
-    else
-        res = 0;
-    return (res);
+    int res = 0;
+    while(r)
+    {
+        if(strcmp(r->nomTipo, tipo)==0)
+        {
+            eliminaXreceta(&(r->cabRece), rece);
+            res = 1;
+        }
+        r = r->sigTipo;
+    }
+    return(res);
 }
 
 /* Funciòn para eliminar las todas las recetas de un tipo, eliminando
@@ -725,44 +845,33 @@ previamente todos los ingredientes
 */
 void eliminaRecetas(LISTA_RECE lr)
 {
-    LISTA_RECE aux;
-    while (lr) 
+    while(lr)
     {
         eliminaIngredientes(&(lr->cabIngre));
-        aux = lr;
-        lr = lr->sigRece;
-        free(aux);
     }
 }
 
 /* Función para eliminar un tipo de receta */
 int eliminaTipo(RECETARIO *r, char *tipo)
 {
-    int res;
-    RECETARIO aux;
-    if (*r && strcmp((*r)->nomTipo, tipo) == 0)
+    int res = 0;
+    while(*r)
     {
-        eliminaRecetas((*r)->cabRece);
-        aux = *r;
+        if(strcmp((*r)->nomTipo, tipo)==0)
+        {
+            eliminaRecetas((*r)->cabRece);
+            res = 1;
+        }
         *r = (*r)->sigTipo;
-        free(aux);
-        res = 1;
-    } else if (*r && strcmp((*r)->nomTipo, tipo) > 0)
-        res = eliminaTipo(&(*r)->sigTipo, tipo);
-    else
-        res = 0;
-    return (res);
+    }
+    return(res);
 }
 
 /* Función para eliminar un recetario completo */
 void eliminaRecetario(RECETARIO *r)
 {
-    RECETARIO aux;
-    while (*r)
+    while(*r)
     {
-        eliminaRecetas((*r)->cabRece);
-        aux = *r;
-        *r = (*r)->sigTipo;
-        free(aux);
+        eliminaTipo(r, (*r)->nomTipo);
     }
 }
