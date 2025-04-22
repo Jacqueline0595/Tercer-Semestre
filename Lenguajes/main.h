@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define STRING_LENGHT 100
+#define STRING_LENGHT 50
 
 typedef struct Register
 {
@@ -49,15 +49,10 @@ enum
 void printMainMenu();
 void processUserSelection();
 
-FILE * CreateFile(const char* fileName);
-FILE * OpenFile(const char* fileName);
-REGISTER createNewDataBlock();
+void printDictionaryMenu();
+void processInputDictonary(char dictionary[]);
 
-void processInputDictonary();
-void printDictionaryMenu(); // Data dictionary menu
-
-
-void processInputEntity();
 void printEntityMenu();
+void processInputEntity();
 
-int openDataDictionary(const char * fileName);
+void printDictionary(FILE *dataFile);

@@ -17,7 +17,7 @@ void printMainMenu()
 
 void processUserSelection()
 {
-    FILE *dataFile = NULL;
+    FILE *dataFile;
     int userSelection;
     long num = empty;
     char name[ENTITY_NAME_LENGHT];
@@ -55,7 +55,7 @@ void processUserSelection()
         }
         fclose(dataFile);
         printf("\t We're going to the file...\n");
-        processInputDictonary();
+        processInputDictonary(name);
     } while(userSelection != EXIT);
 }
 
@@ -70,15 +70,21 @@ void printDictionaryMenu()
     printf("--- %d Exit \n", RETURN);
 }
 
-void processInputDictonary()
+void processInputDictonary(char dictionary[])
 {
+    FILE *dataFile = fopen(dataFile, "+rb");
     int userSelec;
+    long dirEntity;
+    char name[ENTITY_NAME_LENGHT];
+    ENTITY newEntity, entityy;
+
     do{
         printDictionaryMenu();
         scanf("%d", &userSelec);
         switch(userSelec)
         {
             case PRINT:
+                printDictionary(dataFile);
             break;
             case CREATE_ENTITY:
             break;
@@ -99,72 +105,16 @@ void processInputDictonary()
     } while(userSelec != RETURN);
 }
 
-FILE *CreateFile(const char *fileName)
+void printEntityMenu()
 {
-    printf("Creating a new file... \n");
-    FILE *dataFile = fopen(fileName, "wb+");
-
-    if(!dataFile)
-        fprintf(stderr, "Error creating file\n");
-
-    return dataFile;
+    printf("\t --------Entity menu-------- \n");
+    printf("--- %d Print data dictionary \n", PRINT2);
+    printf("--- %d Create an attribute \n", CREATE_ATTRIBUTE);
+    printf("--- %d Delete an attribute \n", DELETE_ATTRIBUTE);
+    printf("--- %d Modify an attribute \n", MODIFY_ATTRIBUTE);
+    printf("--- %d Select an attribute \n", SELECT_ATTRIBUTE);
+    printf("--- %d Exit \n", RETURN2);
 }
-
-FILE *OpenFile(const char *fileName)
-{
-    FILE *dataFile = fopen(fileName, "rb+");
-    if(dataFile)
-    {
-        //printf("Dictionary name: %s \n", fileName);
-    }
-    return dataFile;
-}
-
-REGISTER createNewDataBlock()
-{
-    REGISTER dataBlock;
-
-    fflush(stdin);
-    printf("Enter the name: ");
-    fgets(dataBlock.name, STRING_LENGHT, stdin);
-    // search the end of the line and insted put '\0'
-    // send the direction of '\n'
-    *(strchr(dataBlock.name, '\n')) = '\0';
-
-    /* printf("Enter the generation: ");
-    scanf("%d", &dataBlock.generation);
-    fflush(stdin);
-
-    printf("Enter the current semester: ");
-    scanf("%d", &dataBlock.semester); */
-
-    return dataBlock;
-}
-
-int openDataDictionary(const char * fileName)
-{
-    int operationResult = EXIT_SUCCESS;
-    long header;
-    FILE *file = fopen(fileName, "rb");
-
-    if(file)
-    {
-        if(fread(&header, sizeof(header), 1, file) != 1)
-        {
-            printf("Dictionary name: %s \n", fileName);
-            fprintf(stderr, "Failed to read data. \n");
-            operationResult = EXIT_FAILURE;
-        } else {
-            printf("The header value is: %ld \n", header);
-        }
-        fclose(file);
-    } else {
-        fprintf(stderr, "Failed to open the data dictionary \n");
-        operationResult = EXIT_FAILURE;
-    }
-    return operationResult;
-}
-
 
 void processInputEntity()
 {
@@ -194,13 +144,40 @@ void processInputEntity()
     } while(userSelec != RETURN2);
 }
 
-void printEntityMenu()
+void printDictionary(FILE *dataFile)
 {
-    printf("\t --------Entity menu-------- \n");
-    printf("--- %d Print data dictionary \n", PRINT2);
-    printf("--- %d Create an attribute \n", CREATE_ATTRIBUTE);
-    printf("--- %d Delete an attribute \n", DELETE_ATTRIBUTE);
-    printf("--- %d Modify an attribute \n", MODIFY_ATTRIBUTE);
-    printf("--- %d Select an attribute \n", SELECT_ATTRIBUTE);
-    printf("--- %d Exit \n", RETURN2);
+    ENTITY entityy;
+    long dir;
+
+    rewind(dataFile);
+    fread(&dir, sizeof(long), 1, dataFile);
+    if(dir == empty)
+        printf("Dictionary empty... \n\n");
+    else
+        while(dir != empty)
+        {
+            fseek(dataFile, dir, SEEK_SET);
+
+            fread(&entityy.name, ENTITY_NAME_LENGHT, 1, dataFile);
+            fread(&entityy.listDat, sizeof(long), 1, dataFile);
+            fread(&entityy.listAttr, sizeof(long), 1, dataFile);
+            fread(&dir, sizeof(long), 1, entityy.name);
+            printf("\n\t------ %s ------\n", entityy.name);
+
+            ATTRIBUTE attri;
+            long dir2;
+            printf("------ Attributes ------ \n");
+            if(entityy.listAttr == empty)
+                printf("There is not attributes \n");
+            else
+            {
+                dir2 = entityy.listAttr;
+                while(dir2 != empty)
+                {
+                    fseek(dataFile, dir2, SEEK_SET);
+
+                    fread(&attri.name, ENTITY_NAME_LENGHT, 1, dataFile);
+                }
+            }
+        }
 }
