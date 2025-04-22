@@ -182,7 +182,7 @@ void processInputDictonary(const char *dictionary)
                 printf("Name of the entity: ");
                 scanf("%s", name);
                 entityy = findEntity(dict, name);
-                if(entityy.sig == 0)
+                if (entityy.sig == 0)
                 {
                     printf("The entity wasn't found \n");
                     fclose(dict);
@@ -196,7 +196,6 @@ void processInputDictonary(const char *dictionary)
                     fclose(dict);
                 }
                 printf("Entering the entity attributes \n");
-                fclose(dict);
                 processInputEntity();
             break;
             case RETURN:
@@ -246,7 +245,14 @@ void printDictionary(FILE *dict)
                     fseek(dict, dir2, SEEK_SET);
 
                     fread(&attri.name, LENGHT, 1, dict);
-                    fread(attri)
+                    fread(&attri.isPrimary, sizeof(bool), 1, dict);
+                    fread(&attri.type, sizeof(int), 1, dict);
+                    fread(&attri.size, sizeof(int), 1, dict);
+                    fread(&attri.nextAttribute, sizeof(long), 1, dict);
+
+                    printf("Attribute: %s | Primary: %d | Type: %d | Size: %d\n", attri.name, attri.isPrimary, attri.type, attri.size);
+
+                    dir2 = attri.nextAttribute;
                 }
             }
         }
@@ -257,7 +263,7 @@ long createEntity(FILE *dict, ENTITIES newEntity)
     long dirEntity;
     fseek(dict, 0, SEEK_END);
     dirEntity = ftell(dict);
-    fwrite(newEntity.name, 50, 1, dict);
+    fwrite(newEntity.name, LENGHT, 1, dict);
     fwrite(&newEntity.listDat, sizeof(long), 1, dict);
     fwrite(&newEntity.listAttr, sizeof(long), 1, dict);
     fwrite(&newEntity.sig, sizeof(long), 1, dict);
@@ -267,7 +273,7 @@ long createEntity(FILE *dict, ENTITIES newEntity)
 void orderEntity(FILE *dict, long currentEntity, const char *newNameEntity, long newDirEntity)
 {
     long dirEntity = -1;
-    char currentEntityName[50];
+    char currentEntityName[LENGHT];
     long nextHeaderPointer;
 
     fseek(dict, currentEntity, SEEK_SET);
@@ -281,7 +287,7 @@ void orderEntity(FILE *dict, long currentEntity, const char *newNameEntity, long
     else
     {
         fseek(dict, dirEntity, SEEK_SET);
-        fread(&currentEntityName, sizeof(char), 50, dict);
+        fread(&currentEntityName, sizeof(char), LENGHT, dict);
         nextHeaderPointer = ftell(dict) + (sizeof(long) * 2);
 
         if (strcmp(currentEntityName, newNameEntity) < 0)
@@ -300,7 +306,7 @@ void orderEntity(FILE *dict, long currentEntity, const char *newNameEntity, long
             {
                 fseek(dict, currentEntity, SEEK_SET);
                 fwrite(&newDirEntity, sizeof(long), 1, dict);
-                fseek(dict, newDirEntity + 50 + (sizeof(long) * 2), SEEK_SET);
+                fseek(dict, newDirEntity + LENGHT + (sizeof(long) * 2), SEEK_SET);
                 fwrite(&dirEntity, sizeof(long), 1, dict);
             }
         }
@@ -366,7 +372,7 @@ ENTITIES findEntity(FILE *dict, char entityName[LENGHT])
 
     fread(&aux.sig, sizeof(long), 1, dict);
     fseek(dict, aux.sig, SEEK_SET);
-    fread(&currentEntity.name, sizeof(char), 50, dict);
+    fread(&currentEntity.name, sizeof(char), LENGHT, dict);
     currentEntity.listDat = ftell(dict);
     fread(&aux.listDat, sizeof(long), 1, dict);
     currentEntity.listAttr = ftell(dict);
@@ -377,7 +383,7 @@ ENTITIES findEntity(FILE *dict, char entityName[LENGHT])
     while (aux.sig != -1 && (strcmp(currentEntity.name, entityName)) != 0)
     {
         fseek(dict, aux.sig, SEEK_SET);
-        fread(&currentEntity.name, sizeof(char), 50, dict);
+        fread(&currentEntity.name, sizeof(char), LENGHT, dict);
         currentEntity.listDat = ftell(dict);
         fread(&aux.listDat, sizeof(long), 1, dict);
         currentEntity.listAttr = ftell(dict);
