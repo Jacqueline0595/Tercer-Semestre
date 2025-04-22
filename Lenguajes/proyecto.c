@@ -140,7 +140,7 @@ void printDictionaryMenu()
 
 void processInputDictonary(const char *dictionary)
 {
-    FILE *dict = fopen(dictionary, "+rb");
+    FILE *dict = fopen(dictionary, "rb+");
     int userSelec;
     long dirEntity;
     char name[LENGHT];
@@ -186,6 +186,7 @@ void processInputDictonary(const char *dictionary)
                 {
                     printf("The entity wasn't found \n");
                     fclose(dict);
+                    return;
                 }
                 fseek(dict, entityy.listDat, SEEK_SET);
                 fread(&dirEntity, sizeof(long), 1, dict);
@@ -245,6 +246,7 @@ void printDictionary(FILE *dict)
                     fseek(dict, dir2, SEEK_SET);
 
                     fread(&attri.name, LENGHT, 1, dict);
+                    fread(attri)
                 }
             }
         }
@@ -292,6 +294,7 @@ void orderEntity(FILE *dict, long currentEntity, const char *newNameEntity, long
             if (strcmp(currentEntityName, newNameEntity) == 0)
             {
                 printf("The entity already exists \n");
+                return;
             }
             else
             {
