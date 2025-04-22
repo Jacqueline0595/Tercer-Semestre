@@ -230,7 +230,8 @@ void printDictionary(FILE *dict)
             fread(&entity.listDat, sizeof(long), 1, dict);
             fread(&entity.listAttr, sizeof(long), 1, dict);
             fread(&dir, sizeof(long), 1, dict);
-            printf("\n\t------- %s ------- %d -------\n", entity.name, dir);
+            printf("\n\t------- %s -------\n", entity.name, dir);
+            printf("\n\t------- %ld -------\n", entity.name, dir);
 
             ATTRIBUTES attri;
             long dir2;
