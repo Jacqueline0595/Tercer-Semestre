@@ -144,7 +144,7 @@ void processInputDictonary(const char *dictionary)
     int userSelec;
     long dirEntity;
     char name[LENGHT];
-    ENTITIES newEntity, entityy;
+    ENTITIES newEntity, entity;
 
     do
     {
@@ -181,14 +181,14 @@ void processInputDictonary(const char *dictionary)
                 rewind(dict);
                 printf("Name of the entity: ");
                 scanf("%s", name);
-                entityy = findEntity(dict, name);
-                if (entityy.sig == 0)
+                entity = findEntity(dict, name);
+                if (entity.sig == 0)
                 {
                     printf("The entity wasn't found \n");
                     fclose(dict);
                     return;
                 }
-                fseek(dict, entityy.listDat, SEEK_SET);
+                fseek(dict, entity.listDat, SEEK_SET);
                 fread(&dirEntity, sizeof(long), 1, dict);
                 if(dirEntity != empty)
                 {
@@ -230,7 +230,7 @@ void printDictionary(FILE *dict)
             fread(&entity.listDat, sizeof(long), 1, dict);
             fread(&entity.listAttr, sizeof(long), 1, dict);
             fread(&dir, sizeof(long), 1, dict);
-            printf("\n\t------ %s ------\n", entity.name);
+            printf("\n\t------- %s ------- %d -------\n", entity.name, dir);
 
             ATTRIBUTES attri;
             long dir2;
