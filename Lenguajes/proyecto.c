@@ -55,7 +55,7 @@ enum
 void printMainMenu();
 void processUserSelection();
 
-void printDictionaryMenu();
+void printDictionaryMenu(const char *dictionary);
 void processInputDictonary(const char *dictionary);
 void printDictionary(FILE *dict);
 long createEntity(FILE *dict, ENTITIES newEntity);
@@ -64,7 +64,7 @@ int deleteEntity(FILE *dict, char name[LENGHT]);
 ENTITIES findEntity(FILE *dict, char entityName[LENGHT]);
 void modifyEntity(FILE *dict, char name[LENGHT]);
 
-void printEntityMenu();
+void printEntityMenu(ENTITIES entity);
 void processInputEntity();
 
 int main()
@@ -88,48 +88,65 @@ void processUserSelection()
     long num = empty;
     char name[LENGHT];
 
-    printMainMenu();
-    scanf("%d", &userSelection);
-
-    switch (userSelection)
+    do 
     {
-        case NEW_FILE:
-            printf("Name of the dictionary: ");
-            scanf("%s", name);
-            if (!(dictionary = fopen(name, "wb+")))
-            {
-                printf("File didn't found\n");
-                processUserSelection();
-            }
-            else
+        printMainMenu();
+        scanf("%d", &userSelection);
+
+        switch(userSelection)
+        {
+            case NEW_FILE:
+                printf("Name of the dictionary: ");
+                scanf("%s", name);
+
+                dictionary = fopen(name, "wb+");
+                if (!dictionary)
+                {
+                    system("cls");
+                    printf("Couldn't create the file.\n");
+                    break;
+                }
+
                 fwrite(&num, sizeof(long), 1, dictionary);
-        break;
-        case OPEN_FILE:
-            printf("Name of the dictionary: ");
-            scanf("%s", name);
-            if (!(dictionary = fopen(name, "rb+")))
-            {
-                printf("File didn't found\n");
-                processUserSelection();
-            }
-        break;
-        case EXIT:
-            printf("Ending program, see u later \n");
-            exit(0);
-        break;
-        default:
-            printf("Wrong option \n");
-            processUserSelection();
-        break;
-    }
-    fclose(dictionary);
-    printf("\t We're going to the file...\n");
-    processInputDictonary(name);
+                fclose(dictionary);
+                printf("We're going to the file...\n\n");
+                processInputDictonary(name);
+            break;
+
+            case OPEN_FILE:
+                printf("Name of the dictionary: ");
+                scanf("%s", name);
+
+                dictionary = fopen(name, "rb+");
+                if (!dictionary)
+                {
+                    system("cls");
+                    printf("File not found.\n");
+                    break;
+                }
+
+                fclose(dictionary);
+                printf("We're going to the file...\n\n");
+                processInputDictonary(name);
+            break;
+
+            case EXIT:
+                printf("Ending program, see u later \n");
+                exit(0);
+            break;
+
+            default:
+                system("cls");
+                printf("Wrong option. Try again.\n");
+            break;
+        }
+
+    } while(userSelection != EXIT);
 }
 
-void printDictionaryMenu()
+void printDictionaryMenu(const char *dictionary)
 {
-    printf("\t --------Dictionary menu-------- \n");
+    printf("\n\n\t --------%s menu-------- \n", dictionary);
     printf("--- %d Print data dictionary \n", PRINT);
     printf("--- %d Create an entity \n", CREATE_ENTITY);
     printf("--- %d Delete an entity \n", DELETE_ENTITY);
@@ -148,13 +165,14 @@ void processInputDictonary(const char *dictionary)
 
     do
     {
-        printDictionaryMenu();
+        printDictionaryMenu(dictionary);
         scanf("%d", &userSelec);
         switch(userSelec)
         {
             case PRINT:
                 printDictionary(dict);
             break;
+
             case CREATE_ENTITY:
                 printf("Name: ");
                 scanf("%s", newEntity.name);
@@ -163,7 +181,9 @@ void processInputDictonary(const char *dictionary)
                 newEntity.sig = empty;
                 dirEntity = createEntity(dict, newEntity);
                 orderEntity(dict, 0, newEntity.name, dirEntity);
+                printf("Added to %d \n", dirEntity);
             break;
+
             case DELETE_ENTITY:
                 printf("Name: ");
                 scanf("%s", name);
@@ -172,37 +192,45 @@ void processInputDictonary(const char *dictionary)
                 else
                     printf("Couldn't be deleted");
             break;
+
             case MODIFY_ENTITY:
                 printf("Name: ");
                 scanf("%s", name);
                 modifyEntity(dict, name);
             break;
+
             case SELECT_ENTITY:
                 rewind(dict);
                 printf("Name of the entity: ");
                 scanf("%s", name);
                 entity = findEntity(dict, name);
+
                 if (entity.sig == 0)
                 {
                     printf("The entity wasn't found \n");
                     fclose(dict);
                     return;
                 }
+
                 fseek(dict, entity.listDat, SEEK_SET);
                 fread(&dirEntity, sizeof(long), 1, dict);
+
                 if(dirEntity != empty)
                 {
                     printf("The entity already has data \n");
                     fclose(dict);
                 }
+
                 printf("Entering the entity attributes \n");
                 processInputEntity();
             break;
+
             case RETURN:
                 fclose(dict);
                 printf("Back to the main menu \n");
                 processUserSelection();
             break;
+
             default:
                 printf("Wrong option \n");
             break;
@@ -230,12 +258,11 @@ void printDictionary(FILE *dict)
             fread(&entity.listDat, sizeof(long), 1, dict);
             fread(&entity.listAttr, sizeof(long), 1, dict);
             fread(&dir, sizeof(long), 1, dict);
-            printf("\n\t------- %s -------\n", entity.name, dir);
-            printf("\n\t------- %ld -------\n", entity.name, dir);
+            printf("\n\t------- %s %d -------\n", entity.name, dir);
 
             ATTRIBUTES attri;
             long dir2;
-            printf("------ Attributes ------ \n");
+            printf("\t\t------ Attributes ------ \n");
             if(entity.listAttr == empty)
                 printf("There is not attributes \n");
             else
@@ -438,9 +465,10 @@ void modifyEntity(FILE *dict, char name[LENGHT])
 }
 
 
-void printEntityMenu()
+
+void printEntityMenu(ENTITIES entity)
 {
-    printf("\t --------Entity menu-------- \n");
+    printf("\t -------- %s menu -------- \n", entity.name);
     printf("--- %d Print data dictionary \n", PRINT2);
     printf("--- %d Create an attribute \n", CREATE_ATTRIBUTE);
     printf("--- %d Delete an attribute \n", DELETE_ATTRIBUTE);
@@ -449,11 +477,13 @@ void printEntityMenu()
     printf("--- %d Exit \n", RETURN2);
 }
 
-void processInputEntity()
+void processInputEntity(char *dict, ENTITIES entity)
 {
+    FILE *dictionary = fopen(dict, "rb+");
     int userSelec;
+    //char name[LENGHT];
     do{
-        printEntityMenu();
+        printEntityMenu(entity);
         scanf("%d", &userSelec);
         switch(userSelec)
         {
@@ -475,4 +505,5 @@ void processInputEntity()
             break;
         }
     } while(userSelec != RETURN2);
+    fclose(dictionary);
 }
