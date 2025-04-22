@@ -65,7 +65,7 @@ ENTITIES findEntity(FILE *dict, char entityName[LENGHT]);
 void modifyEntity(FILE *dict, char name[LENGHT]);
 
 void printEntityMenu(ENTITIES entity);
-void processInputEntity();
+void processInputEntity(const char *dict, ENTITIES entity);
 
 int main()
 {
@@ -102,7 +102,7 @@ void processUserSelection()
                 dictionary = fopen(name, "wb+");
                 if (!dictionary)
                 {
-                    system("cls");
+                    /* system("cls"); */
                     printf("Couldn't create the file.\n");
                     break;
                 }
@@ -120,7 +120,7 @@ void processUserSelection()
                 dictionary = fopen(name, "rb+");
                 if (!dictionary)
                 {
-                    system("cls");
+                    /* system("cls"); */
                     printf("File not found.\n");
                     break;
                 }
@@ -136,7 +136,7 @@ void processUserSelection()
             break;
 
             default:
-                system("cls");
+                /* system("cls"); */
                 printf("Wrong option. Try again.\n");
             break;
         }
@@ -146,7 +146,7 @@ void processUserSelection()
 
 void printDictionaryMenu(const char *dictionary)
 {
-    printf("\n\n\t --------%s menu-------- \n", dictionary);
+    printf("\n\n\t -------- %s menu-------- \n", dictionary);
     printf("--- %d Print data dictionary \n", PRINT);
     printf("--- %d Create an entity \n", CREATE_ENTITY);
     printf("--- %d Delete an entity \n", DELETE_ENTITY);
@@ -170,10 +170,12 @@ void processInputDictonary(const char *dictionary)
         switch(userSelec)
         {
             case PRINT:
+                /* system("cls"); */
                 printDictionary(dict);
             break;
 
             case CREATE_ENTITY:
+                /* system("cls"); */
                 printf("Name: ");
                 scanf("%s", newEntity.name);
                 newEntity.listAttr = empty;
@@ -181,25 +183,31 @@ void processInputDictonary(const char *dictionary)
                 newEntity.sig = empty;
                 dirEntity = createEntity(dict, newEntity);
                 orderEntity(dict, 0, newEntity.name, dirEntity);
-                printf("Added to %d \n", dirEntity);
+                printf("Added to %ld \n", dirEntity);
             break;
 
             case DELETE_ENTITY:
+                /* system("cls"); */
                 printf("Name: ");
                 scanf("%s", name);
                 if(deleteEntity(dict, name))
                     printf("Removed successfully \n");
                 else
+                {
+                    /* system("cls"); */
                     printf("Couldn't be deleted");
+                }
             break;
 
             case MODIFY_ENTITY:
+                /* system("cls"); */
                 printf("Name: ");
                 scanf("%s", name);
                 modifyEntity(dict, name);
             break;
 
             case SELECT_ENTITY:
+                /* system("cls"); */
                 rewind(dict);
                 printf("Name of the entity: ");
                 scanf("%s", name);
@@ -207,6 +215,7 @@ void processInputDictonary(const char *dictionary)
 
                 if (entity.sig == 0)
                 {
+                    /* system("cls"); */
                     printf("The entity wasn't found \n");
                     fclose(dict);
                     return;
@@ -222,7 +231,7 @@ void processInputDictonary(const char *dictionary)
                 }
 
                 printf("Entering the entity attributes \n");
-                processInputEntity();
+                processInputEntity(dictionary, entity);
             break;
 
             case RETURN:
@@ -232,6 +241,7 @@ void processInputDictonary(const char *dictionary)
             break;
 
             default:
+                /* system("cls"); */
                 printf("Wrong option \n");
             break;
         }
@@ -258,7 +268,7 @@ void printDictionary(FILE *dict)
             fread(&entity.listDat, sizeof(long), 1, dict);
             fread(&entity.listAttr, sizeof(long), 1, dict);
             fread(&dir, sizeof(long), 1, dict);
-            printf("\n\t------- %s %d -------\n", entity.name, dir);
+            printf("\n\t------- %s %ld -------\n", entity.name, dir);
 
             ATTRIBUTES attri;
             long dir2;
@@ -341,7 +351,6 @@ void orderEntity(FILE *dict, long currentEntity, const char *newNameEntity, long
     }
 }
 
-// Cambiar nombre de las variables
 int deleteEntity(FILE *dict, char name[LENGHT])
 {
     ENTITIES enti;
@@ -464,7 +473,7 @@ void modifyEntity(FILE *dict, char name[LENGHT])
     printf("Successfully modified\n");
 }
 
-
+// Parte de atributos
 
 void printEntityMenu(ENTITIES entity)
 {
@@ -477,7 +486,7 @@ void printEntityMenu(ENTITIES entity)
     printf("--- %d Exit \n", RETURN2);
 }
 
-void processInputEntity(char *dict, ENTITIES entity)
+void processInputEntity(const char *dict, ENTITIES entity)
 {
     FILE *dictionary = fopen(dict, "rb+");
     int userSelec;
