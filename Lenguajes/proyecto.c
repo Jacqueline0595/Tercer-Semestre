@@ -268,11 +268,12 @@ void printDictionary(FILE *dict)
             fread(&entity.listDat, sizeof(long), 1, dict);
             fread(&entity.listAttr, sizeof(long), 1, dict);
             fread(&dir, sizeof(long), 1, dict);
-            printf("\n\t------- %s %ld -------\n", entity.name, dir);
+            printf("\n------- %s %ld -------\n", entity.name, dir);
+            printf("| %ld | %ld | \n", entity.listDat, entity.listAttr);
 
             ATTRIBUTES attri;
             long dir2;
-            printf("\t\t------ Attributes ------ \n");
+            printf("\t------ Attributes ------ \n");
             if(entity.listAttr == empty)
                 printf("There is not attributes \n");
             else
@@ -288,7 +289,7 @@ void printDictionary(FILE *dict)
                     fread(&attri.size, sizeof(int), 1, dict);
                     fread(&attri.nextAttribute, sizeof(long), 1, dict);
 
-                    printf("Attribute: %s | Primary: %d | Type: %d | Size: %d\n", attri.name, attri.isPrimary, attri.type, attri.size);
+                    printf("Attribute: %s | Primary: %d | Type: %d | Size: %d \n", attri.name, attri.isPrimary, attri.type, attri.size);
 
                     dir2 = attri.nextAttribute;
                 }
@@ -507,7 +508,7 @@ void processInputEntity(const char *dict, ENTITIES entity)
             case SELECT_ATTRIBUTE:
             break;
             case RETURN2:
-                printf("Back to the dictionary menu \n");
+                printf("Back to the %s menu \n", dict);
             break;
             default:
                 printf("Wrong option \n");
