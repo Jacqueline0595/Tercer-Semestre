@@ -183,7 +183,7 @@ void processInputDictonary(const char *dictionary)
                 newEntity.sig = empty;
                 dirEntity = createEntity(dict, newEntity);
                 orderEntity(dict, 0, newEntity.name, dirEntity);
-                printf("Added to %ld \n", dirEntity);
+                printf("Added to %ld \n", newEntity.sig);
             break;
 
             case DELETE_ENTITY:
