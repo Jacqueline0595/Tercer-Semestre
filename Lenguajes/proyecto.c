@@ -275,7 +275,7 @@ void printDictionary(FILE *dict)
             long dir2;
             printf("\t------ Attributes ------ \n");
             if(entity.listAttr == empty)
-                printf("There is not attributes \n");
+                printf("\tThere is not attributes \n");
             else
             {
                 dir2 = entity.listAttr;
@@ -289,7 +289,7 @@ void printDictionary(FILE *dict)
                     fread(&attri.size, sizeof(int), 1, dict);
                     fread(&attri.nextAttribute, sizeof(long), 1, dict);
 
-                    printf("Attribute: %s | Primary: %d | Type: %d | Size: %d \n", attri.name, attri.isPrimary, attri.type, attri.size);
+                    printf("\tAttribute: %s | Primary: %d | Type: %d | Size: %d \n", attri.name, attri.isPrimary, attri.type, attri.size);
 
                     dir2 = attri.nextAttribute;
                 }
