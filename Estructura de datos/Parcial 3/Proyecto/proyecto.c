@@ -151,7 +151,6 @@ int main()
     evaluar();    
 }
 
-
 /* Función para inicualizar la estructura principal */
 void iniRecetario(RECETARIO *r)
 {
@@ -261,7 +260,6 @@ int insRece(LISTA_RECE *lr, char *rece)
     return (res);
   }
   
-
 /* Inserta receta: Función para buscar el tipo de la receta */
 int insReceta(RECETARIO r, char *tipo, char *rece)
 {
@@ -478,7 +476,6 @@ int cuentaRece(LISTA_RECE lr)
 }
 
 /* Cuenta Recetas: Función para buscar el tipo de las recetas a contar */
-
 int cuentaRecetas(RECETARIO r, char *tipo)
 {
     int cont = 0;
@@ -726,7 +723,7 @@ previamente todos los ingredientes
 void eliminaRecetas(LISTA_RECE lr)
 {
     LISTA_RECE aux;
-    while (lr) 
+    while(lr) 
     {
         eliminaIngredientes(&(lr->cabIngre));
         aux = lr;
