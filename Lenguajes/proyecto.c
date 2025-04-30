@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #define empty -1
 #define LENGHT 50
 
@@ -19,11 +18,14 @@ typedef struct entity
 typedef struct atribute
 {
     char name[LENGHT];
-    bool isPrimary;
+    int isPrimary;
     int type;
     int size;
-    long nextAttribute;
+    int next;
 } ATTRIBUTES;
+
+// type:{0:Bite, 1:Integer, 2:Float, 3:Char, 4:String}
+// Size: *Bit=1, *Integer=4, *Float=8, *Char=1, String=? (Ask)
 
 enum
 {
@@ -284,14 +286,14 @@ void printDictionary(FILE *dict)
                     fseek(dict, dir2, SEEK_SET);
 
                     fread(&attri.name, LENGHT, 1, dict);
-                    fread(&attri.isPrimary, sizeof(bool), 1, dict);
+                    fread(&attri.isPrimary, sizeof(int), 1, dict);
                     fread(&attri.type, sizeof(int), 1, dict);
                     fread(&attri.size, sizeof(int), 1, dict);
-                    fread(&attri.nextAttribute, sizeof(long), 1, dict);
+                    fread(&attri.next, sizeof(long), 1, dict);
 
                     printf("\tAttribute: %s | Primary: %d | Type: %d | Size: %d \n", attri.name, attri.isPrimary, attri.type, attri.size);
 
-                    dir2 = attri.nextAttribute;
+                    dir2 = attri.next;
                 }
             }
         }
@@ -476,6 +478,13 @@ void modifyEntity(FILE *dict, char name[LENGHT])
 
 // Parte de atributos
 
+/*
+    - Solo puede existir un atributo primario por entidad
+    - No pueden exixtir dos (o más) veces el mismo nombre de atributo en una entidad
+    - AL momento de agregar datos, estos se ordenan por clave primaria
+    - Una vez que existen datos, LA ENTIDAD NO SE MODIFICA
+*/
+
 void printEntityMenu(ENTITIES entity)
 {
     printf("\t -------- %s menu -------- \n", entity.name);
@@ -516,4 +525,53 @@ void processInputEntity(const char *dict, ENTITIES entity)
         }
     } while(userSelec != RETURN2);
     fclose(dictionary);
+}
+
+long appendAttribute(FILE *dict, ATTRIBUTES newAttribute)
+{
+    long position = 0L;
+    const long nullPointer = -1L;
+    fseek(dict, 0, SEEK_END);
+    position = ftell(dict);
+
+    fwrite(newAttribute.name, sizeof(char), LENGHT, dict);
+    fwrite(&newAttribute.isPrimary, sizeof(int), 1, dict);
+    fwrite(&newAttribute.type, sizeof(int), 1, dict);
+    fwrite(&newAttribute.size, sizeof(int), 1, dict);
+    fwrite(&newAttribute.next, sizeof(int), 1, dict);
+
+    return position;
+}
+
+void reassingAtribute(FILE *dict, long currenPointer, ATTRIBUTES attribute, long newAttrDir)
+{
+    long attrDirection = -1L;
+    fseek(dict, currenPointer, SEEK_SET);
+    fread(&attrDirection, sizeof(long), 1, dict);
+    if(attrDirection == empty)
+    {
+        fseek(dict, currenPointer, SEEK_SET);
+        fwrite(&newAttrDir, sizeof(long), 1, dict);
+    }
+    else{
+        ATTRIBUTES aux;
+        fseek(dict, attrDirection, SEEK_SET);
+        fread();
+        if(strcmp(aux.name, attribute.name) == 0)
+            return 0;
+        if(strcmp(aux.name, attribute.name) < 0)
+        {
+            long nextAttibutePtr = ftell(dict) - sizeof(long);
+            reassingAtribute(dict, nextAttibutePtr, attribute, newAttrDir);
+        }
+        else
+        {
+            fseek(dict, currenPointer, SEEK_SET);
+            fwrite(&newAttrDir, sizeof(long), 1, dict);
+            fseek(dict, newAttrDir + sizeof(ATTRIBUTES) - sizeof(long), SEEK_SET);
+            fwrite(&attrDirection, sizeof(long), 1, dict);
+            return 1;
+        }
+    }
+
 }
