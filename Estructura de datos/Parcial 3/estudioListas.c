@@ -306,7 +306,6 @@ int eliminaEstudiante(Carrera cabCar, char *carrera, char *estudiante)
     while(cabCar && strcmp(carrera, cabCar->nombre) > 0)
         cabCar = cabCar->sigCarre;
     if(cabCar && strcmp(carrera, cabCar->nombre)==0)
-
     {
         aux = cabCar->cabEstu;
         while(aux && strcmp(estudiante, aux->nombre) > 0)
