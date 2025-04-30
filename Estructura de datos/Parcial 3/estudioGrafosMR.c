@@ -156,3 +156,57 @@ int verMasConocido(GRAFO_MR g)
     }
     return(mas);
 }
+
+int formanCamino(GRAFO_MR *g, int v1, int v2, int v3)
+{
+    int res = 0, cont1, cont2, cont3;
+
+    for(cont1 = 0; cont1 < g->cVer && v1 != *(g->vecVer + cont1); cont1++);
+    if(cont1 < g->cVer)
+    {
+        for(cont2 = 0; cont2 < g->cVer && v2 != *(g->vecVer + cont2); cont2++);
+        if(cont2 < g.cVer)
+        {
+            for(cont3 = 0; cont3 < g->cVer && v3 != *(g->vecVer + cont3); cont3++);
+                if(cont3 < g.cVer)
+                    res = *(*(g->matRel + cont1) + cont2) * *(*(g->matRel + cont2) + cont3) * *(*(g->matRel + cont3) + cont1);
+        }
+    }
+    
+    return res;
+}
+
+void contarRelacionesReciprocas(GRAFO_MR *g)
+{
+    int ren, col, cont;
+    for (ren = 0; ren < g.cVer; ren++)
+    {
+        cont = 0;
+        for (col = 0; col < g.cVer; col++)
+            if (ren != col) 
+                if ( *(*(g.matRel + ren) + col) != 0 && *(*(g.matRel + col) + ren) != 0 )
+                    cont++;
+
+        printf("Vertice %d tiene %d relaciones recíprocas. \n", *(g.vecVer + ren), cont);
+    }
+}
+
+int vectorFuente(GRAFO_MR *g, int vectFu)
+{
+    int cont1, cont2, cont3, res = 0;
+
+    for (cont1 = 0; cont1 < g.cVer && vectFu != *(g.vecVer + cont1); cont1++);
+    if (cont1 < g.cVer)
+    {
+        for (cont2 = 0; cont2 < g.cVer && *(*(g.matRel + cont1) + cont2) == 0; cont2++);
+        if (cont2 < g.cVer)
+        {
+            for (cont3 = 0; cont3 < g.cVer && *(*(g.matRel + cont3) + cont1) == 0; cont3++);
+            if (cont3 == g.cVer)
+                res = 1;
+        }
+    }
+
+    return res;
+}
+

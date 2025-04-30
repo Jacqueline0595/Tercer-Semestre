@@ -97,3 +97,34 @@ int insRelGrafoEN(GRAFO_EN g, int vo, int vd)
     }
     return(res);
 }
+
+int contVerRel(GRAFO_EN cab)
+{
+    int contV = 0, verCon = 0, rel = 0;
+    GRAFO_EN aux;
+    LTS_REL auxR;
+
+    aux = cab;
+    while(aux)
+    {
+        contV++;
+        aux = aux->sigVer;
+    }
+
+    aux = cab;
+    while(aux)
+    {
+        rel = 0;
+        auxR = aux->cabRel;
+        while(auxR)
+        {
+            if(auxR->verRel != aux) 
+                rel++;
+            auxR = auxR->sigRel;
+        }
+        if(rel == (contV-1))
+            verCon++;
+        aux = aux->sigVer;
+    }
+    return(verCon);
+}
