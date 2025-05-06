@@ -27,32 +27,33 @@ typedef struct atribute
 // type:{0:Bite, 1:Integer, 2:Float, 3:Char, 4:String}
 // Size: *Bit=1, *Integer=4, *Float=8, *Char=1, String=? (Ask)
 
-enum
-{
-    EXIT,
-    NEW_FILE,
-    OPEN_FILE
-}OPTION;
+enum MenuOption 
+{ 
+    EXIT, 
+    NEW_FILE, 
+    OPEN_FILE 
+};
 
-enum
-{
-    RETURN,
-    PRINT,
-    CREATE_ENTITY,
-    DELETE_ENTITY,
-    MODIFY_ENTITY,
-    SELECT_ENTITY
-}OPTIONEntity;
+enum EntityOption 
+{ 
+    RETURN, 
+    PRINT, 
+    CREATE_ENTITY, 
+    DELETE_ENTITY, 
+    MODIFY_ENTITY, 
+    SELECT_ENTITY 
+};
 
-enum
-{
-    RETURN2,
-    PRINT2,
-    CREATE_ATTRIBUTE,
-    DELETE_ATTRIBUTE,
-    MODIFY_ATTRIBUTE,
-    SELECT_ATTRIBUTE
-}OPTIONAttribute;
+enum AttributeOption 
+{ 
+    RETURN2, 
+    PRINT2, 
+    CREATE_ATTRIBUTE, 
+    DELETE_ATTRIBUTE, 
+    MODIFY_ATTRIBUTE, 
+    DATA_ATTRIBUTE 
+};
+
 
 void printMainMenu();
 void processUserSelection();
@@ -68,6 +69,10 @@ void modifyEntity(FILE *dict, char name[LENGHT]);
 
 void printEntityMenu(ENTITIES entity);
 void processInputEntity(const char *dict, ENTITIES entity);
+void printAttributes(FILE *dict, long listA);
+long appendAttribute(FILE *dict, ATTRIBUTES newAttribute);
+int reassingAttribute(FILE *dict, long currenPointer, ATTRIBUTES attribute, long newAttrDir);
+int removeAtribute(FILE *dict, long currentPointer, char attributeName[LENGHT]);
 
 int main()
 {
@@ -270,11 +275,12 @@ void printDictionary(FILE *dict)
             fread(&entity.listDat, sizeof(long), 1, dict);
             fread(&entity.listAttr, sizeof(long), 1, dict);
             fread(&dir, sizeof(long), 1, dict);
-            printf("\n------- %s %ld -------\n", entity.name, dir);
+            printf("\n------- %s %ld -------\n", entity.name, entity.sig);
             printf("| %ld | %ld | \n", entity.listDat, entity.listAttr);
 
             ATTRIBUTES attri;
             long dir2;
+
             printf("\t------ Attributes ------ \n");
             if(entity.listAttr == empty)
                 printf("\tThere is not attributes \n");
@@ -313,7 +319,7 @@ long createEntity(FILE *dict, ENTITIES newEntity)
 
 void orderEntity(FILE *dict, long currentEntity, const char *newNameEntity, long newDirEntity)
 {
-    long dirEntity = -1;
+    long dirEntity = empty;
     char currentEntityName[LENGHT];
     long nextHeaderPointer;
 
@@ -364,7 +370,7 @@ int deleteEntity(FILE *dict, char name[LENGHT])
         return 0;
 
     fread(&ptr, sizeof(long), 1, dict);
-    if (ptr == -1)
+    if (ptr == empty)
     {
         return 0; 
     }
@@ -385,7 +391,7 @@ int deleteEntity(FILE *dict, char name[LENGHT])
         return 1;
     }
 
-    while (ptr != -1 && strcmp(enti.name, name) != 0)
+    while (ptr != empty && strcmp(enti.name, name) != 0)
     {
         ant = ptrdir;
         fseek(dict, ptr, SEEK_SET); 
@@ -396,7 +402,7 @@ int deleteEntity(FILE *dict, char name[LENGHT])
         fread(&ptr, sizeof(long), 1, dict);
     }
 
-    if (ptr == -1 && strcmp(enti.name, name) != 0)
+    if (ptr == empty && strcmp(enti.name, name) != 0)
         return 0;
 
     fseek(dict, ant, SEEK_SET);
@@ -476,23 +482,24 @@ void modifyEntity(FILE *dict, char name[LENGHT])
     printf("Successfully modified\n");
 }
 
-// Parte de atributos
 
+// Parte de atributos
 /*
     - Solo puede existir un atributo primario por entidad
     - No pueden exixtir dos (o más) veces el mismo nombre de atributo en una entidad
     - AL momento de agregar datos, estos se ordenan por clave primaria
     - Una vez que existen datos, LA ENTIDAD NO SE MODIFICA
+    - Poner todo en mayusculas
 */
 
 void printEntityMenu(ENTITIES entity)
 {
     printf("\t -------- %s menu -------- \n", entity.name);
-    printf("--- %d Print data dictionary \n", PRINT2);
+    printf("--- %d Print attributes \n", PRINT2);
     printf("--- %d Create an attribute \n", CREATE_ATTRIBUTE);
     printf("--- %d Delete an attribute \n", DELETE_ATTRIBUTE);
     printf("--- %d Modify an attribute \n", MODIFY_ATTRIBUTE);
-    printf("--- %d Select an attribute \n", SELECT_ATTRIBUTE);
+    printf("--- %d Add data to the entity \n", DATA_ATTRIBUTE);
     printf("--- %d Exit \n", RETURN2);
 }
 
@@ -507,6 +514,7 @@ void processInputEntity(const char *dict, ENTITIES entity)
         switch(userSelec)
         {
             case PRINT2:
+                printAttributes(dictionary, entity.listAttr);
             break;
             case CREATE_ATTRIBUTE:
             break;
@@ -514,7 +522,7 @@ void processInputEntity(const char *dict, ENTITIES entity)
             break;
             case MODIFY_ATTRIBUTE:
             break;
-            case SELECT_ATTRIBUTE:
+            case DATA_ATTRIBUTE:
             break;
             case RETURN2:
                 printf("Back to the %s menu \n", dict);
@@ -525,6 +533,29 @@ void processInputEntity(const char *dict, ENTITIES entity)
         }
     } while(userSelec != RETURN2);
     fclose(dictionary);
+}
+
+void printAttributes(FILE *dict, long listA)
+{
+    ATTRIBUTES attri;
+    long dir;
+
+    fseek(dict, listA, SEEK_SET);
+    dir = listA;
+    if (dir == empty || listA == empty)
+        printf("\tThere aren't attibutes\n");
+    else
+        while (dir != empty)
+        {
+            fseek(dict, dir, SEEK_SET);
+
+            fread(&attri.name, LENGHT, 1, dict);
+            fread(&attri.isPrimary, sizeof(int), 1, dict);
+            fread(&attri.type, sizeof(int), 1, dict);
+            fread(&attri.size, sizeof(int), 1, dict);
+            fread(&dir, sizeof(long), 1, dict);
+            printf("\tAttribute: %s | Primary: %d | Type: %d | Size: %d \n", attri.name, attri.isPrimary, attri.type, attri.size);
+        }
 }
 
 long appendAttribute(FILE *dict, ATTRIBUTES newAttribute)
@@ -538,12 +569,12 @@ long appendAttribute(FILE *dict, ATTRIBUTES newAttribute)
     fwrite(&newAttribute.isPrimary, sizeof(int), 1, dict);
     fwrite(&newAttribute.type, sizeof(int), 1, dict);
     fwrite(&newAttribute.size, sizeof(int), 1, dict);
-    fwrite(&newAttribute.next, sizeof(int), 1, dict);
+    fwrite(&nullPointer, sizeof(long), 1, dict);
 
     return position;
 }
 
-void reassingAtribute(FILE *dict, long currenPointer, ATTRIBUTES attribute, long newAttrDir)
+int reassingAttribute(FILE *dict, long currenPointer, ATTRIBUTES attribute, long newAttrDir)
 {
     long attrDirection = -1L;
     fseek(dict, currenPointer, SEEK_SET);
@@ -556,7 +587,7 @@ void reassingAtribute(FILE *dict, long currenPointer, ATTRIBUTES attribute, long
     else{
         ATTRIBUTES aux;
         fseek(dict, attrDirection, SEEK_SET);
-        fread();
+        fread(&aux, sizeof(ATTRIBUTES), 1, dict);
         if(strcmp(aux.name, attribute.name) == 0)
             return 0;
         if(strcmp(aux.name, attribute.name) < 0)
@@ -573,5 +604,139 @@ void reassingAtribute(FILE *dict, long currenPointer, ATTRIBUTES attribute, long
             return 1;
         }
     }
-
 }
+
+void CreateAttribute(FILE *dict, ENTITIES currentEntity)
+{
+    ATTRIBUTES newAttribute;
+    int size;
+
+    printf("Name of the new attribute: \n");
+    scanf("%s", &newAttribute.name);
+    printf("Is it a primary key? \n");
+    scanf("%d", &newAttribute.isPrimary);
+    printf("Type of attribute? \n\t1)Bite \t2)Integer \t3)Float \t4)Char \t5)String");
+    scanf("%d", &newAttribute.type);
+
+    switch(newAttribute.type)
+    {
+        case 1:
+            newAttribute.size = 1;
+        break;
+
+        case 2:
+            newAttribute.size = sizeof(int);
+        break;
+
+        case 3:
+            newAttribute.size = sizeof(float);
+        break;
+
+        case 4:
+            newAttribute.size = sizeof(char);
+        break;
+
+        case 5:
+            printf("What size do you want? \n");
+            scanf("%d", &size);
+            newAttribute.size = sizeof(char) * size;
+        break;
+    }
+
+    newAttribute.next = empty;
+
+    long attributeDir = appendAttribute(dict, newAttribute);
+    reassingAttribute(dict, currentEntity.listAttr, attributeDir, newAttribute);
+}
+
+int eliminaAtributo(FILE *Diccionario, char nom[N], long cab)
+{
+    rewind(Diccionario);
+    if (!Diccionario)
+        return 0;
+
+    ATTRIBUTE atributo;
+    long ant, ptr, ptrdir;
+
+    fseek(Diccionario, cab, SEEK_SET);
+    fread(&ptr, sizeof(long), 1, Diccionario);
+
+    if (ptr == -1)
+    {
+        fclose(Diccionario);
+        return 0;
+    }
+
+    fseek(Diccionario, ptr, SEEK_SET);
+    fread(atributo.name, N, 1, Diccionario);
+    fread(&atributo.isPrimary, sizeof(bool), 1, Diccionario);
+    fread(&atributo.type, sizeof(long), 1, Diccionario);
+    fread(&atributo.size, sizeof(long), 1, Diccionario);
+    ptrdir = ftell(Diccionario);
+    fread(&ptr, sizeof(long), 1, Diccionario);
+
+
+    if (strcmp(atributo.name, nom) == 0)
+    {
+        fseek(Diccionario, cab, SEEK_SET);
+        fwrite(&ptr, sizeof(long), 1, Diccionario);
+        return 1;
+    }
+
+    while (ptr != -1 && strcmp(atributo.name, nom) != 0)
+    {
+        ant = ptrdir;
+        fseek(Diccionario, ptr, SEEK_SET);
+        fread(atributo.name, N, 1, Diccionario);
+        fread(&atributo.isPrimary, sizeof(bool), 1, Diccionario);
+        fread(&atributo.type, sizeof(long), 1, Diccionario);
+        fread(&atributo.size, sizeof(long), 1, Diccionario);
+        ptrdir = ftell(Diccionario);
+        fread(&ptr, sizeof(long), 1, Diccionario);
+    }
+
+    if (ptr == -1 && strcmp(atributo.name, nom) != 0)
+    {
+        return 0;
+    }
+
+    fseek(Diccionario, ant, SEEK_SET);
+    fwrite(&ptr, sizeof(long), 1, Diccionario);
+
+    return 1;
+}
+
+
+int removeAtribute(FILE *dict, long currentPointer, char attributeName[LENGHT])
+{
+    long attrDirection = empty;
+
+    fseek(dict, currentPointer, SEEK_SET);
+    fread(&currentPointer, sizeof(attrDirection), 1, dict);
+
+    if(attrDirection == empty)
+    {
+        return 0;
+    }
+    else
+    {
+        ATTRIBUTES aux;
+        long nextAttribute;
+
+        fseek(dict, attrDirection, SEEK_SET);
+        fread(&aux, sizeof(ATTRIBUTES), 1, dict);
+        nextAttribute = ftell(dict) - sizeof(long);
+
+        if(strcmp(aux.name, attributeName) == 0) 
+        {
+            fseek(dict, attrDirection, SEEK_SET);
+            fwrite(&aux.next, sizeof(long), 1, dict);
+            return 1;
+        }
+        else
+        {
+            return removeAtribute(dict, nextAttribute, attributeName);
+        }
+    }
+}
+

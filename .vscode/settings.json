@@ -65,7 +65,10 @@
     "complex": "c",
     "string.h": "c",
     "tAREA9.C": "cpp",
-    "stdbool.h": "c"
+    "stdbool.h": "c",
+    "chrono": "c",
+    "text_encoding": "c",
+    "typeindex": "c"
   },
   "python.testing.pytestArgs": [
     "Analisis"
