@@ -4,20 +4,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #define empty -1
-#define LENGHT 50
+#define LENGTH 50
 
 typedef struct entity
 {
-    char name[LENGHT];
+    char name[LENGTH];
     long listDat;
     long listAttr;
     long sig;
 } ENTITIES;
 
-typedef struct atribute
+typedef struct attribute
 {
-    char name[LENGHT];
+    char name[LENGTH];
     int isPrimary;
     int type;
     int size;
@@ -54,30 +55,47 @@ enum AttributeOption
     DATA_ATTRIBUTE 
 };
 
+void toUpperCase(char *strin);
 
+// ----- Main Menu -----
 void printMainMenu();
 void processUserSelection();
+
+// ----- Entity Menu -----
 
 void printDictionaryMenu(const char *dictionary);
 void processInputDictonary(const char *dictionary);
 void printDictionary(FILE *dict);
 long createEntity(FILE *dict, ENTITIES newEntity);
-void orderEntity(FILE *dict, long currentEntity, const char *newNameEntity, long newDirEntity);
-int deleteEntity(FILE *dict, char name[LENGHT]);
-ENTITIES findEntity(FILE *dict, char entityName[LENGHT]);
-void modifyEntity(FILE *dict, char name[LENGHT]);
+void orderEntity(FILE *dict, ENTITIES newEntity, long newDirEntity);
+int deleteEntity(FILE *dict, char name[LENGTH]);
+ENTITIES findEntity(FILE *dict, char entityName[LENGTH]);
+void modifyEntity(FILE *dict, char name[LENGTH]);
+
+// ----- Attribute Menu -----
 
 void printEntityMenu(ENTITIES entity);
 void processInputEntity(const char *dict, ENTITIES entity);
-void printAttributes(FILE *dict, long listA);
+/* void printAttributes(FILE *dict, long listA);
 long appendAttribute(FILE *dict, ATTRIBUTES newAttribute);
 int reassingAttribute(FILE *dict, long currenPointer, ATTRIBUTES attribute, long newAttrDir);
-int removeAtribute(FILE *dict, long currentPointer, char attributeName[LENGHT]);
+int removeAtribute(FILE *dict, long currentPointer, char attributeName[LENGTH]); */
+
+// ----- Main Menu -----
 
 int main()
 {
     processUserSelection();
     return 0;
+}
+
+void toUpperCase(char *strin)
+{
+    int length = strlen(strin);
+    for (int i = 0; i < length; i++)
+    {
+        strin[i] = toupper((unsigned char)strin[i]);
+    }
 }
 
 void printMainMenu()
@@ -93,7 +111,7 @@ void processUserSelection()
     FILE *dictionary;
     int userSelection;
     long num = empty;
-    char name[LENGHT];
+    char name[LENGTH];
 
     do 
     {
@@ -151,9 +169,11 @@ void processUserSelection()
     } while(userSelection != EXIT);
 }
 
+// ----- Entity Menu -----
+
 void printDictionaryMenu(const char *dictionary)
 {
-    printf("\n\n\t -------- %s menu-------- \n", dictionary);
+    printf("\n\n\t -------- %s menu -------- \n", dictionary);
     printf("--- %d Print data dictionary \n", PRINT);
     printf("--- %d Create an entity \n", CREATE_ENTITY);
     printf("--- %d Delete an entity \n", DELETE_ENTITY);
@@ -165,9 +185,14 @@ void printDictionaryMenu(const char *dictionary)
 void processInputDictonary(const char *dictionary)
 {
     FILE *dict = fopen(dictionary, "rb+");
+    if(!dict)
+    {
+        printf("Error opening the file.\n");
+        return;
+    }
     int userSelec;
     long dirEntity;
-    char name[LENGHT];
+    char name[LENGTH];
     ENTITIES newEntity, entity;
 
     do
@@ -184,19 +209,21 @@ void processInputDictonary(const char *dictionary)
             case CREATE_ENTITY:
                 /* system("cls"); */
                 printf("Name: ");
-                scanf("%s", newEntity.name);
+                scanf("%49s", newEntity.name);
+                toUpperCase(newEntity.name);
                 newEntity.listAttr = empty;
                 newEntity.listDat = empty;
                 newEntity.sig = empty;
                 dirEntity = createEntity(dict, newEntity);
-                orderEntity(dict, 0, newEntity.name, dirEntity);
+                orderEntity(dict, newEntity, dirEntity);
                 printf("Added to %ld \n", newEntity.sig);
             break;
 
             case DELETE_ENTITY:
                 /* system("cls"); */
                 printf("Name: ");
-                scanf("%s", name);
+                scanf("%49s", name);
+                toUpperCase(name);
                 if(deleteEntity(dict, name))
                     printf("Removed successfully \n");
                 else
@@ -209,7 +236,8 @@ void processInputDictonary(const char *dictionary)
             case MODIFY_ENTITY:
                 /* system("cls"); */
                 printf("Name: ");
-                scanf("%s", name);
+                scanf("%49s", name);
+                toUpperCase(name);
                 modifyEntity(dict, name);
             break;
 
@@ -217,24 +245,21 @@ void processInputDictonary(const char *dictionary)
                 /* system("cls"); */
                 rewind(dict);
                 printf("Name of the entity: ");
-                scanf("%s", name);
+                scanf("%49s", name);
+                toUpperCase(name);
+
                 entity = findEntity(dict, name);
 
-                if (entity.sig == 0)
+                if (strcmp(entity.name, name) != 0)
                 {
-                    /* system("cls"); */
                     printf("The entity wasn't found \n");
-                    fclose(dict);
-                    return;
+                    break; 
                 }
 
-                fseek(dict, entity.listDat, SEEK_SET);
-                fread(&dirEntity, sizeof(long), 1, dict);
-
-                if(dirEntity != empty)
+                if (entity.listDat != empty)
                 {
                     printf("The entity already has data \n");
-                    fclose(dict);
+                    break;
                 }
 
                 printf("Entering the entity attributes \n");
@@ -271,12 +296,12 @@ void printDictionary(FILE *dict)
         {
             fseek(dict, dir, SEEK_SET);
 
-            fread(&entity.name, LENGHT, 1, dict);
-            fread(&entity.listDat, sizeof(long), 1, dict);
-            fread(&entity.listAttr, sizeof(long), 1, dict);
-            fread(&dir, sizeof(long), 1, dict);
+            fread(&entity, sizeof(ENTITIES), 1, dict);
+
             printf("\n------- %s %ld -------\n", entity.name, entity.sig);
             printf("| %ld | %ld | \n", entity.listDat, entity.listAttr);
+
+            dir = entity.sig;
 
             ATTRIBUTES attri;
             long dir2;
@@ -291,7 +316,7 @@ void printDictionary(FILE *dict)
                 {
                     fseek(dict, dir2, SEEK_SET);
 
-                    fread(&attri.name, LENGHT, 1, dict);
+                    fread(&attri.name, LENGTH, 1, dict);
                     fread(&attri.isPrimary, sizeof(int), 1, dict);
                     fread(&attri.type, sizeof(int), 1, dict);
                     fread(&attri.size, sizeof(int), 1, dict);
@@ -308,59 +333,65 @@ void printDictionary(FILE *dict)
 long createEntity(FILE *dict, ENTITIES newEntity)
 {
     long dirEntity;
+
     fseek(dict, 0, SEEK_END);
     dirEntity = ftell(dict);
-    fwrite(newEntity.name, LENGHT, 1, dict);
-    fwrite(&newEntity.listDat, sizeof(long), 1, dict);
-    fwrite(&newEntity.listAttr, sizeof(long), 1, dict);
-    fwrite(&newEntity.sig, sizeof(long), 1, dict);
+
+    if (newEntity.listAttr != empty)
+        newEntity.listAttr = empty;
+    if (newEntity.listDat != empty)
+        newEntity.listDat = empty;
+    
+    newEntity.sig = empty;
+
+    fwrite(&newEntity, sizeof(ENTITIES), 1, dict);
+
     return dirEntity;
 }
 
-void orderEntity(FILE *dict, long currentEntity, const char *newNameEntity, long newDirEntity)
+void orderEntity(FILE *dict, ENTITIES newEntity, long newDirEntity)
 {
-    long dirEntity = empty;
-    char currentEntityName[LENGHT];
-    long nextHeaderPointer;
+    ENTITIES tempEntity;
+    long prevDir = empty;
+    long currentDir;
 
-    fseek(dict, currentEntity, SEEK_SET);
-    fread(&dirEntity, sizeof(dirEntity), 1, dict);
+    fseek(dict, 0, SEEK_SET);
+    fread(&currentDir, sizeof(long), 1, dict);
 
-    if (dirEntity == -1L)
-    {
-        fseek(dict, currentEntity, SEEK_SET);
-        fwrite(&newDirEntity, sizeof(long), 1, dict);
+    while (currentDir != empty) {
+        fseek(dict, currentDir, SEEK_SET);
+        fread(&tempEntity, sizeof(ENTITIES), 1, dict);
+
+        if (strcmp(newEntity.name, tempEntity.name) < 0) {
+            break;
+        }
+
+        prevDir = currentDir;
+        currentDir = tempEntity.sig;
     }
-    else
-    {
-        fseek(dict, dirEntity, SEEK_SET);
-        fread(&currentEntityName, sizeof(char), LENGHT, dict);
-        nextHeaderPointer = ftell(dict) + (sizeof(long) * 2);
 
-        if (strcmp(currentEntityName, newNameEntity) < 0)
-        {
-            
-            orderEntity(dict, nextHeaderPointer, newNameEntity, newDirEntity);
-        }
-        else
-        {
-            if (strcmp(currentEntityName, newNameEntity) == 0)
-            {
-                printf("The entity already exists \n");
-                return;
-            }
-            else
-            {
-                fseek(dict, currentEntity, SEEK_SET);
-                fwrite(&newDirEntity, sizeof(long), 1, dict);
-                fseek(dict, newDirEntity + LENGHT + (sizeof(long) * 2), SEEK_SET);
-                fwrite(&dirEntity, sizeof(long), 1, dict);
-            }
-        }
+    newEntity.sig = currentDir;
+
+    fseek(dict, newDirEntity, SEEK_SET);
+    fwrite(&newEntity, sizeof(ENTITIES), 1, dict);
+
+    if(prevDir == empty) 
+    {
+        fseek(dict, 0, SEEK_SET);
+        fwrite(&newDirEntity, sizeof(long), 1, dict);
+    } else 
+    {
+        fseek(dict, prevDir, SEEK_SET);
+        fread(&tempEntity, sizeof(ENTITIES), 1, dict);
+
+        tempEntity.sig = newDirEntity;
+
+        fseek(dict, prevDir, SEEK_SET);
+        fwrite(&tempEntity, sizeof(ENTITIES), 1, dict);
     }
 }
 
-int deleteEntity(FILE *dict, char name[LENGHT])
+int deleteEntity(FILE *dict, char name[LENGTH])
 {
     ENTITIES enti;
     long ant, ptr, ptrdir;
@@ -376,7 +407,7 @@ int deleteEntity(FILE *dict, char name[LENGHT])
     }
 
     fseek(dict, ptr, SEEK_SET);
-    fread(enti.name, LENGHT, 1, dict);
+    fread(enti.name, LENGTH, 1, dict);
     fread(&enti.listDat, sizeof(long), 1, dict);
     fread(&enti.listAttr, sizeof(long), 1, dict);
     ptrdir = ftell(dict); 
@@ -395,7 +426,7 @@ int deleteEntity(FILE *dict, char name[LENGHT])
     {
         ant = ptrdir;
         fseek(dict, ptr, SEEK_SET); 
-        fread(enti.name, LENGHT, 1, dict);
+        fread(enti.name, LENGTH, 1, dict);
         fread(&enti.listDat, sizeof(long), 1, dict);
         fread(&enti.listAttr, sizeof(long), 1, dict);
         ptrdir = ftell(dict);
@@ -411,40 +442,36 @@ int deleteEntity(FILE *dict, char name[LENGHT])
     return 1;
 }
 
-ENTITIES findEntity(FILE *dict, char entityName[LENGHT])
+ENTITIES findEntity(FILE *dict, char entityName[LENGTH])
 {
-    ENTITIES currentEntity, aux;
+    ENTITIES entity;
+    long dir;
+
     rewind(dict);
+    fread(&dir, sizeof(long), 1, dict);
 
-    fread(&aux.sig, sizeof(long), 1, dict);
-    fseek(dict, aux.sig, SEEK_SET);
-    fread(&currentEntity.name, sizeof(char), LENGHT, dict);
-    currentEntity.listDat = ftell(dict);
-    fread(&aux.listDat, sizeof(long), 1, dict);
-    currentEntity.listAttr = ftell(dict);
-    fread(&aux.listAttr, sizeof(long), 1, dict);
-    currentEntity.sig = ftell(dict);
-    fread(&aux.sig, sizeof(long), 1, dict);
-
-    while (aux.sig != -1 && (strcmp(currentEntity.name, entityName)) != 0)
+    while(dir != empty)
     {
-        fseek(dict, aux.sig, SEEK_SET);
-        fread(&currentEntity.name, sizeof(char), LENGHT, dict);
-        currentEntity.listDat = ftell(dict);
-        fread(&aux.listDat, sizeof(long), 1, dict);
-        currentEntity.listAttr = ftell(dict);
-        fread(&aux.listAttr, sizeof(long), 1, dict);
-        currentEntity.sig = ftell(dict);
-        fread(&aux.sig, sizeof(long), 1, dict);
+        fseek(dict, dir, SEEK_SET);
+
+        fread(&entity.name, LENGTH, 1, dict);
+        fread(&entity.listDat, sizeof(long), 1, dict);
+        fread(&entity.listAttr, sizeof(long), 1, dict);
+        fread(&entity.sig, sizeof(long), 1, dict);
+
+        if(strcmp(entity.name, entityName) == 0)
+        {
+            return entity;
+        }
+
+        dir = entity.sig;
     }
 
-    if (aux.sig == -1 && (strcmp(currentEntity.name, entityName)) != 0)
-        currentEntity.sig = 0;
-
-    return currentEntity;
+    entity.sig = 0;
+    return entity;
 }
 
-void modifyEntity(FILE *dict, char name[LENGHT])
+void modifyEntity(FILE *dict, char name[LENGTH])
 {
     rewind(dict);
     long dirEntity;
@@ -453,34 +480,36 @@ void modifyEntity(FILE *dict, char name[LENGHT])
     ptr = findEntity(dict, name);
     if (ptr.sig == 0)
     {
-        printf("The entity doesn't exists\n");
+        printf("The entity doesn't exist\n");
         return;
     }
 
     deleteEntity(dict, name);
 
     printf("New name: ");
-    scanf("%s", newEntity.name);
-    fseek(dict, ptr.listDat, SEEK_SET);
-    fread(&newEntity.listDat, sizeof(long), 1, dict);
-    fread(&newEntity.listAttr, sizeof(long), 1, dict);
+    scanf("%49s", newEntity.name);
+    toUpperCase(newEntity.name);
+
+    newEntity.listDat = ptr.listDat;
+    newEntity.listAttr = ptr.listAttr;
     newEntity.sig = empty;
 
     aux = findEntity(dict, newEntity.name);
-    while (aux.sig != 0)
+    while(aux.sig != 0)
     {
-        if (aux.sig != 0)
+        if(aux.sig != 0)
             printf("This name is already used in another entity\n");
         printf("New name: ");
-        scanf("%s", newEntity.name);
+        scanf("%49s", newEntity.name);
+        toUpperCase(newEntity.name);
         aux = findEntity(dict, newEntity.name);
     }
 
     dirEntity = createEntity(dict, newEntity);
-
-    orderEntity(dict, 0, newEntity.name, dirEntity);
+    orderEntity(dict, newEntity, dirEntity);
     printf("Successfully modified\n");
 }
+
 
 
 // Parte de atributos
@@ -507,14 +536,14 @@ void processInputEntity(const char *dict, ENTITIES entity)
 {
     FILE *dictionary = fopen(dict, "rb+");
     int userSelec;
-    //char name[LENGHT];
+    //char name[LENGTH];
     do{
         printEntityMenu(entity);
         scanf("%d", &userSelec);
         switch(userSelec)
         {
             case PRINT2:
-                printAttributes(dictionary, entity.listAttr);
+                // printAttributes(dictionary, entity.listAttr);
             break;
             case CREATE_ATTRIBUTE:
             break;
@@ -535,7 +564,7 @@ void processInputEntity(const char *dict, ENTITIES entity)
     fclose(dictionary);
 }
 
-void printAttributes(FILE *dict, long listA)
+/* void printAttributes(FILE *dict, long listA)
 {
     ATTRIBUTES attri;
     long dir;
@@ -549,7 +578,7 @@ void printAttributes(FILE *dict, long listA)
         {
             fseek(dict, dir, SEEK_SET);
 
-            fread(&attri.name, LENGHT, 1, dict);
+            fread(&attri.name, LENGTH, 1, dict);
             fread(&attri.isPrimary, sizeof(int), 1, dict);
             fread(&attri.type, sizeof(int), 1, dict);
             fread(&attri.size, sizeof(int), 1, dict);
@@ -565,7 +594,7 @@ long appendAttribute(FILE *dict, ATTRIBUTES newAttribute)
     fseek(dict, 0, SEEK_END);
     position = ftell(dict);
 
-    fwrite(newAttribute.name, sizeof(char), LENGHT, dict);
+    fwrite(newAttribute.name, sizeof(char), LENGTH, dict);
     fwrite(&newAttribute.isPrimary, sizeof(int), 1, dict);
     fwrite(&newAttribute.type, sizeof(int), 1, dict);
     fwrite(&newAttribute.size, sizeof(int), 1, dict);
@@ -612,7 +641,7 @@ void CreateAttribute(FILE *dict, ENTITIES currentEntity)
     int size;
 
     printf("Name of the new attribute: \n");
-    scanf("%s", &newAttribute.name);
+    scanf("%49s", &newAttribute.name);
     printf("Is it a primary key? \n");
     scanf("%d", &newAttribute.isPrimary);
     printf("Type of attribute? \n\t1)Bite \t2)Integer \t3)Float \t4)Char \t5)String");
@@ -707,7 +736,7 @@ int eliminaAtributo(FILE *Diccionario, char nom[N], long cab)
 }
 
 
-int removeAtribute(FILE *dict, long currentPointer, char attributeName[LENGHT])
+int removeAtribute(FILE *dict, long currentPointer, char attributeName[LENGTH])
 {
     long attrDirection = empty;
 
@@ -740,3 +769,44 @@ int removeAtribute(FILE *dict, long currentPointer, char attributeName[LENGHT])
     }
 }
 
+ATTRIBUTES readAttribute(FILE *dict, long addres)
+{
+    ATTRIBUTES attribute;
+    fseek(dict, addres, SEEK_SET);
+    fread(&attribute, sizeof(ATTRIBUTES), 1, dict);
+    return attribute;
+}
+
+size_t calculateTotalDataSize(FILE *dict, ENTITIES entity)
+{
+    size_t totalSize = 0;
+    ATTRIBUTES attribute;
+    long attributePos = entity.listAttr;
+
+    while(attributePos != empty)
+    {
+        attribute = readAttribute(dict, attributePos);
+        totalSize += attribute.size;
+        attributePos = attribute.next;
+    }
+    return totalSize;
+}
+
+int captureDataRecord(FILE *dict, ENTITIES entity, char *dataBuffer)
+{
+    ATTRIBUTES attribute;
+    long attributePos = entity.listAttr;
+    size_t offset = 0;
+    char input[LENGTH];
+
+    while(attributePos != empty)
+    {
+        attribute = readAttribute(dict, attributePos);
+        
+        printf("Input attribute \n");
+        scanf("%49s", input);
+
+        if(attribute.isPrimary)
+            if()
+    }
+} */
