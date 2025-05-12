@@ -36,7 +36,7 @@ void openFile(char *name);
 // ------ Entity functions ------
 
 void printDictionaryMenu(char *dictionary);
-void processInputDictonary(char *dictionary);
+void processInputDictionary(char *dictionary);
 void executeDictionaryOption(int userSelec, char *dictionary);
 void printDictionary(char *dictionaryName);
 void createEntity(char *dictionaryName);
@@ -170,7 +170,7 @@ void createNewFile(FILE *dictionary, char *name)
     fwrite(&num, sizeof(long), 1, dictionary);
     fclose(dictionary);
     printf("File created successfully. Opening the file...\n\n");
-    processInputDictonary(name);
+    processInputDictionary(name);
 }
 
 void openFile(char *name)
@@ -195,7 +195,7 @@ void openFile(char *name)
 
     fclose(dictionary);
     printf("File '%s' opened successfully. Opening the file...\n\n", name);
-    processInputDictonary(name);
+    processInputDictionary(name);
 }
 
 // ------ Entity functions ------
@@ -410,26 +410,30 @@ long findEntity(FILE *dictionary, const char *entityName, ENTITIES *foundEntity)
     ENTITIES entity;
     long position = 0;
 
-    rewind(dictionary);
+    rewind(dictionary); // Asegurarse de empezar desde el inicio del archivo
 
     while (fread(&entity, sizeof(ENTITIES), 1, dictionary) == 1)
     {
         char entityNameUpper[LENGTH];
         strcpy(entityNameUpper, entity.name);
-        toUpperCase(entityNameUpper);
+        toUpperCase(entityNameUpper); // Convertir el nombre leído a mayúsculas
 
-        if (strcmp(entityNameUpper, entityName) == 0)
+        char searchNameUpper[LENGTH];
+        strcpy(searchNameUpper, entityName);
+        toUpperCase(searchNameUpper); // Convertir el nombre buscado a mayúsculas
+
+        if (strcmp(entityNameUpper, searchNameUpper) == 0)
         {
             if (foundEntity != NULL)
             {
-                *foundEntity = entity;
+                *foundEntity = entity; // Copiar la entidad encontrada
             }
-            return position;
+            return ftell(dictionary) - sizeof(ENTITIES); // Retornar la posición exacta en bytes
         }
         position++;
     }
 
-    return -1;
+    return -1; // Retornar -1 si no se encuentra la entidad
 }
 
 void deleteEntity(char *dictionaryName)
@@ -467,12 +471,12 @@ void deleteEntity(char *dictionaryName)
 
     for (int i = 0; i < count; i++)
     {
-        if (i == positionToDelete)
+        if (i == positionToDelete / sizeof(ENTITIES))
         {
             continue;
         }
 
-        if ((unsigned long long)entities[i].sig == (unsigned long long)(positionToDelete * sizeof(ENTITIES)))
+        if (entities[i].sig == positionToDelete)
         {
             entities[i].sig = entityToDelete.sig;
         }
@@ -481,7 +485,7 @@ void deleteEntity(char *dictionaryName)
     rewind(dictionary);
     for (int i = 0; i < count; i++)
     {
-        if (i != positionToDelete)
+        if (i != positionToDelete / sizeof(ENTITIES))
         {
             fwrite(&entities[i], sizeof(ENTITIES), 1, dictionary);
         }
@@ -511,7 +515,7 @@ void modifyEntity(char *dictionaryName)
     ENTITIES entityToModify;
     long positionToModify = findEntity(dictionary, currentName, &entityToModify);
 
-    if(positionToModify == -1)
+    if (positionToModify == -1)
     {
         printf("Error: Entity '%s' not found.\n", currentName);
         fclose(dictionary);
@@ -527,14 +531,14 @@ void modifyEntity(char *dictionaryName)
         scanf("%s", newName);
         toUpperCase(newName);
 
-        if(strcmp(currentName, newName) == 0)
+        if (strcmp(currentName, newName) == 0)
         {
             printf("The new name is the same as the current name. Try again.\n");
             continue;
         }
 
         long existingPosition = findEntity(dictionary, newName, &existingEntity);
-        if(existingPosition != -1)
+        if (existingPosition != -1)
         {
             printf("The name '%s' is already used by another entity. Try again.\n", newName);
         }
@@ -542,12 +546,12 @@ void modifyEntity(char *dictionaryName)
         {
             break;
         }
-    } while(1);
+    } while (1);
 
     strcpy(entityToModify.name, newName);
 
-    fseek(dictionary, positionToModify * sizeof(ENTITIES), SEEK_SET);
-    if(fwrite(&entityToModify, sizeof(ENTITIES), 1, dictionary) != 1)
+    fseek(dictionary, positionToModify, SEEK_SET);
+    if (fwrite(&entityToModify, sizeof(ENTITIES), 1, dictionary) != 1)
     {
         printf("Error: Could not update the entity in the file.\n");
         fclose(dictionary);
@@ -586,7 +590,6 @@ void selectEntity(char *dictionaryName)
 
     printf("Entity '%s' selected successfully.\n", selectedEntity.name);
 
-    // Llamar a processInputEntity para manejar las operaciones de la entidad seleccionada
     processInputEntity(dictionaryName, selectedEntity);
 
     fclose(dictionary);
@@ -646,45 +649,45 @@ void executeEntityOption(int userSelec, ENTITIES entity)
     {
         case PRINT2:
             printf("Printing attributes of entity '%s'...\n", entity.name);
-            //printAttributes(dictionary, entity);
-        break;
+            // Implementar printAttributes
+            break;
 
         case CREATE_ATTRIBUTE:
             printf("Creating a new attribute for entity '%s'...\n", entity.name);
-            //createAttribute(dictionary, entity);
-        break;
+            // Implementar createAttribute
+            break;
 
         case DELETE_ATTRIBUTE:
             printf("Deleting an attribute from entity '%s'...\n", entity.name);
-            //deleteAttribute(dictionary, entity);
-        break;
+            // Implementar deleteAttribute
+            break;
 
         case MODIFY_ATTRIBUTE:
             printf("Modifying an attribute of entity '%s'...\n", entity.name);
-            //modifyAttribute(dictionary, entity);
-        break;
+            // Implementar modifyAttribute
+            break;
 
         case ADD_DATA_ATTRIBUTE:
             printf("Adding data to entity '%s'...\n", entity.name);
-            //addDataToEntity(dictionary, entity);
-        break;
+            // Implementar addDataToEntity
+            break;
 
         case MODIFY_DATA_ATTRIBUTE:
             printf("Modifying data in entity '%s'...\n", entity.name);
-            //modifyDataInEntity(dictionary, entity);
-        break;
+            // Implementar modifyDataInEntity
+            break;
 
         case DELETE_DATA_ATTRIBUTE:
             printf("Deleting data from entity '%s'...\n", entity.name);
-            //deleteDataFromEntity(dictionary, entity);
-        break;
+            // Implementar deleteDataFromEntity
+            break;
 
         case RETURN2:
             printf("Returning to the dictionary menu...\n");
-        break;
+            break;
 
         default:
             printf("Invalid option. Please try again.\n");
-        break;
+            break;
     }
 }
