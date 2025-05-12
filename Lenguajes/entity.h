@@ -1,6 +1,6 @@
 #ifndef ENTITY_H
 #define ENTITY_H
-#define empty -1
+/* #define empty -1
 #define LENGHT 50
 
 typedef struct entity
@@ -27,6 +27,6 @@ long createEntity(FILE *dict, ENTITIES newEntity);
 void orderEntity(FILE *dict, long currentEntity, const char *newNameEntity, long newDirEntity);
 int deleteEntity(FILE *dict, char name[LENGHT]);
 ENTITIES findEntity(FILE *dict, char entityName[LENGHT]);
-void modifyEntity(FILE *dict, char name[LENGHT]);
+void modifyEntity(FILE *dict, char name[LENGHT]); */
 
 #endif
