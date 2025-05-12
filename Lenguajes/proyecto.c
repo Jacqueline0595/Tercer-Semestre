@@ -510,8 +510,6 @@ void modifyEntity(FILE *dict, char name[LENGTH])
     printf("Successfully modified\n");
 }
 
-
-
 // Parte de atributos
 /*
     - Solo puede existir un atributo primario por entidad
