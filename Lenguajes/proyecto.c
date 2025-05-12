@@ -202,7 +202,6 @@ void processInputDictonary(const char *dictionary)
         switch(userSelec)
         {
             case PRINT:
-                /* system("cls"); */
                 printDictionary(dict);
             break;
 
@@ -510,6 +509,8 @@ void modifyEntity(FILE *dict, char name[LENGTH])
     printf("Successfully modified\n");
 }
 
+
+
 // Parte de atributos
 /*
     - Solo puede existir un atributo primario por entidad
@@ -527,6 +528,7 @@ void printEntityMenu(ENTITIES entity)
     printf("--- %d Delete an attribute \n", DELETE_ATTRIBUTE);
     printf("--- %d Modify an attribute \n", MODIFY_ATTRIBUTE);
     printf("--- %d Add data to the entity \n", DATA_ATTRIBUTE);
+    printf("");
     printf("--- %d Exit \n", RETURN2);
 }
 
