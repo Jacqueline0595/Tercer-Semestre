@@ -70,7 +70,8 @@
     "text_encoding": "c",
     "typeindex": "c",
     "sstream": "c",
-    "regex": "c"
+    "regex": "c",
+    "algorithm": "c"
   },
   "python.testing.pytestArgs": [
     "Analisis"

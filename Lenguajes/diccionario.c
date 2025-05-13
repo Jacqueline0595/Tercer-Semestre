@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #define empty -1
 #define LENGTH 50
@@ -40,6 +41,7 @@ void processInputDictionary(char *dictionary);
 void executeDictionaryOption(int userSelec, char *dictionary);
 void printDictionary(char *dictionaryName);
 void createEntity(char *dictionaryName);
+int countEntities(FILE *dictionary);
 void orderEntity(char *dictionaryName);
 long findEntity(FILE *dictionary, const char *entityName, ENTITIES *foundEntity);
 void deleteEntity(char *dictionaryName);
@@ -99,11 +101,25 @@ void toUpperCase(char *strin)
     }
 }
 
+void cleanInput(char *input)
+{
+    size_t len = strlen(input);
+    if (len > 0 && input[len - 1] == '\n')
+    {
+        input[len - 1] = '\0';
+    }
+    else
+    {
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+    }
+}
+
 // ------ Main menu ------
 
 void printMainMenu()
 {
-    printf("\t ---------Main menu--------- \n");
+    printf("\t --------- Main menu --------- \n");
     printf("--- %d Create new file \n", NEW_FILE);
     printf("--- %d Open existing file \n", OPEN_FILE);
     printf("--- %d Exit \n", EXIT);
@@ -119,8 +135,8 @@ void processUserSelection()
         printf("Enter your choice: ");
         if (scanf("%d", &userSel) != 1 || userSel < EXIT || userSel > OPEN_FILE)
         {
+            while (getchar() != '\n');
             printf("Invalid input. Please enter a valid number.\n");
-            while (getchar() != '\n'); // Limpiar el buffer de entrada
             continue;
         }
 
@@ -156,8 +172,10 @@ void executeMenuOption(int userSel)
 
 void createNewFile(FILE *dictionary, char *name)
 {
+    fflush(stdin);
     printf("Enter the name of the new dictionary: ");
-    scanf("%s", name);
+    fgets(name, LENGTH, stdin);
+    cleanInput(name);
 
     dictionary = fopen(name, "wb+");
     if (!dictionary)
@@ -175,8 +193,10 @@ void createNewFile(FILE *dictionary, char *name)
 
 void openFile(char *name)
 {
+    fflush(stdin);
     printf("Enter the name of the dictionary to open: ");
-    scanf("%s", name);
+    fgets(name, LENGTH, stdin);
+    cleanInput(name);
 
     FILE *dictionary = fopen(name, "rb+");
     if (!dictionary)
@@ -221,19 +241,14 @@ void processInputDictionary(char *dictionary)
         return;
     }
 
-    FILE *dictiona = fopen(dictionary, "rb+");
-    if(!dictiona)
-    {
-        printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionary);
-        return;
-    }
-
     do
     {
         printDictionaryMenu(dictionary);
+        fflush(stdin);
         printf("Enter your choice: ");
         if(scanf("%d", &userSelec) != 1)
         {
+            while (getchar() != '\n'); 
             printf("Invalid input. Please enter a number.\n");
             while (getchar() != '\n'); 
             continue;
@@ -246,8 +261,6 @@ void processInputDictionary(char *dictionary)
         }
         executeDictionaryOption(userSelec, dictionary);
     } while(userSelec != RETURN);
-
-    fclose(dictiona);
 }
 
 void executeDictionaryOption(int userSelec, char *dictionary)
@@ -314,15 +327,17 @@ void printDictionary(char *dictionaryName)
 void createEntity(char *dictionaryName)
 {
     FILE *dictionary = fopen(dictionaryName, "rb+");
-    if (!dictionary)
+    if(!dictionary)
     {
         printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
 
     ENTITIES newEntity;
+    fflush(stdin);
     printf("Enter the name of the new entity: ");
-    scanf("%s", newEntity.name);
+    fgets(newEntity.name, LENGTH, stdin);
+    cleanInput(newEntity.name);
     toUpperCase(newEntity.name);
 
     newEntity.listDat = empty;
@@ -331,7 +346,7 @@ void createEntity(char *dictionaryName)
 
     fseek(dictionary, 0, SEEK_END);
 
-    if (fwrite(&newEntity, sizeof(ENTITIES), 1, dictionary) != 1)
+    if(fwrite(&newEntity, sizeof(ENTITIES), 1, dictionary) != 1)
     {
         printf("Error: Could not write the new entity to the file.\n");
         fclose(dictionary);
@@ -344,35 +359,57 @@ void createEntity(char *dictionaryName)
     orderEntity(dictionaryName);
 }
 
+int countEntities(FILE *dictionary)
+{
+    ENTITIES entity;
+    int count = 0;
+
+    rewind(dictionary);
+    while (fread(&entity, sizeof(ENTITIES), 1, dictionary) == 1)
+    {
+        count++;
+    }
+
+    return count;
+}
+
 void orderEntity(char *dictionaryName)
 {
     FILE *dictionary = fopen(dictionaryName, "rb+");
-    if (!dictionary)
+    if(!dictionary)
     {
         printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
 
-    ENTITIES entities[100];
-    int count = 0;
+    int count = countEntities(dictionary);
 
-    while (fread(&entities[count], sizeof(ENTITIES), 1, dictionary) == 1)
-    {
-        count++;
-    }
-
-    if (count == 0)
+    if(count == 0)
     {
         printf("No entities found to order.\n");
         fclose(dictionary);
         return;
     }
 
-    for (int i = 0; i < count - 1; i++)
+    ENTITIES entities[50];
+    if(count > 50)
     {
-        for (int j = i + 1; j < count; j++)
+        printf("Error: Too many entities to handle statically (max 50).\n");
+        fclose(dictionary);
+        return;
+    }
+
+    rewind(dictionary);
+    for(int i = 0; i < count; i++)
+    {
+        fread(&entities[i], sizeof(ENTITIES), 1, dictionary);
+    }
+
+    for(int i = 0; i < count - 1; i++)
+    {
+        for(int j = i + 1; j < count; j++)
         {
-            if (strcmp(entities[i].name, entities[j].name) > 0)
+            if(strcmp(entities[i].name, entities[j].name) > 0)
             {
                 ENTITIES temp = entities[i];
                 entities[i] = entities[j];
@@ -381,9 +418,9 @@ void orderEntity(char *dictionaryName)
         }
     }
 
-    for (int i = 0; i < count; i++)
+    for(int i = 0; i < count; i++)
     {
-        if (i == count - 1)
+        if(i == count - 1)
         {
             entities[i].sig = empty;
         }
@@ -394,7 +431,7 @@ void orderEntity(char *dictionaryName)
     }
 
     rewind(dictionary);
-    if (fwrite(entities, sizeof(ENTITIES), count, dictionary) != (size_t)count)
+    if(fwrite(entities, sizeof(ENTITIES), count, dictionary) != (size_t)count)
     {
         printf("Error: Could not write the ordered entities to the file.\n");
         fclose(dictionary);
@@ -408,32 +445,29 @@ void orderEntity(char *dictionaryName)
 long findEntity(FILE *dictionary, const char *entityName, ENTITIES *foundEntity)
 {
     ENTITIES entity;
-    long position = 0;
+    char searchNameUpper[LENGTH];
+    strcpy(searchNameUpper, entityName);
+    toUpperCase(searchNameUpper);
 
-    rewind(dictionary); // Asegurarse de empezar desde el inicio del archivo
+    rewind(dictionary);
 
     while (fread(&entity, sizeof(ENTITIES), 1, dictionary) == 1)
     {
         char entityNameUpper[LENGTH];
         strcpy(entityNameUpper, entity.name);
-        toUpperCase(entityNameUpper); // Convertir el nombre leído a mayúsculas
-
-        char searchNameUpper[LENGTH];
-        strcpy(searchNameUpper, entityName);
-        toUpperCase(searchNameUpper); // Convertir el nombre buscado a mayúsculas
+        toUpperCase(entityNameUpper);
 
         if (strcmp(entityNameUpper, searchNameUpper) == 0)
         {
             if (foundEntity != NULL)
             {
-                *foundEntity = entity; // Copiar la entidad encontrada
+                *foundEntity = entity;
             }
-            return ftell(dictionary) - sizeof(ENTITIES); // Retornar la posición exacta en bytes
+            return ftell(dictionary) - sizeof(ENTITIES);
         }
-        position++;
     }
 
-    return -1; // Retornar -1 si no se encuentra la entidad
+    return -1;
 }
 
 void deleteEntity(char *dictionaryName)
@@ -446,8 +480,10 @@ void deleteEntity(char *dictionaryName)
     }
 
     char entityName[LENGTH];
+    fflush(stdin);
     printf("Enter the name of the entity to delete: ");
-    scanf("%s", entityName);
+    fgets(entityName, LENGTH, stdin);
+    cleanInput(entityName);
     toUpperCase(entityName);
 
     ENTITIES entityToDelete;
@@ -460,35 +496,52 @@ void deleteEntity(char *dictionaryName)
         return;
     }
 
-    ENTITIES entities[100];
+    printf("Search entity '%s'...\n", entityToDelete.name);
+    ENTITIES entities[50];
     int count = 0;
 
     rewind(dictionary);
-    while (fread(&entities[count], sizeof(ENTITIES), 1, dictionary) == 1)
+    while(fread(&entities[count], sizeof(ENTITIES), 1, dictionary) == 1)
     {
         count++;
     }
 
-    for (int i = 0; i < count; i++)
+    for(int i = 0; i < count; i++)
     {
-        if (i == positionToDelete / sizeof(ENTITIES))
+        if(i == (int)(positionToDelete / sizeof(ENTITIES)))
         {
             continue;
         }
 
-        if (entities[i].sig == positionToDelete)
+        if(entities[i].sig == positionToDelete)
         {
             entities[i].sig = entityToDelete.sig;
         }
     }
 
     rewind(dictionary);
-    for (int i = 0; i < count; i++)
+    for(int i = 0; i < count; i++)
     {
-        if (i != positionToDelete / sizeof(ENTITIES))
+        if(i != (int)(positionToDelete / sizeof(ENTITIES)))
         {
             fwrite(&entities[i], sizeof(ENTITIES), 1, dictionary);
         }
+    }
+
+    int fileDescriptor = fileno(dictionary);
+    if(fileDescriptor == -1)
+    {
+        printf("Error: Could not get file descriptor.\n");
+        fclose(dictionary);
+        return;
+    }
+
+    long newSize = (count - 1) * sizeof(ENTITIES);
+    if(ftruncate(fileDescriptor, newSize) == -1)
+    {
+        printf("Error: Could not truncate the file.\n");
+        fclose(dictionary);
+        return;
     }
 
     fclose(dictionary);
@@ -501,44 +554,48 @@ void deleteEntity(char *dictionaryName)
 void modifyEntity(char *dictionaryName)
 {
     FILE *dictionary = fopen(dictionaryName, "rb+");
-    if (!dictionary)
+    if(!dictionary)
     {
         printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
 
     char currentName[LENGTH];
+    fflush(stdin);
     printf("Enter the name of the entity to modify: ");
-    scanf("%s", currentName);
+    fgets(currentName, LENGTH, stdin);
+    cleanInput(currentName);
     toUpperCase(currentName);
 
     ENTITIES entityToModify;
     long positionToModify = findEntity(dictionary, currentName, &entityToModify);
 
-    if (positionToModify == -1)
+    if(positionToModify == -1)
     {
         printf("Error: Entity '%s' not found.\n", currentName);
         fclose(dictionary);
         return;
     }
-
+    printf("Search entity  '%s'...\n", entityToModify.name);
     char newName[LENGTH];
     ENTITIES existingEntity;
 
     do
     {
+        fflush(stdin);
         printf("Enter the new name for the entity: ");
-        scanf("%s", newName);
+        fgets(newName, LENGTH, stdin);
+        cleanInput(newName);
         toUpperCase(newName);
 
-        if (strcmp(currentName, newName) == 0)
+        if(strcmp(currentName, newName) == 0)
         {
             printf("The new name is the same as the current name. Try again.\n");
             continue;
         }
 
         long existingPosition = findEntity(dictionary, newName, &existingEntity);
-        if (existingPosition != -1)
+        if(existingPosition != -1)
         {
             printf("The name '%s' is already used by another entity. Try again.\n", newName);
         }
@@ -574,8 +631,10 @@ void selectEntity(char *dictionaryName)
     }
 
     char entityName[LENGTH];
+    fflush(stdin);
     printf("Enter the name of the entity to select: ");
-    scanf("%s", entityName);
+    fgets(entityName, LENGTH, stdin);
+    cleanInput(entityName);
     toUpperCase(entityName);
 
     ENTITIES selectedEntity;
@@ -587,6 +646,8 @@ void selectEntity(char *dictionaryName)
         fclose(dictionary);
         return;
     }
+
+    printf("Search entity  '%s'...\n", selectedEntity.name);
 
     printf("Entity '%s' selected successfully.\n", selectedEntity.name);
 
@@ -624,8 +685,10 @@ void processInputEntity(char *dict, ENTITIES entity)
     do
     {
         printEntityMenu(entity);
+        fflush(stdin);
         printf("Enter your choice: ");
         scanf("%d", &userSelec);
+        while (getchar() != '\n'); 
 
         if(userSelec < RETURN2 || userSelec > DELETE_DATA_ATTRIBUTE)
         {
