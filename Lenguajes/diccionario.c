@@ -43,7 +43,7 @@ void printDictionary(char *dictionaryName);
 void createEntity(char *dictionaryName);
 int countEntities(FILE *dictionary);
 void orderEntity(char *dictionaryName);
-long findEntity(FILE *dictionary, const char *entityName, ENTITIES *foundEntity);
+ENTITIES findEntity(FILE *dict, char *entityName);
 void deleteEntity(char *dictionaryName);
 void modifyEntity(char *dictionaryName);
 void selectEntity(char *dictionaryName);
@@ -91,6 +91,7 @@ int main()
 }
 
 // ------ Other functions ------
+
 
 void toUpperCase(char *strin)
 {
@@ -205,8 +206,8 @@ void openFile(char *name)
         return;
     }
 
-    long firstValue;
-    if (fread(&firstValue, sizeof(long), 1, dictionary) != 1)
+    ENTITIES firstEntity;
+    if (fread(&firstEntity, sizeof(ENTITIES), 1, dictionary) != 1)
     {
         printf("Error: The file '%s' is not a valid dictionary file.\n", name);
         fclose(dictionary);
@@ -442,32 +443,27 @@ void orderEntity(char *dictionaryName)
     fclose(dictionary);
 }
 
-long findEntity(FILE *dictionary, const char *entityName, ENTITIES *foundEntity)
+ENTITIES findEntity(FILE *dict, char *entityName)
 {
     ENTITIES entity;
     char searchNameUpper[LENGTH];
     strcpy(searchNameUpper, entityName);
-    toUpperCase(searchNameUpper);
 
-    rewind(dictionary);
+    rewind(dict);
 
-    while (fread(&entity, sizeof(ENTITIES), 1, dictionary) == 1)
+    while (fread(&entity, sizeof(ENTITIES), 1, dict) == 1)
     {
         char entityNameUpper[LENGTH];
         strcpy(entityNameUpper, entity.name);
-        toUpperCase(entityNameUpper);
 
         if (strcmp(entityNameUpper, searchNameUpper) == 0)
         {
-            if (foundEntity != NULL)
-            {
-                *foundEntity = entity;
-            }
-            return ftell(dictionary) - sizeof(ENTITIES);
+            return entity;
         }
     }
 
-    return -1;
+    ENTITIES notFound = { .name = "" };
+    return notFound;
 }
 
 void deleteEntity(char *dictionaryName)
@@ -486,12 +482,30 @@ void deleteEntity(char *dictionaryName)
     cleanInput(entityName);
     toUpperCase(entityName);
 
-    ENTITIES entityToDelete;
-    long positionToDelete = findEntity(dictionary, entityName, &entityToDelete);
+    ENTITIES entityToDelete = findEntity(dictionary, entityName);
+    if (strlen(entityToDelete.name) == 0) // Verifica si no se encontró
+    {
+        printf("Error: Entity '%s' not found.\n", entityName);
+        fclose(dictionary);
+        return;
+    }
+
+    // Calculate the position of the entity to delete
+    long positionToDelete = -1;
+    ENTITIES tempEntity;
+    rewind(dictionary);
+    while (fread(&tempEntity, sizeof(ENTITIES), 1, dictionary) == 1)
+    {
+        if (strcmp(tempEntity.name, entityToDelete.name) == 0)
+        {
+            positionToDelete = ftell(dictionary) - sizeof(ENTITIES);
+            break;
+        }
+    }
 
     if (positionToDelete == -1)
     {
-        printf("Error: Entity '%s' not found.\n", entityName);
+        printf("Error: Could not determine the position of the entity to delete.\n");
         fclose(dictionary);
         return;
     }
@@ -567,16 +581,35 @@ void modifyEntity(char *dictionaryName)
     cleanInput(currentName);
     toUpperCase(currentName);
 
-    ENTITIES entityToModify;
-    long positionToModify = findEntity(dictionary, currentName, &entityToModify);
-
-    if(positionToModify == -1)
+    ENTITIES entityToModify = findEntity(dictionary, currentName);
+    if (strlen(entityToModify.name) == 0) // Verifica si no se encontró
     {
         printf("Error: Entity '%s' not found.\n", currentName);
         fclose(dictionary);
         return;
     }
-    printf("Search entity  '%s'...\n", entityToModify.name);
+
+    // Calculate the position of the entity to modify
+    long positionToModify = -1;
+    ENTITIES tempEntity;
+    rewind(dictionary);
+    while (fread(&tempEntity, sizeof(ENTITIES), 1, dictionary) == 1)
+    {
+        if (strcmp(tempEntity.name, entityToModify.name) == 0)
+        {
+            positionToModify = ftell(dictionary) - sizeof(ENTITIES);
+            break;
+        }
+    }
+
+    if (positionToModify == -1)
+    {
+        printf("Error: Could not determine the position of the entity to modify.\n");
+        fclose(dictionary);
+        return;
+    }
+
+    printf("Search entity '%s'...\n", entityToModify.name);
     char newName[LENGTH];
     ENTITIES existingEntity;
 
@@ -594,8 +627,8 @@ void modifyEntity(char *dictionaryName)
             continue;
         }
 
-        long existingPosition = findEntity(dictionary, newName, &existingEntity);
-        if(existingPosition != -1)
+        existingEntity = findEntity(dictionary, newName);
+        if(strlen(existingEntity.name) != 0)
         {
             printf("The name '%s' is already used by another entity. Try again.\n", newName);
         }
@@ -637,22 +670,18 @@ void selectEntity(char *dictionaryName)
     cleanInput(entityName);
     toUpperCase(entityName);
 
-    ENTITIES selectedEntity;
-    long position = findEntity(dictionary, entityName, &selectedEntity);
-
-    if (position == -1)
+    ENTITIES selectedEntity = findEntity(dictionary, entityName);
+    if (strlen(selectedEntity.name) == 0) // Verifica si no se encontró
     {
         printf("Error: Entity '%s' not found.\n", entityName);
         fclose(dictionary);
         return;
     }
 
-    printf("Search entity  '%s'...\n", selectedEntity.name);
-
+    printf("Search entity '%s'...\n", selectedEntity.name);
     printf("Entity '%s' selected successfully.\n", selectedEntity.name);
 
     processInputEntity(dictionaryName, selectedEntity);
-
     fclose(dictionary);
 }
 
@@ -741,16 +770,16 @@ void executeEntityOption(int userSelec, ENTITIES entity)
             break;
 
         case DELETE_DATA_ATTRIBUTE:
-            printf("Deleting data from entity '%s'...\n", entity.name);
-            // Implementar deleteDataFromEntity
+            printf("Deleting data from entity '%s'...\n", entity.name);;
+            // Implementar deleteDataFromEntityty
             break;
 
         case RETURN2:
             printf("Returning to the dictionary menu...\n");
             break;
 
-        default:
+        default:        
             printf("Invalid option. Please try again.\n");
-            break;
+        break;
     }
 }
