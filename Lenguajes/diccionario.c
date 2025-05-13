@@ -328,7 +328,7 @@ void printDictionary(char *dictionaryName)
 void createEntity(char *dictionaryName)
 {
     FILE *dictionary = fopen(dictionaryName, "rb+");
-    if(!dictionary)
+    if (!dictionary)
     {
         printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
@@ -336,6 +336,7 @@ void createEntity(char *dictionaryName)
 
     ENTITIES newEntity;
     fflush(stdin);
+    
     printf("Enter the name of the new entity: ");
     fgets(newEntity.name, LENGTH, stdin);
     cleanInput(newEntity.name);
@@ -347,7 +348,7 @@ void createEntity(char *dictionaryName)
 
     fseek(dictionary, 0, SEEK_END);
 
-    if(fwrite(&newEntity, sizeof(ENTITIES), 1, dictionary) != 1)
+    if (fwrite(&newEntity, sizeof(ENTITIES), 1, dictionary) != 1)
     {
         printf("Error: Could not write the new entity to the file.\n");
         fclose(dictionary);
@@ -483,67 +484,54 @@ void deleteEntity(char *dictionaryName)
     toUpperCase(entityName);
 
     ENTITIES entityToDelete = findEntity(dictionary, entityName);
-    if (strlen(entityToDelete.name) == 0) // Verifica si no se encontró
+    if (strlen(entityToDelete.name) == 0)
     {
         printf("Error: Entity '%s' not found.\n", entityName);
         fclose(dictionary);
         return;
     }
 
-    // Calculate the position of the entity to delete
-    long positionToDelete = -1;
-    ENTITIES tempEntity;
-    rewind(dictionary);
-    while (fread(&tempEntity, sizeof(ENTITIES), 1, dictionary) == 1)
-    {
-        if (strcmp(tempEntity.name, entityToDelete.name) == 0)
-        {
-            positionToDelete = ftell(dictionary) - sizeof(ENTITIES);
-            break;
-        }
-    }
-
-    if (positionToDelete == -1)
-    {
-        printf("Error: Could not determine the position of the entity to delete.\n");
-        fclose(dictionary);
-        return;
-    }
-
-    printf("Search entity '%s'...\n", entityToDelete.name);
     ENTITIES entities[50];
     int count = 0;
 
     rewind(dictionary);
-    while(fread(&entities[count], sizeof(ENTITIES), 1, dictionary) == 1)
+    while (fread(&entities[count], sizeof(ENTITIES), 1, dictionary) == 1)
     {
         count++;
     }
 
-    for(int i = 0; i < count; i++)
+    int indexToDelete = -1;
+    for (int i = 0; i < count; i++)
     {
-        if(i == (int)(positionToDelete / sizeof(ENTITIES)))
+        if (strcmp(entities[i].name, entityToDelete.name) == 0)
         {
-            continue;
-        }
-
-        if(entities[i].sig == positionToDelete)
-        {
-            entities[i].sig = entityToDelete.sig;
+            indexToDelete = i;
+            break;
         }
     }
 
-    rewind(dictionary);
-    for(int i = 0; i < count; i++)
+    if (indexToDelete == -1)
     {
-        if(i != (int)(positionToDelete / sizeof(ENTITIES)))
+        printf("Error: Could not find the entity to delete.\n");
+        fclose(dictionary);
+        return;
+    }
+
+    for (int i = 0; i < count; i++)
+    {
+        if (entities[i].sig == (long int)(indexToDelete * sizeof(ENTITIES)))
         {
-            fwrite(&entities[i], sizeof(ENTITIES), 1, dictionary);
+            entities[i].sig = entities[indexToDelete].sig;
         }
+    }
+
+    for (int i = indexToDelete; i < count - 1; i++)
+    {
+        entities[i] = entities[i + 1];
     }
 
     int fileDescriptor = fileno(dictionary);
-    if(fileDescriptor == -1)
+    if (fileDescriptor == -1)
     {
         printf("Error: Could not get file descriptor.\n");
         fclose(dictionary);
@@ -551,9 +539,17 @@ void deleteEntity(char *dictionaryName)
     }
 
     long newSize = (count - 1) * sizeof(ENTITIES);
-    if(ftruncate(fileDescriptor, newSize) == -1)
+    if (ftruncate(fileDescriptor, newSize) == -1)
     {
         printf("Error: Could not truncate the file.\n");
+        fclose(dictionary);
+        return;
+    }
+
+    rewind(dictionary);
+    if (fwrite(entities, sizeof(ENTITIES), count - 1, dictionary) != (size_t)(count - 1))
+    {
+        printf("Error: Could not write the updated entities to the file.\n");
         fclose(dictionary);
         return;
     }
