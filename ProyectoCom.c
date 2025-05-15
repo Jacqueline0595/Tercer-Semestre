@@ -22,9 +22,30 @@ typedef struct Atribute
     long nextAtribute;
 } ATTRIBUTE;
 
-void menu();
+void imprimirAtributos(FILE *Diccionario, long ListAtrubutos);
+long appendAttribute(FILE *dataDictionary, ATTRIBUTE newAttribute);
+void reorderAttributes(FILE *dataDictionary, long currentAttributePointer, const char *newAttributeName, long newAttributeDirection, bool clavePrim);
+void CreateAttribute(FILE *dataDictionary, Entidades currentEntity);
+int eliminaAtributo(FILE *Diccionario, char nom[N], long cab);
+void modificaAtributo(FILE *dataDictionary, char nom[50], long cab);
+void menuAtributos(char *diccionario, Entidades entidad);
+int elimina(FILE *Diccionario, char nom[N]);
+void OrdenarEntidad(FILE *Diccionario, long EntidadActual, const char *nuevoNombreEntidad, long nuevaDirEntidad);
+long AgregarEntidad(FILE *Diccionario, Entidades nuevaEntidad);
+void imprimirDatos(FILE *Diccionario, long LDatos, long LAtributos);
+void imprimir(FILE *Diccionario);
+Entidades findEntity(FILE *dataDictionary, char entityName[50]);
+void modificarEntidad(FILE *Diccionario, char nom[50]);
+void AgregarDato(FILE *Diccionario, long nuevoDato, long LDatos, long LAtributos);
+void insertarDatos(FILE *Diccionario, Entidades entidad);
 void EntidadesMenu(char diccionario[N]);
-void menuAtributos(char diccionario[N], Entidades entidad);
+void menu();
+
+
+int main()
+{
+    menu();
+}
 
 void imprimirAtributos(FILE *Diccionario, long ListAtrubutos)
 {
@@ -41,7 +62,7 @@ void imprimirAtributos(FILE *Diccionario, long ListAtrubutos)
         {
             fseek(Diccionario, direccion, SEEK_SET);
 
-            fread(&atributo.name, N, 1, Diccionario);
+            fread(&atributo.name, 50, 1, Diccionario);
             fread(&atributo.isPrimary, sizeof(bool), 1, Diccionario);
             fread(&atributo.type, sizeof(long), 1, Diccionario);
             fread(&atributo.size, sizeof(long), 1, Diccionario);
@@ -198,17 +219,17 @@ int eliminaAtributo(FILE *Diccionario, char nom[N], long cab)
 
     if (ptr == -1)
     {
-        fclose(Diccionario);
+        // No cerrar el archivo aquí, solo retornar
         return 0; // Lista vacía
     }
 
     // Desplazarse a la primera entidad
     fseek(Diccionario, ptr, SEEK_SET);
-    fread(atributo.name, N, 1, Diccionario);
+    fread(atributo.name, 50, 1, Diccionario);
     fread(&atributo.isPrimary, sizeof(bool), 1, Diccionario);
     fread(&atributo.type, sizeof(long), 1, Diccionario);
     fread(&atributo.size, sizeof(long), 1, Diccionario);
-    ptrdir = ftell(Diccionario);               // Dirección de la primera entidad
+    ptrdir = ftell(Diccionario);               // Dirección del puntero 'sig'
     fread(&ptr, sizeof(long), 1, Diccionario); // Obtener el puntero 'sig' de la primera entidad
 
     // Si la entidad a eliminar es la primera (cabeza de la lista)
@@ -221,29 +242,28 @@ int eliminaAtributo(FILE *Diccionario, char nom[N], long cab)
     }
 
     // Buscar la entidad a eliminar en el resto de la lista
-    while (ptr != -1 && strcmp(atributo.name, nom) != 0)
+    while (ptr != -1)
     {
         ant = ptrdir;
         fseek(Diccionario, ptr, SEEK_SET);
-        fread(atributo.name, N, 1, Diccionario);
+        fread(atributo.name, 50, 1, Diccionario);
         fread(&atributo.isPrimary, sizeof(bool), 1, Diccionario);
         fread(&atributo.type, sizeof(long), 1, Diccionario);
         fread(&atributo.size, sizeof(long), 1, Diccionario);
-        ptrdir = ftell(Diccionario);               // Dirección de la primera entidad
-        fread(&ptr, sizeof(long), 1, Diccionario); // Obtener el puntero 'sig' de la primera entidad
+        ptrdir = ftell(Diccionario);               // Dirección del puntero 'sig'
+        fread(&ptr, sizeof(long), 1, Diccionario); // Obtener el puntero 'sig' de la entidad actual
+
+        if (strcmp(atributo.name, nom) == 0)
+        {
+            // Ahora eliminamos la entidad: Actualizamos el puntero 'sig' de la entidad anterior
+            fseek(Diccionario, ant, SEEK_SET);          // Desplazarse a la entidad anterior
+            fwrite(&ptr, sizeof(long), 1, Diccionario); // Actualizamos el puntero 'sig' para omitir la entidad eliminada
+            return 1; // Eliminación exitosa
+        }
     }
 
     // Si no se encontró la entidad, devolvemos 0
-    if (ptr == -1 && strcmp(atributo.name, nom) != 0)
-    {
-        return 0;
-    }
-
-    // Ahora eliminamos la entidad: Actualizamos el puntero 'sig' de la entidad anterior
-    fseek(Diccionario, ant, SEEK_SET);          // Desplazarse a la entidad anterior
-    fwrite(&ptr, sizeof(long), 1, Diccionario); // Actualizamos el puntero 'sig' para omitir la entidad eliminada
-
-    return 1; // Eliminación exitosa
+    return 0;
 }
 
 void modificaAtributo(FILE *dataDictionary, char nom[50], long cab)
@@ -293,11 +313,15 @@ void modificaAtributo(FILE *dataDictionary, char nom[50], long cab)
 void menuAtributos(char *diccionario, Entidades entidad)
 {
     FILE *Diccionario = fopen(diccionario, "rb+");
+    if (!Diccionario) {
+        printf("No se pudo abrir el archivo.\n");
+        return;
+    }
     int ops;
     char nom[N];
 
     printf("----------Atributos de %s----------\n", entidad.nom);
-    printf(" 1)Imprimir Atributos\n 2)Nuevo Atributo\n 3)Eliminar Atributo\n 4)Modificar Atributo\n 0)salir\n Opcion: ");
+    printf(" 1)Imprimir Atributos\n 2)Nuevo Atributo\n 3)Eliminar Atributo\n 4)Modificar Atributo\n 5)Agregar datos\n 0)salir\n Opcion: ");
     scanf("%d", &ops);
 
     switch (ops)
@@ -322,10 +346,13 @@ void menuAtributos(char *diccionario, Entidades entidad)
         scanf("%s", nom);
         modificaAtributo(Diccionario, nom, entidad.ListAtrubutos);
         break;
+    case 5:
+        insertarDatos(Diccionario, entidad);
+        break;
     case 0:
         fclose(Diccionario);
         EntidadesMenu(diccionario);
-        break;
+        return; // Salir del menú de atributos
     }
 
     fclose(Diccionario);
@@ -354,7 +381,7 @@ int elimina(FILE *Diccionario, char nom[N])
     fread(entidad.nom, N, 1, Diccionario);
     fread(&entidad.listDatos, sizeof(long), 1, Diccionario);
     fread(&entidad.ListAtrubutos, sizeof(long), 1, Diccionario);
-    ptrdir = ftell(Diccionario);               // Dirección de la primera entidad
+    ptrdir = ftell(Diccionario);               // Dirección del puntero 'sig'
     fread(&ptr, sizeof(long), 1, Diccionario); // Obtener el puntero 'sig' de la primera entidad
 
     // Si la entidad a eliminar es la primera (cabeza de la lista)
@@ -805,13 +832,17 @@ void insertarDatos(FILE *Diccionario, Entidades entidad)
 void EntidadesMenu(char diccionario[N])
 {
     FILE *Diccionario = fopen(diccionario, "rb+");
+    if (!Diccionario) {
+        printf("No se pudo abrir el archivo.\n");
+        return;
+    }
     int ops;
     long DirEntidad;
     char nom[N];
     Entidades nuevaEntidad, entidad;
 
     printf("----------ENTIDADES----------\n");
-    printf("1)Imprimir \n2)Nueva Entidad \n3)Eliminar Entidad \n4)Modificar entidad \n5)Seleccionar Entidad \n6)Agregar Datos \n0)salir \nOpcion: ");
+    printf("1)Imprimir \n2)Nueva Entidad \n3)Eliminar Entidad \n4)Modificar entidad \n5)Seleccionar Entidad \n0)salir \nOpcion: ");
     scanf("%d", &ops);
     switch (ops)
     {
@@ -853,6 +884,7 @@ void EntidadesMenu(char diccionario[N])
             printf("No se encontro La entidad!, favor de revisar.\n");
             fclose(Diccionario);
             EntidadesMenu(diccionario);
+            return;
         }
         fseek(Diccionario, entidad.listDatos, SEEK_SET);
         fread(&DirEntidad, sizeof(long), 1, Diccionario);
@@ -861,29 +893,17 @@ void EntidadesMenu(char diccionario[N])
             printf("Ya hay datos en esta entidad, no puedes modificar ni agregar mas atributos.\n");
             fclose(Diccionario);
             EntidadesMenu(diccionario);
+            return;
         }
         printf("Entrando a los Atributos de la Entidad...........\n\n");
         fclose(Diccionario);
         menuAtributos(diccionario, entidad);
-        break;
-    case 6:
-        rewind(Diccionario);
-        printf("Nombre de la Entidad a la que se le quiere insertar los datos: ");
-        scanf("%s", nom);
-        entidad = findEntity(Diccionario, nom);
-        if (entidad.sig == 0)
-        {
-            printf("No se encontro La entidad!, favor de revisar.\n");
-            fclose(Diccionario);
-            EntidadesMenu(diccionario);
-        }
-        insertarDatos(Diccionario, entidad);
-        break;
+        return;
     case 0:
         fclose(Diccionario);
         printf("Saliendo del Archivo...................\n\n");
         menu();
-        break;
+        return;
     }
     fclose(Diccionario);
     EntidadesMenu(diccionario);
@@ -896,7 +916,7 @@ void menu()
     long num = vacio;
     char nom[N];
 
-    printf("----------MENU----------\n");
+    printf("---------- MENU ----------\n");
     printf("1)Crear Diccionario \n2)Abrir diccionario \n0)salir \nOpcion: ");
     scanf("%d", &ops);
     switch (ops)
@@ -904,23 +924,31 @@ void menu()
     case 1:
         printf("Nombre del diccionario: ");
         scanf("%s", nom);
-        if (!(diccionario = fopen(nom, "wb")))
+        diccionario = fopen(nom, "wb");
+        if (!diccionario)
         {
             printf("Archivo no encontrado\n");
             menu();
+            return;
         }
-        else
-            // inicializar diccionario
-            fwrite(&num, sizeof(long), 1, diccionario);
+        fwrite(&num, sizeof(long), 1, diccionario);
+        fclose(diccionario);
+        printf("Abriendo Archivo.............\n\n");
+        EntidadesMenu(nom);
         break;
     case 2:
         printf("Nombre del diccionario: ");
         scanf("%s", nom);
-        if (!(diccionario = fopen(nom, "rb+")))
+        diccionario = fopen(nom, "rb+");
+        if (!diccionario)
         {
             printf("Archivo no encontrado\n");
             menu();
+            return;
         }
+        fclose(diccionario);
+        printf("Abriendo Archivo.............\n\n");
+        EntidadesMenu(nom);
         break;
     case 0:
         printf("Cerrando programa... \n");
@@ -930,12 +958,4 @@ void menu()
         menu();
         break;
     }
-    fclose(diccionario);
-    printf("Abriendo Archivo.............\n\n");
-    EntidadesMenu(nom);
-}
-
-int main()
-{
-    menu();
 }
