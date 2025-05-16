@@ -38,9 +38,9 @@ void openFile(char *name);
 void printDictionaryMenu(char *dictionary);
 void processInputDictionary(char *dictionary);
 void executeDictionaryOption(int userSelec, char *dictionary);
-void printDictionary(char *dictionaryName);
-void createEntityFun(char *dictionaryName);
-long createEntity(FILE *dictionary, ENTITIES newEntity);
+void printDictionary(FILE *dictionary, char *dictionaryName);
+void createEntity(FILE *dictionary, char *dictionaryName);
+long writeEntity(FILE *dictionary, ENTITIES newEntity);
 void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity, long newDirEntity);
 
 // ------ Attributes functions ------
@@ -180,7 +180,6 @@ void createNewFile(FILE *dictionary, char *name)
         printf("Error: Could not create the file.\n");
         return;
     }
-    printf("%ld \n", num);
     fwrite(&num, sizeof(long), 1, dictionary);
     fclose(dictionary);
     printf("File created successfully. Opening the file...\n\n");
@@ -264,12 +263,12 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
     {
         case PRINT:
             printf("Printing data dictionary...\n");
-            //printDictionary(dictionary);
+            printDictionary(dictionary, dictionaryName);
         break;
 
         case CREATE_ENTITY:
             printf("Creating a new entity...\n");
-            //createEntityFun(dictionary);
+            createEntity(dictionary, dictionaryName);
         break;
 
         case DELETE_ENTITY:
@@ -299,9 +298,8 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
     fclose(dictionary);
 }
 
-void printDictionary(char *dictionaryName)
+void printDictionary(FILE *dictionary, char *dictionaryName)
 {
-    FILE *dictionary = fopen(dictionaryName, "rb");
     if(!dictionary)
     {
         printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
@@ -309,21 +307,68 @@ void printDictionary(char *dictionaryName)
     }
 
     ENTITIES entity;
-    printf("\n------- Data Dictionary: %s -------\n", dictionaryName);
-    printf("| %-50s | %-10s | %-10s | %-10s |\n", "Entity Name", "List Data", "List Attr", "Next");
+    long direction;
 
-    while(fread(&entity, sizeof(ENTITIES), 1, dictionary) == 1)
+    rewind(dictionary);
+    fread(&direction, sizeof(long), 1, dictionary);
+    if(direction == empty)
     {
-        printf("| %-50s | %-10ld | %-10ld | %-10ld |\n", entity.name, entity.listDat, entity.listAttr, entity.sig);
+        printf("No entities found in the dictionary.\n");
+        fclose(dictionary);
+        return;
     }
 
-    fclose(dictionary);
+    printf("\n------- Data Dictionary: %s -------\n", dictionaryName);
+    printf("| %-30s | %-10s | %-10s | %-10s |\n", "Entity Name", "List Data", "List Attr", "Next");
+
+    printf("|-----------------------------------------------------------------------|\n");
+    while(direction != empty)
+    {
+        fseek(dictionary, direction, SEEK_SET);
+        fread(&entity.name, LENGTH, 1, dictionary);
+        fread(&entity.listDat, sizeof(long), 1, dictionary);
+        fread(&entity.listAttr, sizeof(long), 1, dictionary);
+        fread(&direction, sizeof(long), 1, dictionary);
+        printf("| %-30s | %-10ld | %-10ld | %-10ld |\n", entity.name, entity.listDat, entity.listAttr, direction);
+
+        ATTRIBUTES attribute;
+        long direction2 = entity.listAttr;
+
+        if (direction2 == empty)
+        {
+            printf("\tNo attributes found for entity '%s'.\n", entity.name);
+        }
+        else
+        {
+            printf("\t ----- Attributes of entity '%s': ----- \n", entity.name);
+            printf("\t| %-30s | %-10s | %-10s | %-10s | %-10s |\n", "Attribute name", "Is primary", "Type", "Size", "Next");
+            while (direction2 != empty)
+            {
+                fseek(dictionary, direction2, SEEK_SET);
+                fread(&attribute.name, LENGTH, 1, dictionary);
+                fread(&attribute.isPrimary, sizeof(long), 1, dictionary);
+                fread(&attribute.type, sizeof(long), 1, dictionary);
+                fread(&attribute.size, sizeof(long), 1, dictionary);
+                fread(&direction2, sizeof(long), 1, dictionary);
+                printf("\t| %-30s | %-10d | %-10d | %-10d | %-10ld |\n", attribute.name, attribute.isPrimary, attribute.type, attribute.size, direction2);
+            }
+            if(entity.listDat == empty)
+            {
+                printf("\tNo data found for entity '%s'.\n", entity.name);
+            }
+            else
+            {
+                printf("\t ----- Data of entity '%s': ----- \n", entity.name);
+                // Implementar printData
+            }
+        }
+    }
+
     printf("\n--- End of Dictionary ---\n");
 }
 
-void createEntityFun(char *dictionaryName)
+void createEntity(FILE *dictionary, char *dictionaryName)
 {
-    FILE *dictionary = fopen(dictionaryName, "rb+");
     if (!dictionary)
     {
         printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
@@ -343,15 +388,14 @@ void createEntityFun(char *dictionaryName)
     newEntity.listDat = empty;
     newEntity.sig = empty;
 
-    dirEntity = createEntity(dictionary, newEntity);
+    dirEntity = writeEntity(dictionary, newEntity);
 
-    printf("Entity '%s' created successfully.\n", newEntity.name);
     orderEntity(dictionary, 0, newEntity.name, dirEntity);
 
-    fclose(dictionary);
+    printf("Entity '%s' created successfully, and added to %ld.\n", newEntity.name, dirEntity);
 }
 
-long createEntity(FILE *dictionary, ENTITIES newEntity)
+long writeEntity(FILE *dictionary, ENTITIES newEntity)
 {
     long dirEntity;
     fseek(dictionary, 0, SEEK_END);
@@ -363,8 +407,6 @@ long createEntity(FILE *dictionary, ENTITIES newEntity)
 void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity, long newDirEntity)
 {
     long dirEntity = empty;
-    char currentEntityName[LENGTH];
-    long nextHeaderPointer;
 
     fseek(dictionary, currentEntity, SEEK_SET);
     fread(&dirEntity, sizeof(dirEntity), 1, dictionary);
@@ -376,27 +418,28 @@ void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity
     }
     else
     {
-        fseek(dictionary, dirEntity, SEEK_SET);
-        fread(&currentEntityName, sizeof(char), LENGTH, dictionary);
-        nextHeaderPointer = ftell(dictionary) + (sizeof(long) * 2);
+        char currentEntityName[50];
+        long nextHeaderPointer;
 
+        fseek(dictionary, dirEntity, SEEK_SET);
+        fread(&currentEntityName, sizeof(char), 50, dictionary);
+        nextHeaderPointer = ftell(dictionary) + (sizeof(long) * 2);
         if (strcmp(currentEntityName, newNameEntity) < 0)
         {
-
             orderEntity(dictionary, nextHeaderPointer, newNameEntity, newDirEntity);
         }
         else
         {
             if (strcmp(currentEntityName, newNameEntity) == 0)
             {
-                printf("The entity already exists \n");
-                return;
+                printf("This entity already exist \n");
             }
             else
             {
+
                 fseek(dictionary, currentEntity, SEEK_SET);
                 fwrite(&newDirEntity, sizeof(long), 1, dictionary);
-                fseek(dictionary, newDirEntity + LENGTH + (sizeof(long) * 2), SEEK_SET);
+                fseek(dictionary, newDirEntity + 50 + (sizeof(long) * 2), SEEK_SET);
                 fwrite(&dirEntity, sizeof(long), 1, dictionary);
             }
         }

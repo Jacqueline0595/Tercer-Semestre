@@ -551,7 +551,6 @@ void imprimirDatos(FILE *Diccionario, long LDatos, long LAtributos)
 
 void imprimir(FILE *Diccionario)
 {
-
     Entidades Entidad;
     long direccion;
 

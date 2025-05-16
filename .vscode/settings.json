@@ -71,7 +71,15 @@
     "typeindex": "c",
     "sstream": "c",
     "regex": "c",
-    "algorithm": "c"
+    "algorithm": "c",
+    "array": "c",
+    "bitset": "c",
+    "string_view": "c",
+    "format": "c",
+    "initializer_list": "c",
+    "ranges": "c",
+    "span": "c",
+    "stacktrace": "c"
   },
   "python.testing.pytestArgs": [
     "Analisis"
