@@ -632,7 +632,7 @@ Entidades findEntity(FILE *dataDictionary, char entityName[50])
         fread(&aux.sig, sizeof(long), 1, dataDictionary);
     }
 
-    if (aux.sig == -1 && (strcmp(currentEntity.nom, entityName)) != 0)
+    if(aux.sig == -1 && (strcmp(currentEntity.nom, entityName)) != 0)
         currentEntity.sig = 0;
 
     return currentEntity;

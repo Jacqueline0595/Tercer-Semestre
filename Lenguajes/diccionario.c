@@ -20,7 +20,7 @@ typedef struct attribute
     int isPrimary;
     int type;
     int size;
-    int next;
+    long next;
 } ATTRIBUTES;
 
 void toUpperCase(char *strin);
@@ -346,9 +346,9 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
             {
                 fseek(dictionary, direction2, SEEK_SET);
                 fread(&attribute.name, LENGTH, 1, dictionary);
-                fread(&attribute.isPrimary, sizeof(long), 1, dictionary);
-                fread(&attribute.type, sizeof(long), 1, dictionary);
-                fread(&attribute.size, sizeof(long), 1, dictionary);
+                fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
+                fread(&attribute.type, sizeof(int), 1, dictionary);
+                fread(&attribute.size, sizeof(int), 1, dictionary);
                 fread(&direction2, sizeof(long), 1, dictionary);
                 printf("\t| %-30s | %-10d | %-10d | %-10d | %-10ld |\n", attribute.name, attribute.isPrimary, attribute.type, attribute.size, direction2);
             }
