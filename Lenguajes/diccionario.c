@@ -3,7 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
-
 #define empty -1
 #define LENGTH 50
 
@@ -40,13 +39,9 @@ void printDictionaryMenu(char *dictionary);
 void processInputDictionary(char *dictionary);
 void executeDictionaryOption(int userSelec, char *dictionary);
 void printDictionary(char *dictionaryName);
-void createEntity(char *dictionaryName);
-int countEntities(FILE *dictionary);
-void orderEntity(char *dictionaryName);
-ENTITIES findEntity(FILE *dict, char *entityName);
-void deleteEntity(char *dictionaryName);
-void modifyEntity(char *dictionaryName);
-void selectEntity(char *dictionaryName);
+void createEntityFun(char *dictionaryName);
+long createEntity(FILE *dictionary, ENTITIES newEntity);
+void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity, long newDirEntity);
 
 // ------ Attributes functions ------
 
@@ -92,7 +87,6 @@ int main()
 
 // ------ Other functions ------
 
-
 void toUpperCase(char *strin)
 {
     int length = strlen(strin);
@@ -120,10 +114,10 @@ void cleanInput(char *input)
 
 void printMainMenu()
 {
-    printf("\t --------- Main menu --------- \n");
-    printf("--- %d Create new file \n", NEW_FILE);
-    printf("--- %d Open existing file \n", OPEN_FILE);
-    printf("--- %d Exit \n", EXIT);
+    printf("\t ----------- Main menu ----------- \n");
+    printf("----- %d Create new file \n", NEW_FILE);
+    printf("----- %d Open existing file \n", OPEN_FILE);
+    printf("----- %d Exit \n", EXIT);
 }
 
 void processUserSelection()
@@ -134,6 +128,7 @@ void processUserSelection()
     {
         printMainMenu();
         printf("Enter your choice: ");
+
         if (scanf("%d", &userSel) != 1 || userSel < EXIT || userSel > OPEN_FILE)
         {
             while (getchar() != '\n');
@@ -177,15 +172,15 @@ void createNewFile(FILE *dictionary, char *name)
     printf("Enter the name of the new dictionary: ");
     fgets(name, LENGTH, stdin);
     cleanInput(name);
+    long num = empty;
 
-    dictionary = fopen(name, "wb+");
+    dictionary = fopen(name, "wb");
     if (!dictionary)
     {
         printf("Error: Could not create the file.\n");
         return;
     }
-
-    long num = empty;
+    printf("%ld \n", num);
     fwrite(&num, sizeof(long), 1, dictionary);
     fclose(dictionary);
     printf("File created successfully. Opening the file...\n\n");
@@ -203,14 +198,6 @@ void openFile(char *name)
     if (!dictionary)
     {
         printf("Error: File '%s' not found or could not be opened.\n", name);
-        return;
-    }
-
-    ENTITIES firstEntity;
-    if (fread(&firstEntity, sizeof(ENTITIES), 1, dictionary) != 1)
-    {
-        printf("Error: The file '%s' is not a valid dictionary file.\n", name);
-        fclose(dictionary);
         return;
     }
 
@@ -275,22 +262,22 @@ void executeDictionaryOption(int userSelec, char *dictionary)
 
         case CREATE_ENTITY:
             printf("Creating a new entity...\n");
-            createEntity(dictionary);
+            createEntityFun(dictionary);
         break;
 
         case DELETE_ENTITY:
             printf("Deleting an entity...\n");
-            deleteEntity(dictionary);
+            //deleteEntity(dictionary);
         break;
 
         case MODIFY_ENTITY:
             printf("Modifying an entity...\n");
-            modifyEntity(dictionary);
+            //modifyEntity(dictionary);
         break;
 
         case SELECT_ENTITY:
             printf("Selecting an entity...\n");
-            selectEntity(dictionary);
+            //selectEntity(dictionary);
         break;
 
         case RETURN:
@@ -314,27 +301,28 @@ void printDictionary(char *dictionaryName)
 
     ENTITIES entity;
     printf("\n------- Data Dictionary: %s -------\n", dictionaryName);
-    printf("| %-20s | %-10s | %-10s | %-10s |\n", "Entity Name", "List Data", "List Attr", "Next");
+    printf("| %-50s | %-10s | %-10s | %-10s |\n", "Entity Name", "List Data", "List Attr", "Next");
 
     while(fread(&entity, sizeof(ENTITIES), 1, dictionary) == 1)
     {
-        printf("| %-20s | %-10ld | %-10ld | %-10ld |\n", entity.name, entity.listDat, entity.listAttr, entity.sig);
+        printf("| %-50s | %-10ld | %-10ld | %-10ld |\n", entity.name, entity.listDat, entity.listAttr, entity.sig);
     }
 
     fclose(dictionary);
     printf("\n--- End of Dictionary ---\n");
 }
 
-void createEntity(char *dictionaryName)
+void createEntityFun(char *dictionaryName)
 {
     FILE *dictionary = fopen(dictionaryName, "rb+");
     if (!dictionary)
     {
-        printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
 
     ENTITIES newEntity;
+    long dirEntity;
     fflush(stdin);
     
     printf("Enter the name of the new entity: ");
@@ -342,343 +330,68 @@ void createEntity(char *dictionaryName)
     cleanInput(newEntity.name);
     toUpperCase(newEntity.name);
 
-    newEntity.listDat = empty;
     newEntity.listAttr = empty;
+    newEntity.listDat = empty;
     newEntity.sig = empty;
 
-    fseek(dictionary, 0, SEEK_END);
-
-    if (fwrite(&newEntity, sizeof(ENTITIES), 1, dictionary) != 1)
-    {
-        printf("Error: Could not write the new entity to the file.\n");
-        fclose(dictionary);
-        return;
-    }
+    dirEntity = createEntity(dictionary, newEntity);
 
     printf("Entity '%s' created successfully.\n", newEntity.name);
+    orderEntity(dictionary, 0, newEntity.name, dirEntity);
+
     fclose(dictionary);
-
-    orderEntity(dictionaryName);
 }
 
-int countEntities(FILE *dictionary)
+long createEntity(FILE *dictionary, ENTITIES newEntity)
 {
-    ENTITIES entity;
-    int count = 0;
-
-    rewind(dictionary);
-    while (fread(&entity, sizeof(ENTITIES), 1, dictionary) == 1)
-    {
-        count++;
-    }
-
-    return count;
+    long dirEntity;
+    fseek(dictionary, 0, SEEK_END);
+    dirEntity = ftell(dictionary);
+    fwrite(&newEntity, sizeof(ENTITIES), 1, dictionary);
+    return dirEntity;
 }
 
-void orderEntity(char *dictionaryName)
+void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity, long newDirEntity)
 {
-    FILE *dictionary = fopen(dictionaryName, "rb+");
-    if(!dictionary)
+    long dirEntity = empty;
+    char currentEntityName[LENGTH];
+    long nextHeaderPointer;
+
+    fseek(dictionary, currentEntity, SEEK_SET);
+    fread(&dirEntity, sizeof(dirEntity), 1, dictionary);
+
+    if (dirEntity == -1L)
     {
-        printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
-        return;
+        fseek(dictionary, currentEntity, SEEK_SET);
+        fwrite(&newDirEntity, sizeof(long), 1, dictionary);
     }
-
-    int count = countEntities(dictionary);
-
-    if(count == 0)
+    else
     {
-        printf("No entities found to order.\n");
-        fclose(dictionary);
-        return;
-    }
+        fseek(dictionary, dirEntity, SEEK_SET);
+        fread(&currentEntityName, sizeof(char), LENGTH, dictionary);
+        nextHeaderPointer = ftell(dictionary) + (sizeof(long) * 2);
 
-    ENTITIES entities[50];
-    if(count > 50)
-    {
-        printf("Error: Too many entities to handle statically (max 50).\n");
-        fclose(dictionary);
-        return;
-    }
-
-    rewind(dictionary);
-    for(int i = 0; i < count; i++)
-    {
-        fread(&entities[i], sizeof(ENTITIES), 1, dictionary);
-    }
-
-    for(int i = 0; i < count - 1; i++)
-    {
-        for(int j = i + 1; j < count; j++)
+        if (strcmp(currentEntityName, newNameEntity) < 0)
         {
-            if(strcmp(entities[i].name, entities[j].name) > 0)
+
+            orderEntity(dictionary, nextHeaderPointer, newNameEntity, newDirEntity);
+        }
+        else
+        {
+            if (strcmp(currentEntityName, newNameEntity) == 0)
             {
-                ENTITIES temp = entities[i];
-                entities[i] = entities[j];
-                entities[j] = temp;
+                printf("The entity already exists \n");
+                return;
+            }
+            else
+            {
+                fseek(dictionary, currentEntity, SEEK_SET);
+                fwrite(&newDirEntity, sizeof(long), 1, dictionary);
+                fseek(dictionary, newDirEntity + LENGTH + (sizeof(long) * 2), SEEK_SET);
+                fwrite(&dirEntity, sizeof(long), 1, dictionary);
             }
         }
     }
-
-    for(int i = 0; i < count; i++)
-    {
-        if(i == count - 1)
-        {
-            entities[i].sig = empty;
-        }
-        else
-        {
-            entities[i].sig = (i + 1) * sizeof(ENTITIES);
-        }
-    }
-
-    rewind(dictionary);
-    if(fwrite(entities, sizeof(ENTITIES), count, dictionary) != (size_t)count)
-    {
-        printf("Error: Could not write the ordered entities to the file.\n");
-        fclose(dictionary);
-        return;
-    }
-
-    printf("Entities ordered successfully.\n");
-    fclose(dictionary);
-}
-
-ENTITIES findEntity(FILE *dict, char *entityName)
-{
-    ENTITIES entity;
-    char searchNameUpper[LENGTH];
-    strcpy(searchNameUpper, entityName);
-
-    rewind(dict);
-
-    while (fread(&entity, sizeof(ENTITIES), 1, dict) == 1)
-    {
-        char entityNameUpper[LENGTH];
-        strcpy(entityNameUpper, entity.name);
-
-        if (strcmp(entityNameUpper, searchNameUpper) == 0)
-        {
-            return entity;
-        }
-    }
-
-    ENTITIES notFound = { .name = "" };
-    return notFound;
-}
-
-void deleteEntity(char *dictionaryName)
-{
-    FILE *dictionary = fopen(dictionaryName, "rb+");
-    if (!dictionary)
-    {
-        printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
-        return;
-    }
-
-    char entityName[LENGTH];
-    fflush(stdin);
-    printf("Enter the name of the entity to delete: ");
-    fgets(entityName, LENGTH, stdin);
-    cleanInput(entityName);
-    toUpperCase(entityName);
-
-    ENTITIES entityToDelete = findEntity(dictionary, entityName);
-    if (strlen(entityToDelete.name) == 0)
-    {
-        printf("Error: Entity '%s' not found.\n", entityName);
-        fclose(dictionary);
-        return;
-    }
-
-    ENTITIES entities[50];
-    int count = 0;
-
-    rewind(dictionary);
-    while (fread(&entities[count], sizeof(ENTITIES), 1, dictionary) == 1)
-    {
-        count++;
-    }
-
-    int indexToDelete = -1;
-    for (int i = 0; i < count; i++)
-    {
-        if (strcmp(entities[i].name, entityToDelete.name) == 0)
-        {
-            indexToDelete = i;
-            break;
-        }
-    }
-
-    if (indexToDelete == -1)
-    {
-        printf("Error: Could not find the entity to delete.\n");
-        fclose(dictionary);
-        return;
-    }
-
-    for (int i = 0; i < count; i++)
-    {
-        if (entities[i].sig == (long int)(indexToDelete * sizeof(ENTITIES)))
-        {
-            entities[i].sig = entities[indexToDelete].sig;
-        }
-    }
-
-    for (int i = indexToDelete; i < count - 1; i++)
-    {
-        entities[i] = entities[i + 1];
-    }
-
-    int fileDescriptor = fileno(dictionary);
-    if (fileDescriptor == -1)
-    {
-        printf("Error: Could not get file descriptor.\n");
-        fclose(dictionary);
-        return;
-    }
-
-    long newSize = (count - 1) * sizeof(ENTITIES);
-    if (ftruncate(fileDescriptor, newSize) == -1)
-    {
-        printf("Error: Could not truncate the file.\n");
-        fclose(dictionary);
-        return;
-    }
-
-    rewind(dictionary);
-    if (fwrite(entities, sizeof(ENTITIES), count - 1, dictionary) != (size_t)(count - 1))
-    {
-        printf("Error: Could not write the updated entities to the file.\n");
-        fclose(dictionary);
-        return;
-    }
-
-    fclose(dictionary);
-
-    orderEntity(dictionaryName);
-
-    printf("Entity '%s' deleted and dictionary reordered successfully.\n", entityName);
-}
-
-void modifyEntity(char *dictionaryName)
-{
-    FILE *dictionary = fopen(dictionaryName, "rb+");
-    if(!dictionary)
-    {
-        printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
-        return;
-    }
-
-    char currentName[LENGTH];
-    fflush(stdin);
-    printf("Enter the name of the entity to modify: ");
-    fgets(currentName, LENGTH, stdin);
-    cleanInput(currentName);
-    toUpperCase(currentName);
-
-    ENTITIES entityToModify = findEntity(dictionary, currentName);
-    if (strlen(entityToModify.name) == 0) // Verifica si no se encontró
-    {
-        printf("Error: Entity '%s' not found.\n", currentName);
-        fclose(dictionary);
-        return;
-    }
-
-    // Calculate the position of the entity to modify
-    long positionToModify = -1;
-    ENTITIES tempEntity;
-    rewind(dictionary);
-    while (fread(&tempEntity, sizeof(ENTITIES), 1, dictionary) == 1)
-    {
-        if (strcmp(tempEntity.name, entityToModify.name) == 0)
-        {
-            positionToModify = ftell(dictionary) - sizeof(ENTITIES);
-            break;
-        }
-    }
-
-    if (positionToModify == -1)
-    {
-        printf("Error: Could not determine the position of the entity to modify.\n");
-        fclose(dictionary);
-        return;
-    }
-
-    printf("Search entity '%s'...\n", entityToModify.name);
-    char newName[LENGTH];
-    ENTITIES existingEntity;
-
-    do
-    {
-        fflush(stdin);
-        printf("Enter the new name for the entity: ");
-        fgets(newName, LENGTH, stdin);
-        cleanInput(newName);
-        toUpperCase(newName);
-
-        if(strcmp(currentName, newName) == 0)
-        {
-            printf("The new name is the same as the current name. Try again.\n");
-            continue;
-        }
-
-        existingEntity = findEntity(dictionary, newName);
-        if(strlen(existingEntity.name) != 0)
-        {
-            printf("The name '%s' is already used by another entity. Try again.\n", newName);
-        }
-        else
-        {
-            break;
-        }
-    } while (1);
-
-    strcpy(entityToModify.name, newName);
-
-    fseek(dictionary, positionToModify, SEEK_SET);
-    if (fwrite(&entityToModify, sizeof(ENTITIES), 1, dictionary) != 1)
-    {
-        printf("Error: Could not update the entity in the file.\n");
-        fclose(dictionary);
-        return;
-    }
-
-    orderEntity(dictionaryName);
-
-    printf("Entity '%s' successfully modified to '%s'.\n", currentName, newName);
-    fclose(dictionary);
-}
-
-void selectEntity(char *dictionaryName)
-{
-    FILE *dictionary = fopen(dictionaryName, "rb+");
-    if (!dictionary)
-    {
-        printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
-        return;
-    }
-
-    char entityName[LENGTH];
-    fflush(stdin);
-    printf("Enter the name of the entity to select: ");
-    fgets(entityName, LENGTH, stdin);
-    cleanInput(entityName);
-    toUpperCase(entityName);
-
-    ENTITIES selectedEntity = findEntity(dictionary, entityName);
-    if (strlen(selectedEntity.name) == 0) // Verifica si no se encontró
-    {
-        printf("Error: Entity '%s' not found.\n", entityName);
-        fclose(dictionary);
-        return;
-    }
-
-    printf("Search entity '%s'...\n", selectedEntity.name);
-    printf("Entity '%s' selected successfully.\n", selectedEntity.name);
-
-    processInputEntity(dictionaryName, selectedEntity);
-    fclose(dictionary);
 }
 
 // ------ Attributes functions ------
