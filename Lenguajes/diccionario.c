@@ -409,9 +409,9 @@ void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity
     long dirEntity = empty;
 
     fseek(dictionary, currentEntity, SEEK_SET);
-    fread(&dirEntity, sizeof(dirEntity), 1, dictionary);
+    fread(&dirEntity, sizeof(long), 1, dictionary);
 
-    if (dirEntity == -1L)
+    if (dirEntity == empty)
     {
         fseek(dictionary, currentEntity, SEEK_SET);
         fwrite(&newDirEntity, sizeof(long), 1, dictionary);
@@ -439,7 +439,7 @@ void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity
 
                 fseek(dictionary, currentEntity, SEEK_SET);
                 fwrite(&newDirEntity, sizeof(long), 1, dictionary);
-                fseek(dictionary, newDirEntity + 50 + (sizeof(long) * 2), SEEK_SET);
+                fseek(dictionary, newDirEntity + LENGTH + (sizeof(long) * 2), SEEK_SET);
                 fwrite(&dirEntity, sizeof(long), 1, dictionary);
             }
         }
