@@ -352,7 +352,7 @@ void menuAtributos(char *diccionario, Entidades entidad)
     case 0:
         fclose(Diccionario);
         EntidadesMenu(diccionario);
-        return; // Salir del menú de atributos
+        return;
     }
 
     fclose(Diccionario);
@@ -775,6 +775,9 @@ void insertarDatos(FILE *Diccionario, Entidades entidad)
         return;
     }
 
+    // type:{0:Bite, 1:Integer, 2:Float, 3:Char, 4:String}
+    // Size: *Bit=1, *Integer=4, *Float=8, *Char=1, String=? (Ask)
+
     while (ListAtributos != -1)
     {
         // Moverse asia la lista de atributos
@@ -935,7 +938,7 @@ void menu()
         fclose(diccionario);
         printf("Abriendo Archivo.............\n\n");
         EntidadesMenu(nom);
-        break;
+    break;
     case 2:
         printf("Nombre del diccionario: ");
         scanf("%s", nom);
