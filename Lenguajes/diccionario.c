@@ -430,18 +430,10 @@ void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity
         }
         else
         {
-            if (strcmp(currentEntityName, newNameEntity) == 0)
-            {
-                printf("This entity already exist \n");
-            }
-            else
-            {
-
-                fseek(dictionary, currentEntity, SEEK_SET);
-                fwrite(&newDirEntity, sizeof(long), 1, dictionary);
-                fseek(dictionary, newDirEntity + LENGTH + (sizeof(long) * 2), SEEK_SET);
-                fwrite(&dirEntity, sizeof(long), 1, dictionary);
-            }
+            fseek(dictionary, currentEntity, SEEK_SET);
+            fwrite(&newDirEntity, sizeof(long), 1, dictionary);
+            fseek(dictionary, newDirEntity + LENGTH + (sizeof(long) * 2), SEEK_SET);
+            fwrite(&dirEntity, sizeof(long), 1, dictionary);
         }
     }
 }
