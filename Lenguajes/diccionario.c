@@ -42,6 +42,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName);
 void createEntity(FILE *dictionary, char *dictionaryName);
 long writeEntity(FILE *dictionary, ENTITIES newEntity);
 void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity, long newDirEntity);
+ENTITIES findEntity(FILE *dataDictionary, char *entityName);
 
 // ------ Attributes functions ------
 
@@ -384,6 +385,12 @@ void createEntity(FILE *dictionary, char *dictionaryName)
     cleanInput(newEntity.name);
     toUpperCase(newEntity.name);
 
+    if(findEntity(dictionary, newEntity.name).sig != 0)
+    {
+        printf("Error: Entity '%s' already exists in the dictionary.\n", newEntity.name);
+        return;
+    }
+
     newEntity.listAttr = empty;
     newEntity.listDat = empty;
     newEntity.sig = empty;
@@ -436,6 +443,40 @@ void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity
             fwrite(&dirEntity, sizeof(long), 1, dictionary);
         }
     }
+}
+
+ENTITIES findEntity(FILE *dataDictionary, char *entityName)
+{
+    ENTITIES currentEntity, aux;
+
+    rewind(dataDictionary);
+    fread(&aux.sig, sizeof(long), 1, dataDictionary);
+    fseek(dataDictionary, aux.sig, SEEK_SET);
+    fread(&currentEntity.name, sizeof(char), 50, dataDictionary);
+    currentEntity.listDat = ftell(dataDictionary);
+    fread(&aux.listDat, sizeof(long), 1, dataDictionary);
+    currentEntity.listAttr = ftell(dataDictionary);
+    fread(&aux.listAttr, sizeof(long), 1, dataDictionary);
+    currentEntity.sig = ftell(dataDictionary);
+    fread(&aux.sig, sizeof(long), 1, dataDictionary);
+
+    while (aux.sig != -1 && (strcmp(currentEntity.name, entityName)) != 0)
+    {
+
+        fseek(dataDictionary, aux.sig, SEEK_SET);
+        fread(&currentEntity.name, sizeof(char), 50, dataDictionary);
+        currentEntity.listDat = ftell(dataDictionary);
+        fread(&aux.listDat, sizeof(long), 1, dataDictionary);
+        currentEntity.listAttr = ftell(dataDictionary);
+        fread(&aux.listAttr, sizeof(long), 1, dataDictionary);
+        currentEntity.sig = ftell(dataDictionary);
+        fread(&aux.sig, sizeof(long), 1, dataDictionary);
+    }
+
+    if(aux.sig == -1 && (strcmp(currentEntity.name, entityName)) != 0)
+        currentEntity.sig = 0;
+
+    return currentEntity;
 }
 
 // ------ Attributes functions ------
