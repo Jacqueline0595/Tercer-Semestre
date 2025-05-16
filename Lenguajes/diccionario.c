@@ -114,7 +114,7 @@ void cleanInput(char *input)
 
 void printMainMenu()
 {
-    printf("\t ----------- Main menu ----------- \n");
+    printf("----------- Main menu ----------- \n");
     printf("----- %d Create new file \n", NEW_FILE);
     printf("----- %d Open existing file \n", OPEN_FILE);
     printf("----- %d Exit \n", EXIT);
@@ -210,13 +210,13 @@ void openFile(char *name)
 
 void printDictionaryMenu(char *dictionary)
 {
-    printf("\n\n\t -------- %s menu -------- \n", dictionary);
-    printf("--- %d Print data dictionary \n", PRINT);
-    printf("--- %d Create an entity \n", CREATE_ENTITY);
-    printf("--- %d Delete an entity \n", DELETE_ENTITY);
-    printf("--- %d Modify an entity \n", MODIFY_ENTITY);
-    printf("--- %d Select an entity \n", SELECT_ENTITY);
-    printf("--- %d Exit \n", RETURN);
+    printf("\n\n\t ----------- %s menu ----------- \n", dictionary);
+    printf("----- %d Print data dictionary \n", PRINT);
+    printf("----- %d Create an entity \n", CREATE_ENTITY);
+    printf("----- %d Delete an entity \n", DELETE_ENTITY);
+    printf("----- %d Modify an entity \n", MODIFY_ENTITY);
+    printf("----- %d Select an entity \n", SELECT_ENTITY);
+    printf("----- %d Exit \n", RETURN);
 }
 
 void processInputDictionary(char *dictionary)
@@ -251,18 +251,25 @@ void processInputDictionary(char *dictionary)
     } while(userSelec != RETURN);
 }
 
-void executeDictionaryOption(int userSelec, char *dictionary)
+void executeDictionaryOption(int userSelec, char *dictionaryName)
 {
+    FILE *dictionary = fopen(dictionaryName, "rb+");
+    if (!dictionary)
+    {
+        printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
+        return;
+    }
+
     switch(userSelec)
     {
         case PRINT:
             printf("Printing data dictionary...\n");
-            printDictionary(dictionary);
+            //printDictionary(dictionary);
         break;
 
         case CREATE_ENTITY:
             printf("Creating a new entity...\n");
-            createEntityFun(dictionary);
+            //createEntityFun(dictionary);
         break;
 
         case DELETE_ENTITY:
@@ -288,6 +295,8 @@ void executeDictionaryOption(int userSelec, char *dictionary)
             printf("Invalid option. Please try again.\n");
         break;
     }
+
+    fclose(dictionary);
 }
 
 void printDictionary(char *dictionaryName)
@@ -398,15 +407,15 @@ void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity
 
 void printEntityMenu(ENTITIES entity)
 {
-    printf("\n\n\t -------- %s's menu -------- \n", entity.name);
-    printf("--- %d Print attributes \n", PRINT2);
-    printf("--- %d Create an attribute \n", CREATE_ATTRIBUTE);
-    printf("--- %d Delete an attribute \n", DELETE_ATTRIBUTE);
-    printf("--- %d Modify an attribute \n", MODIFY_ATTRIBUTE);
-    printf("--- %d Add data to the entity \n", ADD_DATA_ATTRIBUTE);
-    printf("--- %d Modify data to the entity \n", MODIFY_DATA_ATTRIBUTE);
-    printf("--- %d Delete data to the entity \n", DELETE_DATA_ATTRIBUTE);
-    printf("--- %d Exit \n", RETURN2);
+    printf("\n\n\t\t ----------- %s's menu ----------- \n", entity.name);
+    printf("\t----- %d Print attributes \n", PRINT2);
+    printf("\t----- %d Create an attribute \n", CREATE_ATTRIBUTE);
+    printf("\t----- %d Delete an attribute \n", DELETE_ATTRIBUTE);
+    printf("\t----- %d Modify an attribute \n", MODIFY_ATTRIBUTE);
+    printf("\t----- %d Add data to the entity \n", ADD_DATA_ATTRIBUTE);
+    printf("\t----- %d Modify data to the entity \n", MODIFY_DATA_ATTRIBUTE);
+    printf("\t----- %d Delete data to the entity \n", DELETE_DATA_ATTRIBUTE);
+    printf("\t----- %d Exit \n", RETURN2);
 }
 
 void processInputEntity(char *dict, ENTITIES entity)
