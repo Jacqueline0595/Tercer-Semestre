@@ -43,13 +43,16 @@ void createEntity(FILE *dictionary, char *dictionaryName);
 long writeEntity(FILE *dictionary, ENTITIES newEntity);
 void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity, long newDirEntity);
 ENTITIES findEntity(FILE *dataDictionary, char *entityName);
+int deleteEntity(FILE *dictionary, char *dictionaryName, int band);
 
 // ------ Attributes functions ------
 
-void printEntityMenu(ENTITIES entity);
-void processInputEntity(char *dict, ENTITIES entity);
+// void printEntityMenu(ENTITIES entity);
+void printEntityMenu();
+// void processInputEntity(char *dict, ENTITIES entity);
+void processInputEntity(char *dictionaryName);
 // void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity);
-void executeEntityOption(int userSelec, ENTITIES entity);
+void executeEntityOption(int userSelec);
 
 enum MenuOption 
 { 
@@ -274,7 +277,10 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
 
         case DELETE_ENTITY:
             printf("Deleting an entity...\n");
-            //deleteEntity(dictionary);
+            if(deleteEntity(dictionary, dictionaryName, 1))
+                printf("Entity deleted successfully.\n");
+            else
+                printf("Error: Entity not found.\n");
         break;
 
         case MODIFY_ENTITY:
@@ -285,6 +291,8 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
         case SELECT_ENTITY:
             printf("Selecting an entity...\n");
             //selectEntity(dictionary);
+            fclose(dictionary);
+            processInputEntity(dictionaryName);
         break;
 
         case RETURN:
@@ -479,11 +487,71 @@ ENTITIES findEntity(FILE *dataDictionary, char *entityName)
     return currentEntity;
 }
 
+int deleteEntity(FILE *dictionary, char *dictionaryName, int band)
+{
+    if (!dictionary)
+    {
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
+        return 0;
+    }
+
+    ENTITIES entityDelete;
+    long ant, ptr, ptrdir;
+    char name[LENGTH];
+    
+    fflush(stdin);
+    printf("Enter the name of the entity you want to %s: ", band ? "delete" : "modify");
+    fgets(name, LENGTH, stdin);
+    cleanInput(name);
+    toUpperCase(name);
+
+    fread(&ptr, sizeof(long), 1, dictionary);
+    if(ptr == -1)
+    {
+        return 0;
+    }
+
+    fseek(dictionary, ptr, SEEK_SET);
+    fread(entityDelete.name, LENGTH, 1, dictionary);
+    fread(&entityDelete.listDat, sizeof(long), 1, dictionary);
+    fread(&entityDelete.listAttr, sizeof(long), 1, dictionary);
+    ptrdir = ftell(dictionary);
+    fread(&ptr, sizeof(long), 1, dictionary);
+
+    if (strcmp(entityDelete.name, name) == 0)
+    {
+        rewind(dictionary);
+        fwrite(&ptr, sizeof(long), 1, dictionary);
+
+        return 1;
+    }
+
+    while (ptr != empty && strcmp(entityDelete.name, name) != 0)
+    {
+        ant = ptrdir;
+        fseek(dictionary, ptr, SEEK_SET);
+        fread(entityDelete.name, LENGTH, 1, dictionary);
+        fread(&entityDelete.listDat, sizeof(long), 1, dictionary);
+        fread(&entityDelete.listAttr, sizeof(long), 1, dictionary);
+        ptrdir = ftell(dictionary);
+        fread(&ptr, sizeof(long), 1, dictionary);
+    }
+
+    if (ptr == -1 && strcmp(entityDelete.name, name) != 0)
+        return 0;
+
+    fseek(dictionary, ant, SEEK_SET);
+    fwrite(&ptr, sizeof(long), 1, dictionary);
+
+    return 1;
+}
+
 // ------ Attributes functions ------
 
-void printEntityMenu(ENTITIES entity)
+// void printEntityMenu(ENTITIES entity)
+void printEntityMenu()
 {
-    printf("\n\n\t\t ----------- %s's menu ----------- \n", entity.name);
+    printf("\n\n\t\t ----------- %s's menu ----------- \n", "Entity");
     printf("\t----- %d Print attributes \n", PRINT2);
     printf("\t----- %d Create an attribute \n", CREATE_ATTRIBUTE);
     printf("\t----- %d Delete an attribute \n", DELETE_ATTRIBUTE);
@@ -494,12 +562,13 @@ void printEntityMenu(ENTITIES entity)
     printf("\t----- %d Exit \n", RETURN2);
 }
 
-void processInputEntity(char *dict, ENTITIES entity)
+// void processInputEntity(char *dictionaryName, ENTITIES entity)
+void processInputEntity(char *dictionaryName)
 {
-    FILE *dictionary = fopen(dict, "rb+");
+    FILE *dictionary = fopen(dictionaryName, "rb+");
     if (!dictionary)
     {
-        printf("Error: Could not open the file '%s'. Make sure it exists.\n", dict);
+        printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
 
@@ -507,7 +576,8 @@ void processInputEntity(char *dict, ENTITIES entity)
 
     do
     {
-        printEntityMenu(entity);
+        // printEntityMenu(entity);
+        printEntityMenu();
         fflush(stdin);
         printf("Enter your choice: ");
         scanf("%d", &userSelec);
@@ -520,7 +590,7 @@ void processInputEntity(char *dict, ENTITIES entity)
         }
 
         // executeEntityOption(userSelec, dictionary, entity);
-        executeEntityOption(userSelec, entity);
+        executeEntityOption(userSelec);
 
 
     } while (userSelec != RETURN2);
@@ -529,42 +599,42 @@ void processInputEntity(char *dict, ENTITIES entity)
 }
 
 /* void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity) */
-void executeEntityOption(int userSelec, ENTITIES entity)
+void executeEntityOption(int userSelec)
 {
     switch (userSelec)
     {
         case PRINT2:
-            printf("Printing attributes of entity '%s'...\n", entity.name);
+            printf("Printing attributes of entity "/* '%s'...\n", entity.name */);
             // Implementar printAttributes
             break;
 
         case CREATE_ATTRIBUTE:
-            printf("Creating a new attribute for entity '%s'...\n", entity.name);
+            printf("Creating a new attribute for entity "/* '%s'...\n", entity.name */);
             // Implementar createAttribute
             break;
 
         case DELETE_ATTRIBUTE:
-            printf("Deleting an attribute from entity '%s'...\n", entity.name);
+            printf("Deleting an attribute from entity "/* '%s'...\n", entity.name */);
             // Implementar deleteAttribute
             break;
 
         case MODIFY_ATTRIBUTE:
-            printf("Modifying an attribute of entity '%s'...\n", entity.name);
+            printf("Modifying an attribute of entity "/* '%s'...\n", entity.name */);
             // Implementar modifyAttribute
             break;
 
         case ADD_DATA_ATTRIBUTE:
-            printf("Adding data to entity '%s'...\n", entity.name);
+            printf("Adding data to entity " /* '%s'...\n", entity.name */);
             // Implementar addDataToEntity
             break;
 
         case MODIFY_DATA_ATTRIBUTE:
-            printf("Modifying data in entity '%s'...\n", entity.name);
+            printf("Modifying data in entity "/* '%s'...\n", entity.name */);
             // Implementar modifyDataInEntity
             break;
 
         case DELETE_DATA_ATTRIBUTE:
-            printf("Deleting data from entity '%s'...\n", entity.name);;
+            printf("Deleting data from entity "/* '%s'...\n", entity.name */);
             // Implementar deleteDataFromEntityty
             break;
 
