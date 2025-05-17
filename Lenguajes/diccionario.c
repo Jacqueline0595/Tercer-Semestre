@@ -487,63 +487,60 @@ ENTITIES findEntity(FILE *dataDictionary, char *entityName)
     return currentEntity;
 }
 
-int deleteEntity(FILE *dictionary, char *dictionaryName, int band)
+int deleteEntity(FILE *dictionary, char *dictionaryName, int band) 
 {
-    if (!dictionary)
+    if (dictionary == NULL)
     {
         printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return 0;
     }
 
-    ENTITIES entityDelete;
-    long ant, ptr, ptrdir;
     char name[LENGTH];
-    
+    ENTITIES entity;
+    long currentPtr = -1, previousPtr = -1, currentPos = -1;
+
     fflush(stdin);
     printf("Enter the name of the entity you want to %s: ", band ? "delete" : "modify");
     fgets(name, LENGTH, stdin);
     cleanInput(name);
     toUpperCase(name);
 
-    fread(&ptr, sizeof(long), 1, dictionary);
-    if(ptr == -1)
+    long headPtr;
+    rewind(dictionary);
+    fread(&headPtr, sizeof(long), 1, dictionary);
+
+    currentPtr = headPtr;
+
+    while (currentPtr != -1)
     {
-        return 0;
+        fseek(dictionary, currentPtr, SEEK_SET);
+
+        fread(entity.name, LENGTH, 1, dictionary);
+        fread(&entity.listDat, sizeof(long), 1, dictionary);
+        fread(&entity.listAttr, sizeof(long), 1, dictionary);
+        currentPos = ftell(dictionary);
+        fread(&entity.sig, sizeof(long), 1, dictionary);
+
+        if (strcmp(entity.name, name) == 0)
+        {
+            if (currentPtr == headPtr)
+            {
+                rewind(dictionary);
+                fwrite(&entity.sig, sizeof(long), 1, dictionary);
+            }
+            else
+            {
+                fseek(dictionary, previousPtr, SEEK_SET);
+                fwrite(&entity.sig, sizeof(long), 1, dictionary);
+            }
+            return 1;
+        }
+
+        previousPtr = currentPos;
+        currentPtr = entity.sig;
     }
 
-    fseek(dictionary, ptr, SEEK_SET);
-    fread(entityDelete.name, LENGTH, 1, dictionary);
-    fread(&entityDelete.listDat, sizeof(long), 1, dictionary);
-    fread(&entityDelete.listAttr, sizeof(long), 1, dictionary);
-    ptrdir = ftell(dictionary);
-    fread(&ptr, sizeof(long), 1, dictionary);
-
-    if (strcmp(entityDelete.name, name) == 0)
-    {
-        rewind(dictionary);
-        fwrite(&ptr, sizeof(long), 1, dictionary);
-
-        return 1;
-    }
-
-    while (ptr != empty && strcmp(entityDelete.name, name) != 0)
-    {
-        ant = ptrdir;
-        fseek(dictionary, ptr, SEEK_SET);
-        fread(entityDelete.name, LENGTH, 1, dictionary);
-        fread(&entityDelete.listDat, sizeof(long), 1, dictionary);
-        fread(&entityDelete.listAttr, sizeof(long), 1, dictionary);
-        ptrdir = ftell(dictionary);
-        fread(&ptr, sizeof(long), 1, dictionary);
-    }
-
-    if (ptr == -1 && strcmp(entityDelete.name, name) != 0)
-        return 0;
-
-    fseek(dictionary, ant, SEEK_SET);
-    fwrite(&ptr, sizeof(long), 1, dictionary);
-
-    return 1;
+    return 0;
 }
 
 // ------ Attributes functions ------
