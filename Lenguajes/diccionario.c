@@ -497,7 +497,7 @@ int deleteEntity(FILE *dictionary, char *dictionaryName, int band)
 
     char name[LENGTH];
     ENTITIES entity;
-    long currentPtr = -1, previousPtr = -1, currentPos = -1;
+    long currentPtr = empty, previousPtr = empty, currentPos = empty;
 
     fflush(stdin);
     printf("Enter the name of the entity you want to %s: ", band ? "delete" : "modify");
@@ -511,7 +511,7 @@ int deleteEntity(FILE *dictionary, char *dictionaryName, int band)
 
     currentPtr = headPtr;
 
-    while (currentPtr != -1)
+    while (currentPtr != empty)
     {
         fseek(dictionary, currentPtr, SEEK_SET);
 
