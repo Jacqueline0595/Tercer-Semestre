@@ -24,6 +24,8 @@ typedef struct attribute
 } ATTRIBUTES;
 
 void toUpperCase(char *strin);
+void askEntityName(char *name, int band);
+void cleanInput(char *input);
 
 // ------ Principal functions ------
 
@@ -43,7 +45,8 @@ void createEntity(FILE *dictionary, char *dictionaryName);
 long writeEntity(FILE *dictionary, ENTITIES newEntity);
 void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity, long newDirEntity);
 ENTITIES findEntity(FILE *dataDictionary, char *entityName);
-int deleteEntity(FILE *dictionary, char *dictionaryName, int band);
+int deleteEntity(FILE *dictionary, char *dictionaryName, char *name);
+void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName);
 
 // ------ Attributes functions ------
 
@@ -257,6 +260,7 @@ void processInputDictionary(char *dictionary)
 void executeDictionaryOption(int userSelec, char *dictionaryName)
 {
     FILE *dictionary = fopen(dictionaryName, "rb+");
+    char name[LENGTH];
     if (!dictionary)
     {
         printf("Error: Could not open the file '%s'. Make sure it exists.\n", dictionaryName);
@@ -277,7 +281,8 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
 
         case DELETE_ENTITY:
             printf("Deleting an entity...\n");
-            if(deleteEntity(dictionary, dictionaryName, 1))
+            askEntityName(name, 1);
+            if(deleteEntity(dictionary, dictionaryName, name))
                 printf("Entity deleted successfully.\n");
             else
                 printf("Error: Entity not found.\n");
@@ -285,7 +290,8 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
 
         case MODIFY_ENTITY:
             printf("Modifying an entity...\n");
-            //modifyEntity(dictionary);
+            askEntityName(name, 0);
+            modifyEntity(dictionary, dictionaryName, name);
         break;
 
         case SELECT_ENTITY:
@@ -305,6 +311,15 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
     }
 
     fclose(dictionary);
+}
+
+void askEntityName(char *name, int band)
+{
+    printf("Enter the name of the entity you want to %s: ", band ? "delete" : "modify");
+    fflush(stdin);
+    fgets(name, LENGTH, stdin);
+    cleanInput(name);
+    toUpperCase(name);
 }
 
 void printDictionary(FILE *dictionary, char *dictionaryName)
@@ -487,7 +502,7 @@ ENTITIES findEntity(FILE *dataDictionary, char *entityName)
     return currentEntity;
 }
 
-int deleteEntity(FILE *dictionary, char *dictionaryName, int band) 
+int deleteEntity(FILE *dictionary, char *dictionaryName, char *name) 
 {
     if (dictionary == NULL)
     {
@@ -495,16 +510,8 @@ int deleteEntity(FILE *dictionary, char *dictionaryName, int band)
         return 0;
     }
 
-    char name[LENGTH];
     ENTITIES entity;
     long currentPtr = empty, previousPtr = empty, currentPos = empty;
-
-    fflush(stdin);
-    printf("Enter the name of the entity you want to %s: ", band ? "delete" : "modify");
-    fgets(name, LENGTH, stdin);
-    cleanInput(name);
-    toUpperCase(name);
-
     long headPtr;
     rewind(dictionary);
     fread(&headPtr, sizeof(long), 1, dictionary);
@@ -541,6 +548,58 @@ int deleteEntity(FILE *dictionary, char *dictionaryName, int band)
     }
 
     return 0;
+}
+
+void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
+{
+    if (dictionary == NULL)
+    {
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
+        return;
+    }
+
+    rewind(dictionary);
+    long dirEntity;
+    ENTITIES ptr, newEntity, aux;
+
+    ptr = findEntity(dictionary, oldName);
+    if (ptr.sig == 0)
+    {
+        printf("Error: Entity '%s' not found.\n", oldName);
+        return;
+    }
+
+    deleteEntity(dictionary, dictionaryName, oldName);
+
+    printf("Enter the new name of the entity: ");
+    fflush(stdin);
+    fgets(newEntity.name, LENGTH, stdin);
+    cleanInput(newEntity.name);
+    toUpperCase(newEntity.name);
+
+    fseek(dictionary, ptr.listDat, SEEK_SET);
+    fread(&newEntity.listDat, sizeof(long), 1, dictionary);
+    fread(&newEntity.listAttr, sizeof(long), 1, dictionary);
+    newEntity.sig = empty;
+
+    aux = findEntity(dictionary, newEntity.name);
+    while (aux.sig != 0)
+    {
+        if (aux.sig != 0)
+            printf("This name is already used. Please enter another name.\n");
+        printf("Enter the new name of the entity: ");
+        fflush(stdin);
+        fgets(newEntity.name, LENGTH, stdin);
+        cleanInput(newEntity.name);
+        toUpperCase(newEntity.name);
+        aux = findEntity(dictionary, newEntity.name);
+    }
+
+    dirEntity = writeEntity(dictionary, newEntity);
+
+    orderEntity(dictionary, 0, newEntity.name, dirEntity);
+
+    printf("Successfully modified!\n");
 }
 
 // ------ Attributes functions ------
