@@ -277,17 +277,14 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
     switch(userSelec)
     {
         case PRINT:
-            printf("Printing data dictionary...\n");
             printDictionary(dictionary, dictionaryName);
         break;
 
         case CREATE_ENTITY:
-            printf("Creating a new entity...\n");
             createEntity(dictionary, dictionaryName);
         break;
 
         case DELETE_ENTITY:
-            printf("Deleting an entity...\n");
             askEntityName(name, 0);
             if(deleteEntity(dictionary, dictionaryName, name))
                 printf("Entity deleted successfully.\n");
@@ -296,13 +293,11 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
         break;
 
         case MODIFY_ENTITY:
-            printf("Modifying an entity...\n");
             askEntityName(name, 1);
             modifyEntity(dictionary, dictionaryName, name);
         break;
 
         case SELECT_ENTITY:
-            printf("Selecting an entity...\n");
             askEntityName(name, 2);
             selectEntity(dictionary, dictionaryName, name);
         break;
@@ -702,41 +697,41 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity)
         case PRINT2:
             printf("Printing attributes of entity '%s'...\n", entity.name);
             // Implementar printAttributes
-            break;
+        break;
 
         case CREATE_ATTRIBUTE:
             printf("Creating a new attribute for entity '%s'...\n", entity.name );
             // Implementar createAttribute
-            break;
+        break;
 
         case DELETE_ATTRIBUTE:
             printf("Deleting an attribute from entity '%s'...\n", entity.name);
             // Implementar deleteAttribute
-            break;
+        break;
 
         case MODIFY_ATTRIBUTE:
             printf("Modifying an attribute of entity '%s'...\n", entity.name);
             // Implementar modifyAttribute
-            break;
+        break;
 
         case ADD_DATA_ATTRIBUTE:
             printf("Adding data to entity '%s'...\n", entity.name);
             // Implementar addDataToEntity
-            break;
+        break;
 
         case MODIFY_DATA_ATTRIBUTE:
             printf("Modifying data in entity '%s'...\n", entity.name);
             // Implementar modifyDataInEntity
-            break;
+        break;
 
         case DELETE_DATA_ATTRIBUTE:
             printf("Deleting data from entity '%s'...\n", entity.name);
             // Implementar deleteDataFromEntityty
-            break;
+        break;
 
         case RETURN2:
             printf("Returning to the dictionary menu...\n");
-            break;
+        break;
 
         default:        
             printf("Invalid option. Please try again.\n");
