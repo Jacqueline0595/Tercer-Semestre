@@ -579,28 +579,23 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
         return;
     }
 
-    printf("Enter the new name of the entity: ");
-    fflush(stdin);
-    fgets(updatedEntity.name, LENGTH, stdin);
-    cleanInput(updatedEntity.name);
-    toUpperCase(updatedEntity.name);
-
-    fseek(dictionary, originalEntity.listDat, SEEK_SET);
-    fread(&updatedEntity.listDat, sizeof(long), 1, dictionary);
-    fread(&updatedEntity.listAttr, sizeof(long), 1, dictionary);
-    updatedEntity.sig = empty;
-
-    checkEntity = findEntity(dictionary, updatedEntity.name);
-    while (checkEntity.sig != 0)
-    {
-        printf("This name is already used. Please enter another name.\n");
+    do {
         printf("Enter the new name of the entity: ");
         fflush(stdin);
         fgets(updatedEntity.name, LENGTH, stdin);
         cleanInput(updatedEntity.name);
         toUpperCase(updatedEntity.name);
+
         checkEntity = findEntity(dictionary, updatedEntity.name);
-    }
+        if (checkEntity.sig != 0)
+            printf("This name is already used. Please enter another name.\n");
+
+    } while (checkEntity.sig != 0);
+
+    fseek(dictionary, originalEntity.listDat, SEEK_SET);
+    fread(&updatedEntity.listDat, sizeof(long), 1, dictionary);
+    fread(&updatedEntity.listAttr, sizeof(long), 1, dictionary);
+    updatedEntity.sig = empty;
 
     entityAddress = writeEntity(dictionary, updatedEntity);
     orderEntity(dictionary, 0, updatedEntity.name, entityAddress);
