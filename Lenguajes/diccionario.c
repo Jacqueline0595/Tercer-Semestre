@@ -54,6 +54,7 @@ void selectEntity(FILE *dictionary, char *dictionaryName, char *name);
 void printEntityMenu(ENTITIES entity);
 void processInputEntity(char *dict, ENTITIES entity);
 void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity);
+void printAttributes(FILE *dictionary, long listA);
 
 enum MenuOption 
 { 
@@ -696,7 +697,7 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity)
     {
         case PRINT2:
             printf("Printing attributes of entity '%s'...\n", entity.name);
-            // Implementar printAttributes
+            printAttributes(dictionary, entity.listAttr);
         break;
 
         case CREATE_ATTRIBUTE:
@@ -737,4 +738,28 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity)
             printf("Invalid option. Please try again.\n");
         break;
     }
+}
+
+void printAttributes(FILE *dictionary, long listA)
+{
+    ATTRIBUTES attribute;
+    long dir;
+
+    printf("\t ----- Attributes ----- \n");
+    fseek(dictionary, listA, SEEK_SET);
+    fread(&dir, sizeof(long), 1, dictionary);
+    if (dir == empty || listA == empty)
+        printf("\tThere aren't attributes\n");
+    else
+        while (dir != empty)
+        {
+            fseek(dictionary, dir, SEEK_SET);
+
+            fread(&attribute.name, LENGTH, 1, dictionary);
+            fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
+            fread(&attribute.type, sizeof(int), 1, dictionary);
+            fread(&attribute.size, sizeof(int), 1, dictionary);
+            fread(&dir, sizeof(long), 1, dictionary);
+            printf("\t| %-30s | %-10d | %-10d | %-10d | %-10ld |\n", attribute.name, attribute.isPrimary, attribute.type, attribute.size, dir);
+        }
 }
