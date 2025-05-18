@@ -79,7 +79,8 @@
     "initializer_list": "c",
     "ranges": "c",
     "span": "c",
-    "stacktrace": "c"
+    "stacktrace": "c",
+    "string": "c"
   },
   "python.testing.pytestArgs": [
     "Analisis"

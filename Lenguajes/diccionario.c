@@ -47,6 +47,7 @@ void orderEntity(FILE *dictionary, long currentEntity, const char *newNameEntity
 ENTITIES findEntity(FILE *dataDictionary, char *entityName);
 int deleteEntity(FILE *dictionary, char *dictionaryName, char *name);
 void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName);
+void selectEntity(FILE *dictionary, char *dictionaryName, char *name);
 
 // ------ Attributes functions ------
 
@@ -303,6 +304,7 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
         case SELECT_ENTITY:
             printf("Selecting an entity...\n");
             askEntityName(name, 2);
+            selectEntity(dictionary, dictionaryName, name);
         break;
 
         case RETURN:
@@ -355,7 +357,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
 
         if (direction2 == empty)
         {
-            printf("\tNo attributes found for entity '%s'.\n", entity.name);
+            printf("\t| No attributes found for entity '%s'.\n", entity.name);
         }
         else
         {
@@ -425,7 +427,7 @@ long writeEntity(FILE *dictionary, ENTITIES newEntity)
     long dirEntity;
     fseek(dictionary, 0, SEEK_END);
     dirEntity = ftell(dictionary);
-    printf("Adding %s - %ld - %ld - %ld \n", newEntity.name, newEntity.listDat, newEntity.listAttr, newEntity.sig);
+    printf("Adding %s | %ld | %ld | %ld \n", newEntity.name, newEntity.listDat, newEntity.listAttr, newEntity.sig);
     fwrite(newEntity.name, 50, 1, dictionary);
     fwrite(&newEntity.listDat, sizeof(long), 1, dictionary);
     fwrite(&newEntity.listAttr, sizeof(long), 1, dictionary);
@@ -624,7 +626,7 @@ void selectEntity(FILE *dictionary, char *dictionaryName, char *name)
 
     rewind(dictionary);
     ENTITIES entity;
-    long dirEntity;
+    long dirData;
     entity = findEntity(dictionary, name);
     if (entity.sig == 0)
     {
@@ -632,20 +634,24 @@ void selectEntity(FILE *dictionary, char *dictionaryName, char *name)
         return;
     }
     fseek(dictionary, entity.listDat, SEEK_SET);
-    fread(&dirEntity, sizeof(long), 1, dictionary);
-    if (dirEntity != empty)
+    fread(&dirData, sizeof(long), 1, dictionary);
+    if (dirData != empty)
     {
-        printf("Ya hay datos en esta entidad, no puedes modificar ni agregar mas atributos.\n");
+        printf("The entity already has data, we couldn't modify it\n");
         fclose(dictionary);
         return;
     }
+
+    printf("Going to the entity menu. \n");
+    fclose(dictionary);
+    processInputEntity(dictionaryName, entity);
 }
 
 // ------ Attributes functions ------
 
 void printEntityMenu(ENTITIES entity)
 {
-    printf("\n\n\t\t ----------- %s's menu ----------- \n", "Entity");
+    printf("\n\n\t\t ----------- %s's menu ----------- \n", entity.name);
     printf("\t----- %d Print attributes \n", PRINT2);
     printf("\t----- %d Create an attribute \n", CREATE_ATTRIBUTE);
     printf("\t----- %d Delete an attribute \n", DELETE_ATTRIBUTE);
