@@ -25,6 +25,7 @@ typedef struct attribute
 
 void toUpperCase(char *strin);
 void askEntityName(char *name, int band);
+void askAttributeName(char *name, int band);
 void cleanInput(char *input);
 
 // ------ Principal functions ------
@@ -58,6 +59,7 @@ void printAttributes(FILE *dictionary, long listA);
 void createAttribute(FILE *dictionary, ENTITIES currentEntity);
 long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute);
 void orderAttribute(FILE *dictionary, long currentAttr, ATTRIBUTES attribute, long newAttrDir);
+int deleteAttribute(FILE *dictionary, char *name, long listAttr);
 
 enum MenuOption 
 { 
@@ -131,6 +133,15 @@ void cleanInput(char *input)
 void askEntityName(char *name, int band)
 {
     printf("Enter the name of the entity you want to %s: ", band == 0 ? "delete" : band == 1 ? "modify" : "select");
+    fflush(stdin);
+    fgets(name, LENGTH, stdin);
+    cleanInput(name);
+    toUpperCase(name);
+}
+
+void askAttributeName(char *name, int band)
+{
+    printf("Enter the name of the attribute you want to %s: ", band ? "delete" : "modify");
     fflush(stdin);
     fgets(name, LENGTH, stdin);
     cleanInput(name);
@@ -581,6 +592,7 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
         return;
     }
 
+    // Correct this part
     if(originalEntity.listAttr != empty)
     {
         fseek(dictionary, originalEntity.listAttr, SEEK_SET);
@@ -708,6 +720,8 @@ void processInputEntity(char *dictionaryName, ENTITIES entity)
 
 void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity)
 {
+    char name[LENGTH];
+
     switch (userSelec)
     {
         case PRINT2:
@@ -722,7 +736,11 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity)
 
         case DELETE_ATTRIBUTE:
             printf("Deleting an attribute from entity '%s'...\n", entity.name);
-            // Implementar deleteAttribute
+            askAttributeName(name, 1);
+            if(deleteAttribute(dictionary, name, entity.listAttr))
+                printf("Attribute deleted successfully.\n");
+            else
+                printf("Error: Attribute not found.\n");
         break;
 
         case MODIFY_ATTRIBUTE:
@@ -819,6 +837,7 @@ void createAttribute(FILE *dictionary, ENTITIES currentEntity)
     break;
 
     case STRING:
+        // add validation for size
         printf("Size of the string: ");
         scanf("%d", &size);
         newAttribute.size = sizeof(char) * size;
@@ -902,4 +921,58 @@ void orderAttribute(FILE *dictionary, long currentAttr, ATTRIBUTES attribute, lo
             }
         }
     }
+}
+
+int deleteAttribute(FILE *dictionary, char *name, long listAttr)
+{
+    rewind(dictionary);
+    if (!dictionary)
+        return 0;
+
+    ATTRIBUTES attribute;
+    long ant, ptr, ptrdir;
+
+    fseek(dictionary, listAttr, SEEK_SET);
+    fread(&ptr, sizeof(long), 1, dictionary);
+
+    if (ptr == empty)
+    {
+        return 0;
+    }
+
+    fseek(dictionary, ptr, SEEK_SET);
+    fread(attribute.name, 50, 1, dictionary);
+    fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
+    fread(&attribute.type, sizeof(int), 1, dictionary);
+    fread(&attribute.size, sizeof(int), 1, dictionary);
+    ptrdir = ftell(dictionary);
+    fread(&ptr, sizeof(long), 1, dictionary);
+
+    if (strcmp(attribute.name, name) == 0)
+    {
+        fseek(dictionary, listAttr, SEEK_SET);
+        fwrite(&ptr, sizeof(long), 1, dictionary);
+        return 1;
+    }
+
+    while (ptr != -1)
+    {
+        ant = ptrdir;
+        fseek(dictionary, ptr, SEEK_SET);
+        fread(attribute.name, 50, 1, dictionary);
+        fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
+        fread(&attribute.type, sizeof(int), 1, dictionary);
+        fread(&attribute.size, sizeof(int), 1, dictionary);
+        ptrdir = ftell(dictionary);
+        fread(&ptr, sizeof(long), 1, dictionary);
+
+        if (strcmp(attribute.name, name) == 0)
+        {
+            fseek(dictionary, ant, SEEK_SET);
+            fwrite(&ptr, sizeof(long), 1, dictionary);
+            return 1;
+        }
+    }
+
+    return 0;
 }
