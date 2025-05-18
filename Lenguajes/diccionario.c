@@ -563,47 +563,51 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
     }
 
     rewind(dictionary);
-    long dirEntity;
-    ENTITIES ptr, newEntity, aux;
+    ENTITIES originalEntity, updatedEntity, checkEntity;
+    long entityAddress;
 
-    ptr = findEntity(dictionary, oldName);
-    if (ptr.sig == 0)
+    originalEntity = findEntity(dictionary, oldName);
+    if (originalEntity.sig == 0)
     {
         printf("Error: Entity '%s' not found.\n", oldName);
         return;
     }
 
-    deleteEntity(dictionary, dictionaryName, oldName);
+    if (!deleteEntity(dictionary, dictionaryName, oldName))
+    {
+        printf("Error deleting the entity '%s'.\n", oldName);
+        return;
+    }
 
     printf("Enter the new name of the entity: ");
     fflush(stdin);
-    fgets(newEntity.name, LENGTH, stdin);
-    cleanInput(newEntity.name);
-    toUpperCase(newEntity.name);
+    fgets(updatedEntity.name, LENGTH, stdin);
+    cleanInput(updatedEntity.name);
+    toUpperCase(updatedEntity.name);
 
-    fseek(dictionary, ptr.listDat, SEEK_SET);
-    fread(&newEntity.listDat, sizeof(long), 1, dictionary);
-    fread(&newEntity.listAttr, sizeof(long), 1, dictionary);
-    newEntity.sig = empty;
+    fseek(dictionary, originalEntity.listDat, SEEK_SET);
+    fread(&updatedEntity.listDat, sizeof(long), 1, dictionary);
+    fread(&updatedEntity.listAttr, sizeof(long), 1, dictionary);
+    updatedEntity.sig = empty;
 
-    aux = findEntity(dictionary, newEntity.name);
-    while (aux.sig != 0)
+    checkEntity = findEntity(dictionary, updatedEntity.name);
+    while (checkEntity.sig != 0)
     {
-        if (aux.sig != 0)
-            printf("This name is already used. Please enter another name.\n");
+        printf("This name is already used. Please enter another name.\n");
         printf("Enter the new name of the entity: ");
         fflush(stdin);
-        fgets(newEntity.name, LENGTH, stdin);
-        cleanInput(newEntity.name);
-        toUpperCase(newEntity.name);
-        aux = findEntity(dictionary, newEntity.name);
+        fgets(updatedEntity.name, LENGTH, stdin);
+        cleanInput(updatedEntity.name);
+        toUpperCase(updatedEntity.name);
+        checkEntity = findEntity(dictionary, updatedEntity.name);
     }
 
-    dirEntity = writeEntity(dictionary, newEntity);
-    orderEntity(dictionary, 0, newEntity.name, dirEntity);
+    entityAddress = writeEntity(dictionary, updatedEntity);
+    orderEntity(dictionary, 0, updatedEntity.name, entityAddress);
 
     printf("Successfully modified!\n");
 }
+
 
 // ------ Attributes functions ------
 
