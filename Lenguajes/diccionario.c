@@ -60,6 +60,7 @@ void createAttribute(FILE *dictionary, char *dictionaryName, ENTITIES currentEnt
 long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute);
 void orderAttribute(FILE *dictionary, char *dictionaryName, long currentAttr, ATTRIBUTES attribute, long newAttrDir);
 int deleteAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr);
+void modifyAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr);
 
 enum MenuOption 
 { 
@@ -745,7 +746,8 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char
 
         case MODIFY_ATTRIBUTE:
             printf("Modifying an attribute of entity '%s'...\n", entity.name);
-            // Implementar modifyAttribute
+            askAttributeName(name, 0);
+            modifyAttribute(dictionary, dictionaryName, name, entity.listAttr);
         break;
 
         case ADD_DATA_ATTRIBUTE:
@@ -997,4 +999,57 @@ int deleteAttribute(FILE *dictionary, char *dictionaryName, char *name, long lis
     }
 
     return 0;
+}
+
+void modifyAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr)
+{
+    if (dictionary == NULL)
+    {
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
+        return;
+    }
+
+    rewind(dictionary);
+    ATTRIBUTES newAttribute;
+    long dirAttr;
+
+    fseek(dictionary, listAttr, SEEK_SET);
+    fread(&dirAttr, sizeof(long), 1, dictionary);
+    if (dirAttr == empty)
+    {
+        printf("The entity doesn't have any attributes.\n");
+        return;
+    }
+
+    fseek(dictionary, dirAttr, SEEK_SET);
+    fread(newAttribute.name, LENGTH, 1, dictionary);
+    fread(&newAttribute.isPrimary, sizeof(int), 1, dictionary);
+    fread(&newAttribute.type, sizeof(int), 1, dictionary);
+    fread(&newAttribute.size, sizeof(int), 1, dictionary);
+    fread(&dirAttr, sizeof(long), 1, dictionary);
+    while (dirAttr != empty && (strcmp(newAttribute.name, name)) != 0)
+    {
+        fseek(dictionary, dirAttr, SEEK_SET);
+        fread(newAttribute.name, LENGTH, 1, dictionary);
+        fread(&newAttribute.isPrimary, sizeof(int), 1, dictionary);
+        fread(&newAttribute.type, sizeof(int), 1, dictionary);
+        fread(&newAttribute.size, sizeof(int), 1, dictionary);
+        fread(&dirAttr, sizeof(long), 1, dictionary);
+    }
+    newAttribute.next = empty;
+    if (dirAttr == empty && (strcmp(newAttribute.name, name)) != 0)
+    {
+        printf("The attribute doesn't exist, try with othe one.\n");
+        return;
+    }
+    deleteAttribute(dictionary, dictionaryName, name, listAttr);
+
+    printf("Enter the new name of the attribute: ");
+    fflush(stdin);
+    fgets(newAttribute.name, LENGTH, stdin);
+    cleanInput(newAttribute.name);
+    toUpperCase(newAttribute.name);
+
+    dirAttr = writeAttribute(dictionary, newAttribute);
+    orderAttribute(dictionary, dictionaryName, listAttr, newAttribute, dirAttr);
 }
