@@ -80,7 +80,8 @@
     "ranges": "c",
     "span": "c",
     "stacktrace": "c",
-    "string": "c"
+    "string": "c",
+    "charconv": "c"
   },
   "python.testing.pytestArgs": [
     "Analisis"

@@ -54,12 +54,12 @@ void selectEntity(FILE *dictionary, char *dictionaryName, char *name);
 
 void printEntityMenu(ENTITIES entity);
 void processInputEntity(char *dict, ENTITIES entity);
-void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity);
-void printAttributes(FILE *dictionary, long listA);
-void createAttribute(FILE *dictionary, ENTITIES currentEntity);
+void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char *dictionaryName);
+void printAttributes(FILE *dictionary, char *dictionaryName, long listA);
+void createAttribute(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity);
 long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute);
-void orderAttribute(FILE *dictionary, long currentAttr, ATTRIBUTES attribute, long newAttrDir);
-int deleteAttribute(FILE *dictionary, char *name, long listAttr);
+void orderAttribute(FILE *dictionary, char *dictionaryName, long currentAttr, ATTRIBUTES attribute, long newAttrDir);
+int deleteAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr);
 
 enum MenuOption 
 { 
@@ -710,7 +710,7 @@ void processInputEntity(char *dictionaryName, ENTITIES entity)
             continue;
         }
 
-        executeEntityOption(userSelec, dictionary, entity);
+        executeEntityOption(userSelec, dictionary, entity, dictionaryName);
 
 
     } while (userSelec != RETURN2);
@@ -718,7 +718,7 @@ void processInputEntity(char *dictionaryName, ENTITIES entity)
     fclose(dictionary);
 }
 
-void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity)
+void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char *dictionaryName)
 {
     char name[LENGTH];
 
@@ -726,18 +726,18 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity)
     {
         case PRINT2:
             printf("Printing attributes of entity '%s'...\n", entity.name);
-            printAttributes(dictionary, entity.listAttr);
+            printAttributes(dictionary, dictionaryName, entity.listAttr);
         break;
 
         case CREATE_ATTRIBUTE:
             printf("Creating a new attribute for entity '%s'...\n", entity.name );
-            createAttribute(dictionary, entity);
+            createAttribute(dictionary, dictionaryName, entity);
         break;
 
         case DELETE_ATTRIBUTE:
             printf("Deleting an attribute from entity '%s'...\n", entity.name);
             askAttributeName(name, 1);
-            if(deleteAttribute(dictionary, name, entity.listAttr))
+            if(deleteAttribute(dictionary, dictionaryName, name, entity.listAttr))
                 printf("Attribute deleted successfully.\n");
             else
                 printf("Error: Attribute not found.\n");
@@ -773,8 +773,14 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity)
     }
 }
 
-void printAttributes(FILE *dictionary, long listA)
+void printAttributes(FILE *dictionary, char *dictionaryName, long listA)
 {
+    if (dictionary == NULL)
+    {
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
+        return;
+    }
+
     ATTRIBUTES attribute;
     long dir;
 
@@ -799,8 +805,14 @@ void printAttributes(FILE *dictionary, long listA)
         }
 }
 
-void createAttribute(FILE *dictionary, ENTITIES currentEntity)
+void createAttribute(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
 {
+    if (dictionary == NULL)
+    {
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
+        return;
+    }
+
     ATTRIBUTES newAttribute;
     int size;
 
@@ -847,7 +859,7 @@ void createAttribute(FILE *dictionary, ENTITIES currentEntity)
     newAttribute.next = empty;
 
     long attrDir = writeAttribute(dictionary, newAttribute);
-    orderAttribute(dictionary, currentEntity.listAttr, newAttribute, attrDir);
+    orderAttribute(dictionary, dictionaryName, currentEntity.listAttr, newAttribute, attrDir);
 }
 
 long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute)
@@ -863,8 +875,14 @@ long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute)
     return attrDir;
 }
 
-void orderAttribute(FILE *dictionary, long currentAttr, ATTRIBUTES attribute, long newAttrDir)
+void orderAttribute(FILE *dictionary, char *dictionaryName, long currentAttr, ATTRIBUTES attribute, long newAttrDir)
 {
+    if (dictionary == NULL)
+    {
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
+        return;
+    }
+
     long attrDir = empty;
     char currentAttrName[LENGTH];
     long nextHeaderPointer, isPrimary;
@@ -908,7 +926,7 @@ void orderAttribute(FILE *dictionary, long currentAttr, ATTRIBUTES attribute, lo
         {
             if (strcmp(currentAttrName, attribute.name) < 0 || isPrimary || attribute.isPrimary)
             {
-                orderAttribute(dictionary, nextHeaderPointer, attribute, newAttrDir);
+                orderAttribute(dictionary, dictionaryName, nextHeaderPointer, attribute, newAttrDir);
             }
             else
             {
@@ -923,53 +941,57 @@ void orderAttribute(FILE *dictionary, long currentAttr, ATTRIBUTES attribute, lo
     }
 }
 
-int deleteAttribute(FILE *dictionary, char *name, long listAttr)
+int deleteAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr)
 {
-    rewind(dictionary);
-    if (!dictionary)
+    if (dictionary == NULL)
+    {
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return 0;
+    }
+
+    rewind(dictionary);
 
     ATTRIBUTES attribute;
-    long ant, ptr, ptrdir;
+    long previousPtr, currentPtr, currentPos;
 
     fseek(dictionary, listAttr, SEEK_SET);
-    fread(&ptr, sizeof(long), 1, dictionary);
+    fread(&currentPtr, sizeof(long), 1, dictionary);
 
-    if (ptr == empty)
+    if (currentPtr == empty)
     {
         return 0;
     }
 
-    fseek(dictionary, ptr, SEEK_SET);
-    fread(attribute.name, 50, 1, dictionary);
+    fseek(dictionary, currentPtr, SEEK_SET);
+    fread(attribute.name, LENGTH, 1, dictionary);
     fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
     fread(&attribute.type, sizeof(int), 1, dictionary);
     fread(&attribute.size, sizeof(int), 1, dictionary);
-    ptrdir = ftell(dictionary);
-    fread(&ptr, sizeof(long), 1, dictionary);
+    currentPos = ftell(dictionary);
+    fread(&currentPtr, sizeof(long), 1, dictionary);
 
     if (strcmp(attribute.name, name) == 0)
     {
         fseek(dictionary, listAttr, SEEK_SET);
-        fwrite(&ptr, sizeof(long), 1, dictionary);
+        fwrite(&currentPtr, sizeof(long), 1, dictionary);
         return 1;
     }
 
-    while (ptr != -1)
+    while (currentPtr != empty)
     {
-        ant = ptrdir;
-        fseek(dictionary, ptr, SEEK_SET);
-        fread(attribute.name, 50, 1, dictionary);
+        previousPtr = currentPos;
+        fseek(dictionary, currentPtr, SEEK_SET);
+        fread(attribute.name, LENGTH, 1, dictionary);
         fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
         fread(&attribute.type, sizeof(int), 1, dictionary);
         fread(&attribute.size, sizeof(int), 1, dictionary);
-        ptrdir = ftell(dictionary);
-        fread(&ptr, sizeof(long), 1, dictionary);
+        currentPos = ftell(dictionary);
+        fread(&currentPtr, sizeof(long), 1, dictionary);
 
         if (strcmp(attribute.name, name) == 0)
         {
-            fseek(dictionary, ant, SEEK_SET);
-            fwrite(&ptr, sizeof(long), 1, dictionary);
+            fseek(dictionary, previousPtr, SEEK_SET);
+            fwrite(&currentPtr, sizeof(long), 1, dictionary);
             return 1;
         }
     }
