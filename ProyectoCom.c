@@ -567,7 +567,7 @@ void imprimir(FILE *Diccionario)
             fread(&Entidad.listDatos, sizeof(long), 1, Diccionario);
             fread(&Entidad.ListAtrubutos, sizeof(long), 1, Diccionario);
             fread(&direccion, sizeof(long), 1, Diccionario);
-            printf("\n--%s--\n ", Entidad.nom);
+            printf("\n-- %s | %ld | %ld | %ld --\n ", Entidad.nom, Entidad.listDatos, Entidad.ListAtrubutos, direccion);
 
             // imprimirAtributos(Diccionario,Entidad.ListAtrubutos);
             ATTRIBUTE atributo;

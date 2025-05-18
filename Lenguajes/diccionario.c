@@ -414,8 +414,8 @@ void createEntity(FILE *dictionary, char *dictionaryName)
         return;
     }
 
-    newEntity.listAttr = empty;
     newEntity.listDat = empty;
+    newEntity.listAttr = empty;
     newEntity.sig = empty;
 
     dirEntity = writeEntity(dictionary, newEntity);
@@ -430,7 +430,11 @@ long writeEntity(FILE *dictionary, ENTITIES newEntity)
     long dirEntity;
     fseek(dictionary, 0, SEEK_END);
     dirEntity = ftell(dictionary);
-    fwrite(&newEntity, sizeof(ENTITIES), 1, dictionary);
+    printf("Adding %s - %ld - %ld - %ld \n", newEntity.name, newEntity.listDat, newEntity.listAttr, newEntity.sig);
+    fwrite(newEntity.name, 50, 1, dictionary);
+    fwrite(&newEntity.listDat, sizeof(long), 1, dictionary);
+    fwrite(&newEntity.listAttr, sizeof(long), 1, dictionary);
+    fwrite(&newEntity.sig, sizeof(long), 1, dictionary);
     return dirEntity;
 }
 
@@ -510,7 +514,7 @@ int deleteEntity(FILE *dictionary, char *dictionaryName, char *name)
         return 0;
     }
 
-    ENTITIES entity;
+    /* ENTITIES entity;
     long currentPtr = empty, previousPtr = empty, currentPos = empty;
     long headPtr;
     rewind(dictionary);
@@ -547,7 +551,60 @@ int deleteEntity(FILE *dictionary, char *dictionaryName, char *name)
         currentPtr = entity.sig;
     }
 
-    return 0;
+    return 0; */
+
+    rewind(dictionary);
+    if (!dictionary)
+        return 0;
+
+    ENTITIES entity;
+    long ant, ptr, ptrdir;
+
+    // Leer la cabecera (dirección de la cabeza de la lista)
+    fread(&ptr, sizeof(long), 1, dictionary);
+    if (ptr == -1)
+    {
+        return 0;
+    }
+
+    fseek(dictionary, ptr, SEEK_SET);
+    fread(entity.name, LENGTH, 1, dictionary);
+    fread(&entity.listDat, sizeof(long), 1, dictionary);
+    fread(&entity.listAttr, sizeof(long), 1, dictionary);
+    ptrdir = ftell(dictionary);               // Dirección del puntero 'sig'
+    fread(&ptr, sizeof(long), 1, dictionary); // Obtener el puntero 'sig' de la primera entidad
+
+    // Si la entidad a eliminar es la primera (cabeza de la lista)
+    if (strcmp(entity.name, name) == 0)
+    {
+        // Actualizamos la cabeza de la lista para que apunte a la siguiente entidad
+        rewind(dictionary);
+        fwrite(&ptr, sizeof(long), 1, dictionary); // Nueva cabeza de la lista
+
+        return 1; // Eliminada con éxito
+    }
+
+    // Buscar la entidad a eliminar en el resto de la lista
+    while (ptr != -1 && strcmp(entity.name, name) != 0)
+    {
+        ant = ptrdir;
+        fseek(dictionary, ptr, SEEK_SET); // Desplazarse a la entidad actual
+        fread(entity.name, LENGTH, 1, dictionary);
+        fread(&entity.listDat, sizeof(long), 1, dictionary);
+        fread(&entity.listAttr, sizeof(long), 1, dictionary);
+        ptrdir = ftell(dictionary);               // Dirección de la entidad actual
+        fread(&ptr, sizeof(long), 1, dictionary); // Leer el siguiente puntero
+    }
+
+    // Si no se encontró la entidad, devolvemos 0
+    if (ptr == -1 && strcmp(entity.name, name) != 0)
+        return 0;
+
+    // Ahora eliminamos la entidad: Actualizamos el puntero 'sig' de la entidad anterior
+    fseek(dictionary, ant, SEEK_SET);          // Desplazarse a la entidad anterior
+    fwrite(&ptr, sizeof(long), 1, dictionary); // Actualizamos el puntero 'sig' para omitir la entidad eliminada
+
+    return 1; // Eliminación exitosa
 }
 
 void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
@@ -596,7 +653,6 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
     }
 
     dirEntity = writeEntity(dictionary, newEntity);
-
     orderEntity(dictionary, 0, newEntity.name, dirEntity);
 
     printf("Successfully modified!\n");
