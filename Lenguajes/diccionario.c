@@ -55,6 +55,9 @@ void printEntityMenu(ENTITIES entity);
 void processInputEntity(char *dict, ENTITIES entity);
 void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity);
 void printAttributes(FILE *dictionary, long listA);
+void createAttribute(FILE *dictionary, ENTITIES currentEntity);
+long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute);
+void orderAttribute(FILE *dictionary, long currentAttr, ATTRIBUTES attribute, long newAttrDir);
 
 enum MenuOption 
 { 
@@ -83,6 +86,15 @@ enum AttributeOp
     ADD_DATA_ATTRIBUTE,
     MODIFY_DATA_ATTRIBUTE,
     DELETE_DATA_ATTRIBUTE
+};
+
+enum typeData
+{
+    BIT,
+    INTEGER,
+    FLOAT,
+    CHAR,
+    STRING
 };
 
 int main()
@@ -357,8 +369,10 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
         }
         else
         {
-            printf("\t ----- Attributes of entity '%s': ----- \n", entity.name);
-            printf("\t| %-30s | %-10s | %-10s | %-10s | %-10s |\n", "Attribute name", "Is primary", "Type", "Size", "Next");
+            printf("\n\n\t ----- Attributes of entity '%s': ----- \n", entity.name);
+            printf("| %-30s | %-10s | %-10s | %-10s | %-10s |\n", "Attribute name", "Is primary", "Type", "Size", "Next");
+
+            printf("|------------------------------------------------------------------------------------|\n");
             while (direction2 != empty)
             {
                 fseek(dictionary, direction2, SEEK_SET);
@@ -367,11 +381,11 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
                 fread(&attribute.type, sizeof(int), 1, dictionary);
                 fread(&attribute.size, sizeof(int), 1, dictionary);
                 fread(&direction2, sizeof(long), 1, dictionary);
-                printf("\t| %-30s | %-10d | %-10d | %-10d | %-10ld |\n", attribute.name, attribute.isPrimary, attribute.type, attribute.size, direction2);
+                printf("| %-30s | %-10d | %-10d | %-10d | %-10ld |\n", attribute.name, attribute.isPrimary, attribute.type, attribute.size, direction2);
             }
             if(entity.listDat == empty)
             {
-                printf("\tNo data found for entity '%s'.\n", entity.name);
+                printf("\t| No data found for entity '%s'.\n", entity.name);
             }
             else
             {
@@ -567,6 +581,21 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
         return;
     }
 
+    if(originalEntity.listAttr != empty)
+    {
+        fseek(dictionary, originalEntity.listAttr, SEEK_SET);
+        fread(attribute.name, LENGTH, 1, dictionary);
+        fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
+        fread(&attribute.type, sizeof(int), 1, dictionary);
+        fread(&attribute.size, sizeof(int), 1, dictionary);
+        fread(&originalEntity.listAttr, sizeof(long), 1, dictionary);
+        if(attribute.isPrimary == 1)
+        {
+            printf("Error: Cannot modify an entity with primary key attributes.\n");
+            return;
+        }
+    }
+
     if (!deleteEntity(dictionary, dictionaryName, oldName))
     {
         printf("Error deleting the entity '%s'.\n", oldName);
@@ -591,26 +620,12 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
     fread(&updatedEntity.listAttr, sizeof(long), 1, dictionary);
     updatedEntity.sig = empty;
 
-    if(updatedEntity.listAttr != empty)
-    {
-        fseek(dictionary, updatedEntity.listAttr, SEEK_SET);
-        fread(attribute.name, LENGTH, 1, dictionary);
-        fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
-        fread(&attribute.type, sizeof(int), 1, dictionary);
-        fread(&attribute.size, sizeof(int), 1, dictionary);
-        fread(&updatedEntity.listAttr, sizeof(long), 1, dictionary);
-        if(attribute.isPrimary == 1)
-        {
-            printf("Error: Cannot modify an entity with primary key attributes.\n");
-            return;
-        }
-    }
-
     entityAddress = writeEntity(dictionary, updatedEntity);
     orderEntity(dictionary, 0, updatedEntity.name, entityAddress);
 
     printf("Successfully modified!\n");
 }
+
 
 void selectEntity(FILE *dictionary, char *dictionaryName, char *name)
 {
@@ -702,7 +717,7 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity)
 
         case CREATE_ATTRIBUTE:
             printf("Creating a new attribute for entity '%s'...\n", entity.name );
-            // Implementar createAttribute
+            createAttribute(dictionary, entity);
         break;
 
         case DELETE_ATTRIBUTE:
@@ -746,6 +761,8 @@ void printAttributes(FILE *dictionary, long listA)
     long dir;
 
     printf("\t ----- Attributes ----- \n");
+    printf("| %-30s | %-10s | %-10s | %-10s | %-10s |\n", "Attribute name", "Is primary", "Type", "Size", "Next");
+    printf("|------------------------------------------------------------------------------------|\n");
     fseek(dictionary, listA, SEEK_SET);
     fread(&dir, sizeof(long), 1, dictionary);
     if (dir == empty || listA == empty)
@@ -760,6 +777,129 @@ void printAttributes(FILE *dictionary, long listA)
             fread(&attribute.type, sizeof(int), 1, dictionary);
             fread(&attribute.size, sizeof(int), 1, dictionary);
             fread(&dir, sizeof(long), 1, dictionary);
-            printf("\t| %-30s | %-10d | %-10d | %-10d | %-10ld |\n", attribute.name, attribute.isPrimary, attribute.type, attribute.size, dir);
+            printf("| %-30s | %-10d | %-10d | %-10d | %-10ld |\n", attribute.name, attribute.isPrimary, attribute.type, attribute.size, dir);
         }
+}
+
+void createAttribute(FILE *dictionary, ENTITIES currentEntity)
+{
+    ATTRIBUTES newAttribute;
+    int size;
+
+    printf("Name of the new attribute: ");
+    fflush(stdin);
+    fgets(newAttribute.name, LENGTH, stdin);
+    cleanInput(newAttribute.name);
+    toUpperCase(newAttribute.name);
+
+    printf("Is it a primary key? (1 for yes, 0 for no): ");
+    scanf("%d", &newAttribute.isPrimary);
+
+    // {0:Bite, 1:Integer, 2:Float, 3:Char, 4:String}
+    printf("Type of the attribute (%d for bite, %d for integer, %d for float, %d for char, %d for string): ", BIT, INTEGER, FLOAT, CHAR, STRING);
+    scanf("%d", &newAttribute.type);
+
+    // Size: *Bit=1, *Integer=4, *Float=8, *Char=1, String=? (Ask)
+    switch (newAttribute.type)
+    {
+    case BIT:
+        newAttribute.size = sizeof(unsigned char);
+    break;
+
+    case INTEGER:
+        newAttribute.size = sizeof(int);
+    break;
+
+    case FLOAT:
+        newAttribute.size = sizeof(float);
+    break;
+
+    case CHAR:
+        newAttribute.size = sizeof(char);
+    break;
+
+    case STRING:
+        printf("Size of the string: ");
+        scanf("%d", &size);
+        newAttribute.size = sizeof(char) * size;
+    break;
+    }
+
+    newAttribute.next = empty;
+
+    long attrDir = writeAttribute(dictionary, newAttribute);
+    orderAttribute(dictionary, currentEntity.listAttr, newAttribute, attrDir);
+}
+
+long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute)
+{
+    long attrDir;
+    fseek(dictionary, 0, SEEK_END);
+    attrDir = ftell(dictionary);
+    fwrite(newAttribute.name, LENGTH, 1, dictionary);
+    fwrite(&newAttribute.isPrimary, sizeof(int), 1, dictionary);
+    fwrite(&newAttribute.type, sizeof(int), 1, dictionary);
+    fwrite(&newAttribute.size, sizeof(int), 1, dictionary);
+    fwrite(&newAttribute.next, sizeof(long), 1, dictionary);
+    return attrDir;
+}
+
+void orderAttribute(FILE *dictionary, long currentAttr, ATTRIBUTES attribute, long newAttrDir)
+{
+    long attrDir = empty;
+    char currentAttrName[LENGTH];
+    long nextHeaderPointer, isPrimary;
+
+    fseek(dictionary, currentAttr, SEEK_SET);
+    fread(&attrDir, sizeof(long), 1, dictionary);
+
+    if (attrDir == empty)
+    {
+        fseek(dictionary, currentAttr, SEEK_SET);
+        fwrite(&newAttrDir, sizeof(long), 1, dictionary);
+    }
+    else
+    {
+        fseek(dictionary, attrDir, SEEK_SET);
+        fread(&currentAttrName, sizeof(char), LENGTH, dictionary);
+        nextHeaderPointer = ftell(dictionary) + (sizeof(int) * 3);
+        fread(&isPrimary, sizeof(int), 1, dictionary);
+
+        if (attribute.isPrimary)
+        {
+            if (isPrimary == attribute.isPrimary)
+            {
+                printf("The key already exist. \n");
+                return;
+            }
+
+            fseek(dictionary, currentAttr, SEEK_SET);
+            fwrite(&newAttrDir, sizeof(int), 1, dictionary);
+            fseek(dictionary, newAttrDir + LENGTH + (sizeof(int) * 3), SEEK_SET);
+            fwrite(&attrDir, sizeof(long), 1, dictionary);
+            return;
+        }
+
+        if (strcmp(currentAttrName, attribute.name) == 0)
+        {
+            printf("There is already an attribute with this name, please select another one.\n");
+            return;
+        }
+        else
+        {
+            if (strcmp(currentAttrName, attribute.name) < 0 || isPrimary || attribute.isPrimary)
+            {
+                orderAttribute(dictionary, nextHeaderPointer, attribute, newAttrDir);
+            }
+            else
+            {
+                
+                fseek(dictionary, currentAttr, SEEK_SET);
+                fwrite(&newAttrDir, sizeof(long), 1, dictionary);
+                
+                fseek(dictionary, newAttrDir + LENGTH + (sizeof(int) * 3), SEEK_SET);
+                fwrite(&attrDir, sizeof(long), 1, dictionary);
+            }
+        }
+    }
 }
