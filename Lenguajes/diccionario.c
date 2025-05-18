@@ -117,6 +117,15 @@ void cleanInput(char *input)
     }
 }
 
+void askEntityName(char *name, int band)
+{
+    printf("Enter the name of the entity you want to %s: ", band ? "delete" : "modify");
+    fflush(stdin);
+    fgets(name, LENGTH, stdin);
+    cleanInput(name);
+    toUpperCase(name);
+}
+
 // ------ Main menu ------
 
 void printMainMenu()
@@ -311,15 +320,6 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
     }
 
     fclose(dictionary);
-}
-
-void askEntityName(char *name, int band)
-{
-    printf("Enter the name of the entity you want to %s: ", band ? "delete" : "modify");
-    fflush(stdin);
-    fgets(name, LENGTH, stdin);
-    cleanInput(name);
-    toUpperCase(name);
 }
 
 void printDictionary(FILE *dictionary, char *dictionaryName)
