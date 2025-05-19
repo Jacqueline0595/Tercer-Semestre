@@ -1396,3 +1396,4 @@ void printData(FILE *dictionary, long listData, long listAttribute)
         printf("\n\n");
     }
 }
+
