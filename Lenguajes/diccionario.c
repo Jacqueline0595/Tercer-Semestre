@@ -379,6 +379,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
 
         ATTRIBUTES attribute;
         long direction2 = entity.listAttr;
+        const char *typeString;
 
         if (direction2 == empty)
         {
@@ -398,7 +399,19 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
                 fread(&attribute.type, sizeof(int), 1, dictionary);
                 fread(&attribute.size, sizeof(int), 1, dictionary);
                 fread(&direction2, sizeof(long), 1, dictionary);
-                printf("| %-30s | %-10d | %-10d | %-10d | %-10ld |\n", attribute.name, attribute.isPrimary, attribute.type, attribute.size, direction2);
+                switch (attribute.type)
+                {
+                    case 0: typeString = "Bit"; break;
+                    case 1: typeString = "Integer"; break;
+                    case 2: typeString = "Long"; break;
+                    case 3: typeString = "Float"; break;
+                    case 4: typeString = "Char"; break;
+                    case 5: typeString = "String"; break;
+                    default: typeString = "Unknown"; break;
+                }
+                const char *primaryString = attribute.isPrimary ? "Yes" : "No";
+                
+                printf("| %-30s | %-10s | %-10s | %-10d | %-10ld |\n", attribute.name, primaryString, typeString, attribute.size, direction2);
             }
             if(entity.listDat == empty)
             {
