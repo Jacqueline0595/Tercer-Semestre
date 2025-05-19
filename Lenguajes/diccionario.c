@@ -1108,7 +1108,6 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
         fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
         fread(&attribute.type, sizeof(int), 1, dictionary);
         fread(&attribute.size, sizeof(int), 1, dictionary);
-        // apuntador al siguiente attribute
         fread(&listAttributes, sizeof(long), 1, dictionary);
 
         printf("\tEnter %s: ", attribute.name);
@@ -1117,7 +1116,7 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
             case BIT:
                 do
                 {
-                    printf("\tWhich option: \n\t1)True 0)False ");
+                    printf("\t\nWhich option: \n\t1)True 0)False ");
                     scanf("%hhu", &dataBit);
                 } while (dataBit > 1);
                 fseek(dictionary, 0, SEEK_END);
