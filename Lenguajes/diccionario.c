@@ -1171,8 +1171,7 @@ void modifyAttribute(FILE *dictionary, const char *dictionaryName, const char *t
     printf("Attribute modified successfully.\n");
 }
 
-
-void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
+void createData(FILE *dictionary, const char *dictionaryName, ENTITIES currentEntity)
 {
     if (dictionary == NULL)
     {
@@ -1180,7 +1179,7 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
         return;
     }
 
-    long listData, listAttr, listAttributes, next, newDat, possition;
+    long listData, listAttr, listAttributes, nextPointer, dataStartPos, currentPos;
     unsigned char dataBit;
     int dataInt;
     double dataFloat;
@@ -1190,78 +1189,108 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
     ATTRIBUTES attribute;
 
     fseek(dictionary, 0, SEEK_END);
-    newDat = ftell(dictionary);
-    printf("Possition: %ld \n", newDat);
+    dataStartPos = ftell(dictionary);
+    // We can delete this later
+    printf("Starting data write at position: %ld\n", dataStartPos);
 
     fseek(dictionary, currentEntity.listDat, SEEK_SET);
-    fread(&listData, sizeof(long), 1, dictionary);
-    fread(&listAttr, sizeof(long), 1, dictionary);
+    if (fread(&listData, sizeof(long), 1, dictionary) != 1 ||
+        fread(&listAttr, sizeof(long), 1, dictionary) != 1)
+    {
+        printf("Error reading entity's data or attribute list.\n");
+        return;
+    }
+
     listAttributes = listAttr;
+
     if (listAttributes == empty)
     {
-        printf("No hay Atributos...\n");
+        printf("No attributes found for this entity. Data entry aborted.\n");
         return;
     }
 
     while (listAttributes != empty)
     {
         fseek(dictionary, listAttributes, SEEK_SET);
-        fread(attribute.name, LENGTH, 1, dictionary);
-        fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
-        fread(&attribute.type, sizeof(int), 1, dictionary);
-        fread(&attribute.size, sizeof(int), 1, dictionary);
-        fread(&listAttributes, sizeof(long), 1, dictionary);
+        if (fread(attribute.name, LENGTH, 1, dictionary) != 1 ||
+            fread(&attribute.isPrimary, sizeof(int), 1, dictionary) != 1 ||
+            fread(&attribute.type, sizeof(int), 1, dictionary) != 1 ||
+            fread(&attribute.size, sizeof(int), 1, dictionary) != 1 ||
+            fread(&listAttributes, sizeof(long), 1, dictionary) != 1)
+        {
+            printf("Error reading attribute data.\n");
+            return;
+        }
 
-        printf("\tEnter %s: ", attribute.name);
+        printf("Enter value for attribute '%s':\n", attribute.name);
+
         switch (attribute.type)
         {
             case BIT:
                 do
                 {
-                    printf("\t\nWhich option: \n\t1)True 0)False ");
+                    printf("Enter 1 (True) or 0 (False): ");
                     scanf("%hhu", &dataBit);
                 } while (dataBit > 1);
-                fseek(dictionary, 0, SEEK_END);
                 fwrite(&dataBit, sizeof(unsigned char), 1, dictionary);
             break;
+
             case INTEGER:
+                printf("Integer: ");
                 scanf("%d", &dataInt);
-                fseek(dictionary, 0, SEEK_END);
                 fwrite(&dataInt, sizeof(int), 1, dictionary);
             break;
+
             case FLOAT:
+                printf("Float: ");
                 scanf("%lf", &dataFloat);
-                fseek(dictionary, 0, SEEK_END);
                 fwrite(&dataFloat, sizeof(double), 1, dictionary);
             break;
+
             case CHAR:
+                printf("Char: ");
                 scanf(" %c", &dataChar);
                 toUpperCase(&dataChar);
-                fseek(dictionary, 0, SEEK_END);
                 fwrite(&dataChar, sizeof(char), 1, dictionary);
             break;
+
             case STRING:
                 do
                 {
+                    printf("String (max %d characters): ", attribute.size);
                     fflush(stdin);
                     fgets(dataString, LENGTH, stdin);
                     cleanInput(dataString);
                     toUpperCase(dataString);
-                    fseek(dictionary, 0, SEEK_END);
-                    fwrite(dataString, sizeof(char), attribute.size, dictionary);
-                    if(strlen(dataString) > (size_t)attribute.size)
-                        printf("The string is too long, please enter a new one less than %d: ", attribute.size);
+
+                    if (strlen(dataString) > (size_t)attribute.size)
+                    {
+                        printf("String too long. Please enter less than %d characters.\n", attribute.size);
+                    }
+
                 } while (strlen(dataString) > (size_t)attribute.size);
-                
+
+                fwrite(dataString, sizeof(char), attribute.size, dictionary);
+            break;
+
+            default:
+                printf("Unknown attribute type. Skipping...\n");
             break;
         }
-        possition = ftell(dictionary);
-        printf("Possition: %ld \n", possition);
+
+        currentPos = ftell(dictionary);
+        // And also delete this later
+        printf("Written at position: %ld\n", currentPos);
     }
-    next = empty;
-    fwrite(&next, sizeof(long), 1, dictionary);
-    addData(dictionary, dictionaryName, newDat, currentEntity.listDat, listAttr);
+
+    nextPointer = empty;
+    fwrite(&nextPointer, sizeof(long), 1, dictionary);
+
+    addData(dictionary, dictionaryName, dataStartPos, currentEntity.listDat, listAttr);
+
+    printf("Data successfully created and stored.\n");
 }
+
 
 void addData(FILE *dictionary, char *dictionaryName, long newData, long listData, long listAttr)
 {
