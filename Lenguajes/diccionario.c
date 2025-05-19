@@ -23,6 +23,8 @@ typedef struct attribute
     long next;
 } ATTRIBUTES;
 
+// ------ Other functions ------
+
 void toUpperCase(char *strin);
 void askEntityName(char *name, int band);
 void askAttributeName(char *name, int band);
@@ -61,6 +63,9 @@ long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute);
 void orderAttribute(FILE *dictionary, char *dictionaryName, long currentAttr, ATTRIBUTES attribute, long newAttrDir);
 int deleteAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr);
 void modifyAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr);
+void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity);
+void addData(FILE *dictionary, char *dictionaryName, long newData, long listData, long listAttr);
+void printData(FILE *dictionary, long listData, long listAttribute);
 
 enum MenuOption 
 { 
@@ -381,7 +386,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
         }
         else
         {
-            printf("\n\n\t ----- Attributes of entity '%s': ----- \n", entity.name);
+            printf("\n\t ----- Attributes of entity '%s': ----- \n", entity.name);
             printf("| %-30s | %-10s | %-10s | %-10s | %-10s |\n", "Attribute name", "Is primary", "Type", "Size", "Next");
 
             printf("|------------------------------------------------------------------------------------|\n");
@@ -401,8 +406,8 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
             }
             else
             {
-                printf("\t ----- Data of entity '%s': ----- \n", entity.name);
-                // Implementar printData
+                printf("\n\t ----- Data of entity '%s': ----- \n", entity.name);
+                printData(dictionary, entity.listDat, entity.listAttr);
             }
         }
     }
@@ -639,7 +644,6 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
     printf("Successfully modified!\n");
 }
 
-
 void selectEntity(FILE *dictionary, char *dictionaryName, char *name)
 {
     if (dictionary == NULL)
@@ -752,7 +756,7 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char
 
         case ADD_DATA_ATTRIBUTE:
             printf("Adding data to entity '%s'...\n", entity.name);
-            // Implementar addDataToEntity
+            createData(dictionary, dictionaryName, entity);
         break;
 
         case MODIFY_DATA_ATTRIBUTE:
@@ -843,7 +847,7 @@ void createAttribute(FILE *dictionary, char *dictionaryName, ENTITIES currentEnt
     break;
 
     case FLOAT:
-        newAttribute.size = sizeof(float);
+        newAttribute.size = sizeof(double);
     break;
 
     case CHAR:
@@ -1052,4 +1056,232 @@ void modifyAttribute(FILE *dictionary, char *dictionaryName, char *name, long li
 
     dirAttr = writeAttribute(dictionary, newAttribute);
     orderAttribute(dictionary, dictionaryName, listAttr, newAttribute, dirAttr);
+}
+
+void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
+{
+    if (dictionary == NULL)
+    {
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
+        return;
+    }
+
+    long listData, listAttr, listAttributes, next, newDat, possition;
+    unsigned char dataBit;
+    int dataInt;
+    double dataFloat;
+    char dataChar;
+    char dataString[LENGTH];
+
+    ATTRIBUTES attribute;
+
+    fseek(dictionary, 0, SEEK_END);
+    newDat = ftell(dictionary);
+    printf("Possition: %ld \n", newDat);
+
+    fseek(dictionary, currentEntity.listDat, SEEK_SET);
+    fread(&listData, sizeof(long), 1, dictionary);
+    fread(&listAttr, sizeof(long), 1, dictionary);
+    listAttributes = listAttr;
+    if (listAttributes == empty)
+    {
+        printf("No hay Atributos...\n");
+        return;
+    }
+
+    while (listAttributes != empty)
+    {
+        fseek(dictionary, listAttributes, SEEK_SET);
+        fread(attribute.name, LENGTH, 1, dictionary);
+        fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
+        fread(&attribute.type, sizeof(int), 1, dictionary);
+        fread(&attribute.size, sizeof(int), 1, dictionary);
+        // apuntador al siguiente attribute
+        fread(&listAttributes, sizeof(long), 1, dictionary);
+
+        printf("\tEnter %s: ", attribute.name);
+        switch (attribute.type)
+        {
+            case BIT:
+                do
+                {
+                    printf("\tWhich option: \n\t1)True 0)False ");
+                    scanf("%hhu", &dataBit);
+                } while (dataBit > 1);
+                fseek(dictionary, 0, SEEK_END);
+                fwrite(&dataBit, sizeof(unsigned char), 1, dictionary);
+            break;
+            case INTEGER:
+                scanf("%d", &dataInt);
+                fseek(dictionary, 0, SEEK_END);
+                fwrite(&dataInt, sizeof(int), 1, dictionary);
+            break;
+            case FLOAT:
+                scanf("%lf", &dataFloat);
+                fseek(dictionary, 0, SEEK_END);
+                fwrite(&dataFloat, sizeof(double), 1, dictionary);
+            break;
+            case CHAR:
+                scanf(" %c", &dataChar);
+                toUpperCase(&dataChar);
+                fseek(dictionary, 0, SEEK_END);
+                fwrite(&dataChar, sizeof(char), 1, dictionary);
+            break;
+            case STRING:
+                do
+                {
+                    fflush(stdin);
+                    fgets(dataString, LENGTH, stdin);
+                    cleanInput(dataString);
+                    toUpperCase(dataString);
+                    fseek(dictionary, 0, SEEK_END);
+                    fwrite(dataString, sizeof(char), attribute.size, dictionary);
+                    if(strlen(dataString) > (size_t)attribute.size)
+                        printf("The string is too long, please enter a new one less than %d: ", attribute.size);
+                } while (strlen(dataString) > (size_t)attribute.size);
+                
+            break;
+        }
+        possition = ftell(dictionary);
+        printf("Possition: %ld \n", possition);
+    }
+    next = empty;
+    fwrite(&next, sizeof(long), 1, dictionary);
+    addData(dictionary, dictionaryName, newDat, currentEntity.listDat, listAttr);
+}
+
+void addData(FILE *dictionary, char *dictionaryName, long newData, long listData, long listAttr)
+{
+    if (dictionary == NULL)
+    {
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
+        return;
+    }
+
+    long listAttribute, next, end;
+    unsigned char dataBit;  // BIT - 1 byte
+    int dataInt;            // INTEGER - 4 bytes
+    double dataFloat;       // FLOAT - 8 bytes
+    char dataChar;          // CHAR - 1 byte
+    char dataString[LENGTH]; // STRING - variable
+
+    ATTRIBUTES attribute;
+
+    fseek(dictionary, listData, SEEK_SET);
+    fread(&next, sizeof(long), 1, dictionary);
+
+    if (next == empty)
+    {
+        fseek(dictionary, listData, SEEK_SET);
+        fwrite(&newData, sizeof(long), 1, dictionary);
+    }
+    else
+    {
+        while (next != empty)
+        {
+            listAttribute = listAttr;
+            while (listAttribute != empty)
+            {
+                fseek(dictionary, listAttribute, SEEK_SET);
+                fread(attribute.name, LENGTH, 1, dictionary);
+                fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
+                fread(&attribute.type, sizeof(int), 1, dictionary);
+                fread(&attribute.size, sizeof(int), 1, dictionary);
+                fread(&listAttribute, sizeof(long), 1, dictionary);
+
+                fseek(dictionary, next, SEEK_SET);
+                switch (attribute.type)
+                {
+                    case BIT:
+                        fread(&dataBit, sizeof(unsigned char), 1, dictionary);
+                        next = ftell(dictionary);
+                    break;
+                    case INTEGER:
+                        fread(&dataInt, sizeof(int), 1, dictionary);
+                        next = ftell(dictionary);
+                    break;
+                    case FLOAT:
+                        fread(&dataFloat, sizeof(double), 1, dictionary);
+                        next = ftell(dictionary);
+                    break;
+                    case CHAR:
+                        fread(&dataChar, sizeof(char), 1, dictionary);
+                        next = ftell(dictionary);
+                    break;
+                    case STRING:
+                        fread(&dataString, sizeof(char), attribute.size, dictionary);
+                        next = ftell(dictionary);
+                    break;
+                }
+            }
+            end = ftell(dictionary);
+            fread(&next, sizeof(long), 1, dictionary);
+        }
+        fseek(dictionary, end, SEEK_SET);
+        fwrite(&newData, sizeof(long), 1, dictionary);
+    }
+}
+
+void printData(FILE *dictionary, long listData, long listAttribute)
+{
+    long listAttributes, next;
+    unsigned char dataBit;
+    int dataInt;
+    double dataFloat;
+    char dataChar;
+    char dataString[LENGTH];
+
+    ATTRIBUTES attribute;
+
+    next = listData;
+
+    if (next == empty)
+    {
+        printf("\t| No data found for entity.\n");
+    }
+    else
+    {
+        while (next != empty)
+        {
+            listAttributes = listAttribute;
+            listData = next;
+            while (listAttributes != empty)
+            {
+                fseek(dictionary, listAttributes, SEEK_SET);
+                fread(attribute.name, LENGTH, 1, dictionary);
+                fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
+                fread(&attribute.type, sizeof(int), 1, dictionary);
+                fread(&attribute.size, sizeof(int), 1, dictionary);
+                fread(&listAttributes, sizeof(long), 1, dictionary);
+
+                fseek(dictionary, listData, SEEK_SET);
+                switch (attribute.type)
+                {
+                    case BIT:
+                        fread(&dataBit, sizeof(unsigned char), 1, dictionary);
+                        printf("| %s: %s ", attribute.name, dataBit ? "True" : "False");
+                        break;
+                    case INTEGER:
+                        fread(&dataInt, sizeof(int), 1, dictionary);
+                        printf("| %s: %d ", attribute.name, dataInt);
+                        break;
+                    case FLOAT:
+                        fread(&dataFloat, sizeof(double), 1, dictionary);
+                        printf("| %s: %.2lf ", attribute.name, dataFloat);
+                        break;
+                    case CHAR:
+                        fread(&dataChar, sizeof(char), 1, dictionary);
+                        printf("| %s: %c ", attribute.name, dataChar);
+                        break;
+                    case STRING:
+                        fread(dataString, sizeof(char), attribute.size, dictionary);
+                        printf("| %s: %s ", attribute.name, dataString);
+                        break;
+                }
+                listData = ftell(dictionary);
+            }
+            fread(&next, sizeof(long), 1, dictionary);
+            printf("|\n\n");
+        }
+    }
 }
