@@ -1196,7 +1196,7 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
     listAttributes = listAttr;
     if (listAttributes == empty)
     {
-        printf("No hay Atributos...\n");
+        printf("No attributes found for this entity. Data entry aborted.\n");
         return;
     }
 
@@ -1259,7 +1259,6 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
     fwrite(&next, sizeof(long), 1, dictionary);
     addData(dictionary, dictionaryName, newDat, currentEntity.listDat, listAttr);
 }
-
 
 void addData(FILE *dictionary, char *dictionaryName, long newData, long listData, long listAttr)
 {
