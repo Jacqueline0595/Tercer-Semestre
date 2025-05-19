@@ -61,8 +61,8 @@ void printAttributes(FILE *dictionary, char *dictionaryName, long listA);
 void createAttribute(FILE *dictionary, const char *dictionaryName, ENTITIES currentEntity);
 long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute);
 void orderAttribute(FILE *dictionary, const char *dictionaryName, long currentAttr, ATTRIBUTES attribute, long newAttrDir);
-int deleteAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr);
-void modifyAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr);
+int deleteAttribute(FILE *dictionary, const char *dictionaryName, const char *nameToDelete, long listAttr);
+void modifyAttribute(FILE *dictionary, const char *dictionaryName, const char *targetName, long listAttr);
 void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity);
 void addData(FILE *dictionary, char *dictionaryName, long newData, long listData, long listAttr);
 void printData(FILE *dictionary, long listData, long listAttribute);
@@ -383,7 +383,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
 
         if (direction2 == empty)
         {
-            printf("\t| No attributes found for entity '%s'.\n", entity.name);
+            printf("\n\t| No attributes found for entity '%s'.\n", entity.name);
         }
         else
         {
@@ -403,10 +403,9 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
                 {
                     case 0: typeString = "Bit"; break;
                     case 1: typeString = "Integer"; break;
-                    case 2: typeString = "Long"; break;
-                    case 3: typeString = "Float"; break;
-                    case 4: typeString = "Char"; break;
-                    case 5: typeString = "String"; break;
+                    case 2: typeString = "Float"; break;
+                    case 3: typeString = "Char"; break;
+                    case 4: typeString = "String"; break;
                     default: typeString = "Unknown"; break;
                 }
                 const char *primaryString = attribute.isPrimary ? "Yes" : "No";
@@ -415,7 +414,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
             }
             if(entity.listDat == empty)
             {
-                printf("\t| No data found for entity '%s'.\n", entity.name);
+                printf("\n\t| No data found for entity '%s'.\n", entity.name);
             }
             else
             {
@@ -837,10 +836,9 @@ void printAttributes(FILE *dictionary, char *dictionaryName, long listA)
                 {
                     case 0: typeString = "Bit"; break;
                     case 1: typeString = "Integer"; break;
-                    case 2: typeString = "Long"; break;
-                    case 3: typeString = "Float"; break;
-                    case 4: typeString = "Char"; break;
-                    case 5: typeString = "String"; break;
+                    case 2: typeString = "Float"; break;
+                    case 3: typeString = "Char"; break;
+                    case 4: typeString = "String"; break;
                     default: typeString = "Unknown"; break;
                 }
                 const char *primaryString = attribute.isPrimary ? "Yes" : "No";
@@ -1004,7 +1002,7 @@ void orderAttribute(FILE *dictionary, const char *dictionaryName, long currentAt
     }
 }
 
-int deleteAttribute(FILE *dictionary, char *dictionaryName, char *nameToDelete, long listAttr)
+int deleteAttribute(FILE *dictionary, const char *dictionaryName, const char *nameToDelete, long listAttr)
 {
     if (dictionary == NULL)
     {
@@ -1098,7 +1096,7 @@ int deleteAttribute(FILE *dictionary, char *dictionaryName, char *nameToDelete, 
     return 0;
 }
 
-void modifyAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr)
+void modifyAttribute(FILE *dictionary, const char *dictionaryName, const char *targetName, long listAttr)
 {
     if (dictionary == NULL)
     {
@@ -1107,49 +1105,72 @@ void modifyAttribute(FILE *dictionary, char *dictionaryName, char *name, long li
     }
 
     rewind(dictionary);
-    ATTRIBUTES newAttribute;
-    long dirAttr;
+
+    ATTRIBUTES attribute;
+    long currentDir;
 
     fseek(dictionary, listAttr, SEEK_SET);
-    fread(&dirAttr, sizeof(long), 1, dictionary);
-    if (dirAttr == empty)
+    if (fread(&currentDir, sizeof(long), 1, dictionary) != 1)
+    {
+        printf("Error reading attribute list pointer.\n");
+        return;
+    }
+
+    if (currentDir == empty)
     {
         printf("The entity doesn't have any attributes.\n");
         return;
     }
 
-    fseek(dictionary, dirAttr, SEEK_SET);
-    fread(newAttribute.name, LENGTH, 1, dictionary);
-    fread(&newAttribute.isPrimary, sizeof(int), 1, dictionary);
-    fread(&newAttribute.type, sizeof(int), 1, dictionary);
-    fread(&newAttribute.size, sizeof(int), 1, dictionary);
-    fread(&dirAttr, sizeof(long), 1, dictionary);
-    while (dirAttr != empty && (strcmp(newAttribute.name, name)) != 0)
+    long foundDir = empty;
+    while (currentDir != empty)
     {
-        fseek(dictionary, dirAttr, SEEK_SET);
-        fread(newAttribute.name, LENGTH, 1, dictionary);
-        fread(&newAttribute.isPrimary, sizeof(int), 1, dictionary);
-        fread(&newAttribute.type, sizeof(int), 1, dictionary);
-        fread(&newAttribute.size, sizeof(int), 1, dictionary);
-        fread(&dirAttr, sizeof(long), 1, dictionary);
+        fseek(dictionary, currentDir, SEEK_SET);
+        if (fread(attribute.name, LENGTH, 1, dictionary) != 1 ||
+            fread(&attribute.isPrimary, sizeof(int), 1, dictionary) != 1 ||
+            fread(&attribute.type, sizeof(int), 1, dictionary) != 1 ||
+            fread(&attribute.size, sizeof(int), 1, dictionary) != 1 ||
+            fread(&attribute.next, sizeof(long), 1, dictionary) != 1)
+        {
+            printf("Error reading attribute data during search.\n");
+            return;
+        }
+
+        if (strcmp(attribute.name, targetName) == 0)
+        {
+            foundDir = currentDir;
+            break;
+        }
+
+        currentDir = attribute.next;
     }
-    newAttribute.next = empty;
-    if (dirAttr == empty && (strcmp(newAttribute.name, name)) != 0)
+
+    if (foundDir == empty)
     {
-        printf("The attribute doesn't exist, try with othe one.\n");
+        printf("The attribute '%s' doesn't exist. Please try another name.\n", targetName);
         return;
     }
-    deleteAttribute(dictionary, dictionaryName, name, listAttr);
 
+    if (!deleteAttribute(dictionary, dictionaryName, targetName, listAttr))
+    {
+        printf("Unable to delete the original attribute. Modification aborted.\n");
+        return;
+    }
+
+    // Pedir nuevos datos
     printf("Enter the new name of the attribute: ");
     fflush(stdin);
-    fgets(newAttribute.name, LENGTH, stdin);
-    cleanInput(newAttribute.name);
-    toUpperCase(newAttribute.name);
+    fgets(attribute.name, LENGTH, stdin);
+    cleanInput(attribute.name);
+    toUpperCase(attribute.name);
 
-    dirAttr = writeAttribute(dictionary, newAttribute);
-    orderAttribute(dictionary, dictionaryName, listAttr, newAttribute, dirAttr);
+    // Se conserva tipo, tamaño y si es clave primaria. Solo cambia el nombre.
+    long newDir = writeAttribute(dictionary, attribute);
+    orderAttribute(dictionary, dictionaryName, listAttr, attribute, newDir);
+
+    printf("Attribute modified successfully.\n");
 }
+
 
 void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
 {
@@ -1329,7 +1350,7 @@ void printData(FILE *dictionary, long listData, long listAttribute)
 
     if (next == empty)
     {
-        printf("\t| No data found for entity.\n");
+        printf("\n\t| No data found for entity.\n");
     }
     else
     {
@@ -1373,7 +1394,8 @@ void printData(FILE *dictionary, long listData, long listAttribute)
                 listData = ftell(dictionary);
             }
             fread(&next, sizeof(long), 1, dictionary);
-            printf("|\n\n");
+            printf("|\n");
         }
+        printf("\n\n");
     }
 }
