@@ -410,7 +410,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
                     default: typeString = "Unknown"; break;
                 }
                 const char *primaryString = attribute.isPrimary ? "Yes" : "No";
-                
+
                 printf("| %-30s | %-10s | %-10s | %-10d | %-10ld |\n", attribute.name, primaryString, typeString, attribute.size, direction2);
             }
             if(entity.listDat == empty)
@@ -814,6 +814,7 @@ void printAttributes(FILE *dictionary, char *dictionaryName, long listA)
 
     ATTRIBUTES attribute;
     long dir;
+    const char *typeString;
 
     printf("\t ----- Attributes ----- \n");
     printf("| %-30s | %-10s | %-10s | %-10s | %-10s |\n", "Attribute name", "Is primary", "Type", "Size", "Next");
@@ -832,7 +833,18 @@ void printAttributes(FILE *dictionary, char *dictionaryName, long listA)
             fread(&attribute.type, sizeof(int), 1, dictionary);
             fread(&attribute.size, sizeof(int), 1, dictionary);
             fread(&dir, sizeof(long), 1, dictionary);
-            printf("| %-30s | %-10d | %-10d | %-10d | %-10ld |\n", attribute.name, attribute.isPrimary, attribute.type, attribute.size, dir);
+            switch (attribute.type)
+                {
+                    case 0: typeString = "Bit"; break;
+                    case 1: typeString = "Integer"; break;
+                    case 2: typeString = "Long"; break;
+                    case 3: typeString = "Float"; break;
+                    case 4: typeString = "Char"; break;
+                    case 5: typeString = "String"; break;
+                    default: typeString = "Unknown"; break;
+                }
+                const char *primaryString = attribute.isPrimary ? "Yes" : "No";
+            printf("| %-30s | %-10s | %-10s | %-10d | %-10ld |\n", attribute.name, primaryString, typeString, attribute.size, dir);
         }
 }
 
@@ -992,7 +1004,7 @@ void orderAttribute(FILE *dictionary, const char *dictionaryName, long currentAt
     }
 }
 
-int deleteAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr)
+int deleteAttribute(FILE *dictionary, char *dictionaryName, char *nameToDelete, long listAttr)
 {
     if (dictionary == NULL)
     {
@@ -1000,52 +1012,88 @@ int deleteAttribute(FILE *dictionary, char *dictionaryName, char *name, long lis
         return 0;
     }
 
+    if (listAttr == empty)
+    {
+        printf("No attributes to delete. The list is empty.\n");
+        return 0;
+    }
+
     rewind(dictionary);
 
     ATTRIBUTES attribute;
-    long previousPtr, currentPtr, currentPos;
+    long previousPtr = empty;
+    long currentPtr = empty;
+    long currentPos = empty;
 
     fseek(dictionary, listAttr, SEEK_SET);
-    fread(&currentPtr, sizeof(long), 1, dictionary);
+    if (fread(&currentPtr, sizeof(long), 1, dictionary) != 1)
+    {
+        printf("Error reading initial attribute pointer.\n");
+        return 0;
+    }
 
     if (currentPtr == empty)
     {
+        printf("No attributes to delete. The list pointer is empty.\n");
         return 0;
     }
 
     fseek(dictionary, currentPtr, SEEK_SET);
-    fread(attribute.name, LENGTH, 1, dictionary);
-    fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
-    fread(&attribute.type, sizeof(int), 1, dictionary);
-    fread(&attribute.size, sizeof(int), 1, dictionary);
-    currentPos = ftell(dictionary);
-    fread(&currentPtr, sizeof(long), 1, dictionary);
+    if (fread(attribute.name, LENGTH, 1, dictionary) != 1 ||
+        fread(&attribute.isPrimary, sizeof(int), 1, dictionary) != 1 ||
+        fread(&attribute.type, sizeof(int), 1, dictionary) != 1 ||
+        fread(&attribute.size, sizeof(int), 1, dictionary) != 1)
+    {
+        printf("Error reading first attribute.\n");
+        return 0;
+    }
 
-    if (strcmp(attribute.name, name) == 0)
+    currentPos = ftell(dictionary);
+    if (fread(&currentPtr, sizeof(long), 1, dictionary) != 1)
+    {
+        printf("Error reading 'next' pointer of first attribute.\n");
+        return 0;
+    }
+
+    if (strcmp(attribute.name, nameToDelete) == 0)
     {
         fseek(dictionary, listAttr, SEEK_SET);
         fwrite(&currentPtr, sizeof(long), 1, dictionary);
+        printf("Deleting '%s'...\n", nameToDelete);
         return 1;
     }
 
     while (currentPtr != empty)
     {
         previousPtr = currentPos;
-        fseek(dictionary, currentPtr, SEEK_SET);
-        fread(attribute.name, LENGTH, 1, dictionary);
-        fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
-        fread(&attribute.type, sizeof(int), 1, dictionary);
-        fread(&attribute.size, sizeof(int), 1, dictionary);
-        currentPos = ftell(dictionary);
-        fread(&currentPtr, sizeof(long), 1, dictionary);
 
-        if (strcmp(attribute.name, name) == 0)
+        fseek(dictionary, currentPtr, SEEK_SET);
+        if (fread(attribute.name, LENGTH, 1, dictionary) != 1 ||
+            fread(&attribute.isPrimary, sizeof(int), 1, dictionary) != 1 ||
+            fread(&attribute.type, sizeof(int), 1, dictionary) != 1 ||
+            fread(&attribute.size, sizeof(int), 1, dictionary) != 1)
+        {
+            printf("Error reading attribute during traversal.\n");
+            return 0;
+        }
+
+        currentPos = ftell(dictionary);
+        if (fread(&currentPtr, sizeof(long), 1, dictionary) != 1)
+        {
+            printf("Error reading 'next' pointer during traversal.\n");
+            return 0;
+        }
+
+        if (strcmp(attribute.name, nameToDelete) == 0)
         {
             fseek(dictionary, previousPtr, SEEK_SET);
             fwrite(&currentPtr, sizeof(long), 1, dictionary);
+            printf("Deleting '%s'...\n", nameToDelete);
             return 1;
         }
     }
+
+    printf("Attribute '%s' not found.\n", nameToDelete);
 
     return 0;
 }
