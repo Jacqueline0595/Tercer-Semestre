@@ -588,8 +588,8 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
 
     rewind(dictionary);
     ENTITIES originalEntity, updatedEntity, checkEntity;
-    ATTRIBUTES attribute;
-    long entityAddress;
+    // ATTRIBUTES attribute;
+    long entityAddress, dirData;
 
     originalEntity = findEntity(dictionary, oldName);
     if (originalEntity.sig == 0)
@@ -598,8 +598,17 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
         return;
     }
 
+    fseek(dictionary, originalEntity.listAttr, SEEK_SET);
+    fread(&dirData, sizeof(long), 1, dictionary);
+    if (dirData != empty)
+    {
+        printf("The entity already has attributes, we couldn't modify it\n");
+        fclose(dictionary);
+        return;
+    }
+
     // Correct this part
-    if(originalEntity.listAttr != empty)
+    /* if(originalEntity.listAttr != empty)
     {
         fseek(dictionary, originalEntity.listAttr, SEEK_SET);
         fread(attribute.name, LENGTH, 1, dictionary);
@@ -612,7 +621,9 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
             printf("Error: Cannot modify an entity with primary key attributes.\n");
             return;
         }
-    }
+    } */
+
+
 
     if (!deleteEntity(dictionary, dictionaryName, oldName))
     {
@@ -661,6 +672,7 @@ void selectEntity(FILE *dictionary, char *dictionaryName, char *name)
         printf("Error: Entity '%s' not found.\n", name);
         return;
     }
+
     fseek(dictionary, entity.listDat, SEEK_SET);
     fread(&dirData, sizeof(long), 1, dictionary);
     if (dirData != empty)
