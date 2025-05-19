@@ -1157,14 +1157,12 @@ void modifyAttribute(FILE *dictionary, const char *dictionaryName, const char *t
         return;
     }
 
-    // Pedir nuevos datos
     printf("Enter the new name of the attribute: ");
     fflush(stdin);
     fgets(attribute.name, LENGTH, stdin);
     cleanInput(attribute.name);
     toUpperCase(attribute.name);
 
-    // Se conserva tipo, tamaño y si es clave primaria. Solo cambia el nombre.
     long newDir = writeAttribute(dictionary, attribute);
     orderAttribute(dictionary, dictionaryName, listAttr, attribute, newDir);
 
