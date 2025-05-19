@@ -891,7 +891,6 @@ void createAttribute(FILE *dictionary, const char *dictionaryName, ENTITIES curr
     orderAttribute(dictionary, dictionaryName, currentEntity.listAttr, newAttribute, attrDir);
 }
 
-
 long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute)
 {
     long attrDir;
@@ -914,17 +913,26 @@ void orderAttribute(FILE *dictionary, const char *dictionaryName, long currentAt
     }
 
     long attrDir = empty;
-    char currentAttrName[LENGTH];
-    long nextHeaderPointer, isPrimary;
+    char currentAttrName[LENGTH] = {0};
+    long nextHeaderPointer = 0;
+    int isPrimary = 0;
 
-    fseek(dictionary, currentAttr, SEEK_SET);
-    fread(&attrDir, sizeof(long), 1, dictionary);
+    if (fseek(dictionary, currentAttr, SEEK_SET) != 0 || fread(&attrDir, sizeof(long), 1, dictionary) != 1)
+    {
+        printf("Error: We couldn't read attribute pointer at position %ld.\n", currentAttr);
+        return;
+    }
 
     if (attrDir == empty)
     {
-        fseek(dictionary, currentAttr, SEEK_SET);
-        fwrite(&newAttrDir, sizeof(long), 1, dictionary);
+        if (fseek(dictionary, currentAttr, SEEK_SET) == 0)
+            fwrite(&newAttrDir, sizeof(long), 1, dictionary);
+        else
+            printf("Error: We couldn't create new attribute at empty position.\n");
+
+        return;
     }
+
     else
     {
         fseek(dictionary, attrDir, SEEK_SET);
@@ -936,7 +944,7 @@ void orderAttribute(FILE *dictionary, const char *dictionaryName, long currentAt
         {
             if (isPrimary == attribute.isPrimary)
             {
-                printf("The key already exist. \n");
+                printf("Error: A primary key already exists in this entity.\n");
                 return;
             }
 
@@ -949,7 +957,7 @@ void orderAttribute(FILE *dictionary, const char *dictionaryName, long currentAt
 
         if (strcmp(currentAttrName, attribute.name) == 0)
         {
-            printf("There is already an attribute with this name, please select another one.\n");
+            printf("Error: An attribute with this name already exists. Choose another name.\n");
             return;
         }
         else
