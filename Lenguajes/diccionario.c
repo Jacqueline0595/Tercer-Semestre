@@ -218,6 +218,14 @@ void createNewFile(FILE *dictionary, char *name)
     cleanInput(name);
     long num = empty;
 
+    FILE *existingFile = fopen(name, "rb");
+    if(existingFile)
+    {
+        fclose(existingFile);
+        printf("Error: File '%s' already exists. Please choose a different name.\n", name);
+        return;
+    }
+
     dictionary = fopen(name, "wb");
     if (!dictionary)
     {
