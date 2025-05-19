@@ -1159,6 +1159,8 @@ void modifyAttribute(FILE *dictionary, const char *dictionaryName, const char *t
         return;
     }
 
+    // Add other questions to modify the attribute
+
     if (!deleteAttribute(dictionary, dictionaryName, targetName, listAttr))
     {
         printf("Unable to delete the original attribute. Modification aborted.\n");
