@@ -58,9 +58,9 @@ void printEntityMenu(ENTITIES entity);
 void processInputEntity(char *dict, ENTITIES entity);
 void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char *dictionaryName);
 void printAttributes(FILE *dictionary, char *dictionaryName, long listA);
-void createAttribute(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity);
+void createAttribute(FILE *dictionary, const char *dictionaryName, ENTITIES currentEntity);
 long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute);
-void orderAttribute(FILE *dictionary, char *dictionaryName, long currentAttr, ATTRIBUTES attribute, long newAttrDir);
+void orderAttribute(FILE *dictionary, const char *dictionaryName, long currentAttr, ATTRIBUTES attribute, long newAttrDir);
 int deleteAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr);
 void modifyAttribute(FILE *dictionary, char *dictionaryName, char *name, long listAttr);
 void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity);
@@ -823,16 +823,16 @@ void printAttributes(FILE *dictionary, char *dictionaryName, long listA)
         }
 }
 
-void createAttribute(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
+void createAttribute(FILE *dictionary, const char *dictionaryName, ENTITIES currentEntity)
 {
-    if (dictionary == NULL)
+    if (!dictionary)
     {
-        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
+        fprintf(stderr, "Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
 
-    ATTRIBUTES newAttribute;
-    int size;
+    ATTRIBUTES newAttribute = {0};
+    int stringLength = 0;
 
     printf("Name of the new attribute: ");
     fflush(stdin);
@@ -840,38 +840,49 @@ void createAttribute(FILE *dictionary, char *dictionaryName, ENTITIES currentEnt
     cleanInput(newAttribute.name);
     toUpperCase(newAttribute.name);
 
-    printf("Is it a primary key? (1 for yes, 0 for no): ");
-    scanf("%d", &newAttribute.isPrimary);
+    do
+    {
+        printf("Is it a primary key? (1 for yes, 0 for no): ");
+    } while (scanf("%d", &newAttribute.isPrimary) != 1 || (newAttribute.isPrimary != 0 && newAttribute.isPrimary != 1));
 
-    // {0:Bite, 1:Integer, 2:Float, 3:Char, 4:String}
-    printf("Type of the attribute (%d for bite, %d for integer, %d for float, %d for char, %d for string): ", BIT, INTEGER, FLOAT, CHAR, STRING);
-    scanf("%d", &newAttribute.type);
+    printf("Type of the attribute (%d:BITE, %d:INTEGER, %d:FLOAT, %d:CHAR, %d:STRING): ", BIT, INTEGER, FLOAT, CHAR, STRING);
+    while (scanf("%d", &newAttribute.type) != 1 || newAttribute.type < BIT || newAttribute.type > STRING)
+    {
+        printf("Invalid type. Please enter a valid option: ");
+        while (getchar() != '\n');
+    }
 
-    // Size: *Bit=1, *Integer=4, *Float=8, *Char=1, String=? (Ask)
     switch (newAttribute.type)
     {
-    case BIT:
-        newAttribute.size = sizeof(unsigned char);
-    break;
+        case BIT:
+            newAttribute.size = sizeof(unsigned char);
+        break;
 
-    case INTEGER:
-        newAttribute.size = sizeof(int);
-    break;
+        case INTEGER:
+            newAttribute.size = sizeof(int);
+        break;
 
-    case FLOAT:
-        newAttribute.size = sizeof(double);
-    break;
+        case FLOAT:
+            newAttribute.size = sizeof(double);
+        break;
 
-    case CHAR:
-        newAttribute.size = sizeof(char);
-    break;
+        case CHAR:
+            newAttribute.size = sizeof(char);
+        break;
 
-    case STRING:
-        // add validation for size
-        printf("Size of the string: ");
-        scanf("%d", &size);
-        newAttribute.size = sizeof(char) * size;
-    break;
+        case STRING:
+            do
+            {
+                printf("Size of the string (1 to %d): ", LENGTH - 1);
+                if (scanf("%d", &stringLength) != 1)
+                {
+                    stringLength = 0;
+                    while (getchar() != '\n'); // Clean buffer
+                }
+            } while (stringLength <= 0 || stringLength >= LENGTH);
+
+            newAttribute.size = sizeof(char) * stringLength;
+        break;
     }
 
     newAttribute.next = empty;
@@ -879,6 +890,7 @@ void createAttribute(FILE *dictionary, char *dictionaryName, ENTITIES currentEnt
     long attrDir = writeAttribute(dictionary, newAttribute);
     orderAttribute(dictionary, dictionaryName, currentEntity.listAttr, newAttribute, attrDir);
 }
+
 
 long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute)
 {
@@ -893,7 +905,7 @@ long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute)
     return attrDir;
 }
 
-void orderAttribute(FILE *dictionary, char *dictionaryName, long currentAttr, ATTRIBUTES attribute, long newAttrDir)
+void orderAttribute(FILE *dictionary, const char *dictionaryName, long currentAttr, ATTRIBUTES attribute, long newAttrDir)
 {
     if (dictionary == NULL)
     {
