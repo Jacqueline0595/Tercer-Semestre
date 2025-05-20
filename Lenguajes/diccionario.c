@@ -62,9 +62,13 @@ long writeAttribute(FILE *dictionary, ATTRIBUTES newAttribute);
 void orderAttribute(FILE *dictionary, const char *dictionaryName, long currentAttr, ATTRIBUTES attribute, long newAttrDir);
 int deleteAttribute(FILE *dictionary, const char *dictionaryName, const char *nameToDelete, long listAttr);
 void modifyAttribute(FILE *dictionary, const char *dictionaryName, const char *targetName, long listAttr);
+
+// ------ Data functions ------
+
 void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity);
 void addData(FILE *dictionary, char *dictionaryName, long newData, long listData, long listAttr);
 void printData(FILE *dictionary, long listData, long listAttribute);
+void deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity);
 
 enum MenuOption 
 { 
@@ -90,6 +94,7 @@ enum AttributeOp
     CREATE_ATTRIBUTE, 
     DELETE_ATTRIBUTE, 
     MODIFY_ATTRIBUTE, 
+    PRINT_DATA,
     ADD_DATA_ATTRIBUTE,
     DELETE_DATA_ATTRIBUTE,
     MODIFY_DATA_ATTRIBUTE
@@ -170,7 +175,10 @@ void processUserSelection()
     do 
     {
         printMainMenu();
-        fflush(stdin);
+
+        int ch;
+        while ((ch = getchar()) != '\n' && ch != EOF);
+
         printf("Enter your choice: ");
 
         if (scanf("%d", &userSel) != 1 || userSel < EXIT || userSel > OPEN_FILE)
@@ -791,7 +799,7 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char
 
         case DELETE_DATA_ATTRIBUTE:
             printf("Deleting data from entity '%s'...\n", entity.name);
-            // Implementar deleteDataFromEntityty
+            deleteDataFromEntity(dictionary, dictionaryName, entity);
         break;
 
         case MODIFY_DATA_ATTRIBUTE:
@@ -1462,3 +1470,20 @@ void printData(FILE *dictionary, long listData, long listAttribute)
     }
 }
 
+void deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity)
+{
+    if (dictionary == NULL)
+    {
+        printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
+        return;
+    }
+
+    if (entity.listDat == empty)
+    {
+        printf("No data to delete. The entity has no data records.\n");
+        return;
+    }
+
+    printf("Printing data of entity '%s'...\n", entity.name);
+    printData(dictionary, entity.listDat, entity.listAttr);
+}
