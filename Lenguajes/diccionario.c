@@ -176,18 +176,15 @@ void processUserSelection()
     {
         printMainMenu();
 
-        int ch;
-        while ((ch = getchar()) != '\n' && ch != EOF);
-
         printf("Enter your choice: ");
 
+        // while (getchar() != '\n' && !feof(stdin));
         if (scanf("%d", &userSel) != 1 || userSel < EXIT || userSel > OPEN_FILE)
         {
-            while (getchar() != '\n');
             printf("Invalid input. Please enter a valid number.\n");
             continue;
         }
-
+        fflush(stdin);
         executeMenuOption(userSel);
 
     } while (userSel != EXIT);
@@ -626,14 +623,14 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
         return;
     }
 
-    fseek(dictionary, originalEntity.listAttr, SEEK_SET);
+    /* fseek(dictionary, originalEntity.listAttr, SEEK_SET);
     fread(&dirData, sizeof(long), 1, dictionary);
     if (dirData != empty)
     {
         printf("The entity already has attributes, we couldn't modify it\n");
         fclose(dictionary);
         return;
-    }
+    } */
 
     // Correct this part
     /* if(originalEntity.listAttr != empty)
@@ -722,6 +719,7 @@ void printEntityMenu(ENTITIES entity)
     printf("\t----- %d Create an attribute \n", CREATE_ATTRIBUTE);
     printf("\t----- %d Delete an attribute \n", DELETE_ATTRIBUTE);
     printf("\t----- %d Modify an attribute \n", MODIFY_ATTRIBUTE);
+    printf("\t----- %d Print data of the entity \n", PRINT_DATA);
     printf("\t----- %d Add data to the entity \n", ADD_DATA_ATTRIBUTE);
     printf("\t----- %d Delete data to the entity \n", DELETE_DATA_ATTRIBUTE);
     printf("\t----- %d Modify data to the entity \n", MODIFY_DATA_ATTRIBUTE);
@@ -790,6 +788,11 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char
             printf("Modifying an attribute of entity '%s'...\n", entity.name);
             askAttributeName(name, 0);
             modifyAttribute(dictionary, dictionaryName, name, entity.listAttr);
+        break;
+
+        case PRINT_DATA:
+            printf("Printing data of the entity '%s'...\n", entity.name);
+            printData(dictionary, entity.listDat, entity.listAttr);
         break;
 
         case ADD_DATA_ATTRIBUTE:
