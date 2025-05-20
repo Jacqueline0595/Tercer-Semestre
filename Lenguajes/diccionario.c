@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
 #define empty -1
 #define LENGTH 50
 
@@ -92,8 +91,8 @@ enum AttributeOp
     DELETE_ATTRIBUTE, 
     MODIFY_ATTRIBUTE, 
     ADD_DATA_ATTRIBUTE,
-    MODIFY_DATA_ATTRIBUTE,
-    DELETE_DATA_ATTRIBUTE
+    DELETE_DATA_ATTRIBUTE,
+    MODIFY_DATA_ATTRIBUTE
 };
 
 enum typeData
@@ -171,6 +170,7 @@ void processUserSelection()
     do 
     {
         printMainMenu();
+        fflush(stdin);
         printf("Enter your choice: ");
 
         if (scanf("%d", &userSel) != 1 || userSel < EXIT || userSel > OPEN_FILE)
@@ -643,8 +643,6 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
         }
     } */
 
-
-
     if (!deleteEntity(dictionary, dictionaryName, oldName))
     {
         printf("Error deleting the entity '%s'.\n", oldName);
@@ -717,8 +715,8 @@ void printEntityMenu(ENTITIES entity)
     printf("\t----- %d Delete an attribute \n", DELETE_ATTRIBUTE);
     printf("\t----- %d Modify an attribute \n", MODIFY_ATTRIBUTE);
     printf("\t----- %d Add data to the entity \n", ADD_DATA_ATTRIBUTE);
-    printf("\t----- %d Modify data to the entity \n", MODIFY_DATA_ATTRIBUTE);
     printf("\t----- %d Delete data to the entity \n", DELETE_DATA_ATTRIBUTE);
+    printf("\t----- %d Modify data to the entity \n", MODIFY_DATA_ATTRIBUTE);
     printf("\t----- %d Exit \n", RETURN2);
 }
 
@@ -741,7 +739,7 @@ void processInputEntity(char *dictionaryName, ENTITIES entity)
         scanf("%d", &userSelec);
         while (getchar() != '\n'); 
 
-        if(userSelec < RETURN2 || userSelec > DELETE_DATA_ATTRIBUTE)
+        if(userSelec < RETURN2 || userSelec > MODIFY_DATA_ATTRIBUTE)
         {
             printf("Invalid option. Please try again.\n");
             continue;
@@ -791,14 +789,14 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char
             createData(dictionary, dictionaryName, entity);
         break;
 
-        case MODIFY_DATA_ATTRIBUTE:
-            printf("Modifying data in entity '%s'...\n", entity.name);
-            // Implementar modifyDataInEntity
-        break;
-
         case DELETE_DATA_ATTRIBUTE:
             printf("Deleting data from entity '%s'...\n", entity.name);
             // Implementar deleteDataFromEntityty
+        break;
+
+        case MODIFY_DATA_ATTRIBUTE:
+            printf("Modifying data in entity '%s'...\n", entity.name);
+            // Implementar modifyDataInEntity
         break;
 
         case RETURN2:
@@ -873,9 +871,11 @@ void createAttribute(FILE *dictionary, const char *dictionaryName, ENTITIES curr
 
     do
     {
+        // Add validation for empty name (if they put a character)
         printf("Is it a primary key? (1 for yes, 0 for no): ");
     } while (scanf("%d", &newAttribute.isPrimary) != 1 || (newAttribute.isPrimary != 0 && newAttribute.isPrimary != 1));
 
+    // Add validation for type (If they put a character)
     printf("Type of the attribute (%d:BITE, %d:INTEGER, %d:FLOAT, %d:CHAR, %d:STRING): ", BIT, INTEGER, FLOAT, CHAR, STRING);
     while (scanf("%d", &newAttribute.type) != 1 || newAttribute.type < BIT || newAttribute.type > STRING)
     {
@@ -1159,8 +1159,6 @@ void modifyAttribute(FILE *dictionary, const char *dictionaryName, const char *t
         return;
     }
 
-    // Add other questions to modify the attribute
-
     if (!deleteAttribute(dictionary, dictionaryName, targetName, listAttr))
     {
         printf("Unable to delete the original attribute. Modification aborted.\n");
@@ -1172,6 +1170,63 @@ void modifyAttribute(FILE *dictionary, const char *dictionaryName, const char *t
     fgets(attribute.name, LENGTH, stdin);
     cleanInput(attribute.name);
     toUpperCase(attribute.name);
+
+    do {
+        printf("Is this attribute a primary key? (0 = No, 1 = Yes): ");
+        if (scanf("%d", &attribute.isPrimary) != 1 || (attribute.isPrimary != 0 && attribute.isPrimary != 1))
+        {
+            printf("Invalid input. Enter 1 for Yes or 0 for No.\n");
+            while (getchar() != '\n');
+            attribute.isPrimary = empty;
+        }
+    } while (attribute.isPrimary != 0 && attribute.isPrimary != 1);
+
+    do {
+        printf("Enter the attribute type (%d = BIT, %d = INTEGER, %d = FLOAT, %d = CHAR, %d = STRING): ", BIT, INTEGER, FLOAT, CHAR, STRING);
+        if (scanf("%d", &attribute.type) != 1 || attribute.type < BIT || attribute.type > STRING)
+        {
+            printf("Invalid type. Please enter 0, 1, 2, 3 or 4.\n");
+            while (getchar() != '\n');
+            attribute.type = empty;
+        }
+    } while (attribute.type < BIT || attribute.type > STRING);
+
+    int stringLength = 0;
+
+    switch (attribute.type)
+    {
+        case BIT:
+            attribute.size = sizeof(unsigned char);
+        break;
+
+        case INTEGER:
+            attribute.size = sizeof(int);
+        break;
+
+        case FLOAT:
+            attribute.size = sizeof(double);
+        break;
+
+        case CHAR:
+            attribute.size = sizeof(char);
+        break;
+
+        case STRING:
+            do
+            {
+                printf("Size of the string (1 to %d): ", LENGTH - 1);
+                if (scanf("%d", &stringLength) != 1)
+                {
+                    stringLength = 0;
+                    while (getchar() != '\n');
+                }
+            } while (stringLength <= 0 || stringLength >= LENGTH);
+
+            attribute.size = stringLength;
+        break;
+    }
+
+    while (getchar() != '\n'); // limpiar el buffer final
 
     long newDir = writeAttribute(dictionary, attribute);
     orderAttribute(dictionary, dictionaryName, listAttr, attribute, newDir);
