@@ -756,7 +756,7 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char
     {
         case PRINT2:
             printf("Printing attributes of entity '%s'...\n", entity.name);
-            printAttributes(dictionary, dictionaryName, entity.listAttr);
+            printAttributes(dictionary, dictionaryName, entity.name, entity.listAttr, entity.listDat);
         break;
 
         case CREATE_ATTRIBUTE:
@@ -1480,163 +1480,167 @@ int deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity
         return 0;
     }
 
-    // Verificar si hay datos
     if (entity.listDat == empty)
     {
         printf("No data found in entity '%s'.\n", entity.name);
         return 0;
     }
 
-    // Buscar primary key
-    long currentAttr = entity.listAttr;
-    ATTRIBUTES primaryAttr;
+    long attrPtr = entity.listAttr;
+    ATTRIBUTES attr;
     int foundPrimary = 0;
-    
-    while (currentAttr != empty && !foundPrimary)
-    {
-        fseek(dictionary, currentAttr, SEEK_SET);
-        fread(primaryAttr.name, LENGTH, 1, dictionary);
-        fread(&primaryAttr.isPrimary, sizeof(int), 1, dictionary);
-        fread(&primaryAttr.type, sizeof(int), 1, dictionary);
-        fread(&primaryAttr.size, sizeof(int), 1, dictionary);
-        fread(&currentAttr, sizeof(long), 1, dictionary);
-        
-        if (primaryAttr.isPrimary) foundPrimary = 1;
+    long primaryAttrPtr = empty;
+    while (attrPtr != empty) {
+        fseek(dictionary, attrPtr, SEEK_SET);
+        fread(attr.name, LENGTH, 1, dictionary);
+        fread(&attr.isPrimary, sizeof(int), 1, dictionary);
+        fread(&attr.type, sizeof(int), 1, dictionary);
+        fread(&attr.size, sizeof(int), 1, dictionary);
+        fread(&attrPtr, sizeof(long), 1, dictionary);
+        if (attr.isPrimary == 1) {
+            foundPrimary = 1;
+            primaryAttrPtr = attrPtr - sizeof(long) - sizeof(int) * 3 - LENGTH;
+            break;
+        }
     }
-
-    if (!foundPrimary)
-    {
-        printf("Error: No primary key in entity '%s'.\n", entity.name);
+    if (!foundPrimary) {
+        printf("No primary key attribute found. Cannot delete data.\n");
         return 0;
     }
 
-    // Variables estáticas para almacenar el valor de búsqueda
-    union {
-        unsigned char bitVal;
-        int intVal;
-        double floatVal;
-        char charVal;
-        char stringVal[LENGTH];
-    } searchValue;
-
-    // Capturar entrada del usuario
-    printf("Enter primary key value (%s - Type %d): ", primaryAttr.name, primaryAttr.type);
-    switch (primaryAttr.type)
-    {
+    printf("Enter the value of the primary key (%s): ", attr.name);
+    unsigned char pkBit;
+    int pkInt;
+    double pkFloat;
+    char pkChar;
+    char pkString[LENGTH] = {0};
+    switch (attr.type) {
         case BIT:
-            printf("[0/1]: ");
-            scanf("%hhu", &searchValue.bitVal);
+            scanf("%hhu", &pkBit);
             break;
         case INTEGER:
-            printf("[integer]: ");
-            scanf("%d", &searchValue.intVal);
+            scanf("%d", &pkInt);
             break;
         case FLOAT:
-            printf("[float]: ");
-            scanf("%lf", &searchValue.floatVal);
+            scanf("%lf", &pkFloat);
             break;
         case CHAR:
-            printf("[char]: ");
-            scanf(" %c", &searchValue.charVal);
+            scanf(" %c", &pkChar);
             break;
         case STRING:
-            printf("[string]: ");
             fflush(stdin);
-            fgets(searchValue.stringVal, LENGTH, stdin);
-            cleanInput(searchValue.stringVal);
-            toUpperCase(searchValue.stringVal);
+            fgets(pkString, attr.size+1, stdin);
+            cleanInput(pkString);
             break;
     }
 
-    // Buscar dato
-    long prevPtr = entity.listDat;
-    long currentPtr;
-    fseek(dictionary, prevPtr, SEEK_SET);
-    fread(&currentPtr, sizeof(long), 1, dictionary);
-    
-    long dataToDelete = empty;
-    
-    while (currentPtr != empty)
-    {
-        long attrPos = entity.listAttr;
-        long dataPos = currentPtr;
-        int match = 0;
+    long prevDataPtr = entity.listDat;
+    long dataPtr;
+    fseek(dictionary, entity.listDat, SEEK_SET);
+    fread(&dataPtr, sizeof(long), 1, dictionary);
 
-        // Buscar posición del primary key en el registro
-        while (attrPos != empty && !match)
+    long attrListPtr = entity.listAttr;
+    int found = 0;
+    long dataStart = 0, dataEnd = 0;
+    while (dataPtr != empty) {
+        long tempAttrPtr = attrListPtr;
+        long dataPos = dataPtr;
+        int match = 0;
+        while (tempAttrPtr != empty) 
         {
-            ATTRIBUTES attr;
-            fseek(dictionary, attrPos, SEEK_SET);
+            fseek(dictionary, tempAttrPtr, SEEK_SET);
             fread(attr.name, LENGTH, 1, dictionary);
             fread(&attr.isPrimary, sizeof(int), 1, dictionary);
             fread(&attr.type, sizeof(int), 1, dictionary);
             fread(&attr.size, sizeof(int), 1, dictionary);
-            fread(&attrPos, sizeof(long), 1, dictionary);
-            
-            if (attr.isPrimary)
+            fread(&tempAttrPtr, sizeof(long), 1, dictionary);
+
+            fseek(dictionary, dataPos, SEEK_SET);
+            switch (attr.type) 
             {
-                // Leer valor del dato
-                fseek(dictionary, dataPos, SEEK_SET);
-                switch (attr.type)
+                case BIT: 
                 {
-                    case BIT: {
-                        unsigned char val;
-                        fread(&val, sizeof(unsigned char), 1, dictionary);
-                        match = (val == searchValue.bitVal);
-                        break;
-                    }
-                    case INTEGER: {
-                        int val;
-                        fread(&val, sizeof(int), 1, dictionary);
-                        match = (val == searchValue.intVal);
-                        break;
-                    }
-                    case FLOAT: {
-                        double val;
-                        fread(&val, sizeof(double), 1, dictionary);
-                        match = (val == searchValue.floatVal);
-                        break;
-                    }
-                    case CHAR: {
-                        char val;
-                        fread(&val, sizeof(char), 1, dictionary);
-                        match = (val == searchValue.charVal);
-                        break;
-                    }
-                    case STRING: {
-                        char val[LENGTH] = {0};
-                        fread(val, attr.size, 1, dictionary);
-                        match = (strcmp(val, searchValue.stringVal) == 0);
-                        break;
-                    }
+                    unsigned char val;
+                    fread(&val, sizeof(unsigned char), 1, dictionary);
+                    if (attr.isPrimary && val == pkBit) match = 1;
+                    dataPos += sizeof(unsigned char);
+                    break;
+                }
+                case INTEGER: 
+                {
+                    int val;
+                    fread(&val, sizeof(int), 1, dictionary);
+                    if (attr.isPrimary && val == pkInt) match = 1;
+                    dataPos += sizeof(int);
+                    break;
+                }
+                case FLOAT: 
+                {
+                    double val;
+                    fread(&val, sizeof(double), 1, dictionary);
+                    if (attr.isPrimary && val == pkFloat) match = 1;
+                    dataPos += sizeof(double);
+                    break;
+                }
+                case CHAR: 
+                {
+                    char val;
+                    fread(&val, sizeof(char), 1, dictionary);
+                    if (attr.isPrimary && val == pkChar) match = 1;
+                    dataPos += sizeof(char);
+                    break;
+                }
+                case STRING: 
+                {
+                    char val[LENGTH] = {0};
+                    fread(val, sizeof(char), attr.size, dictionary);
+                    val[attr.size] = '\0';
+                    if (attr.isPrimary && strncmp(val, pkString, attr.size) == 0) match = 1;
+                    dataPos += attr.size;
+                    break;
                 }
             }
-            dataPos += attr.size; // Avanzar a siguiente atributo
         }
-
-        if (match)
+        dataEnd = dataPos;
+        if (match) 
         {
-            dataToDelete = currentPtr;
+            found = 1;
             break;
         }
-        
-        prevPtr = currentPtr;
-        fseek(dictionary, currentPtr, SEEK_SET);
-        fread(&currentPtr, sizeof(long), 1, dictionary);
+        prevDataPtr = dataPtr;
+        fseek(dictionary, dataPos, SEEK_SET);
+        fread(&dataPtr, sizeof(long), 1, dictionary);
     }
 
-    if (dataToDelete == empty)
+    if (!found) 
     {
-        printf("Data not found.\n");
+        printf("No data found with the given primary key.\n");
         return 0;
     }
 
-    // Actualizar punteros
-    fseek(dictionary, prevPtr, SEEK_SET);
     long nextPtr;
+    fseek(dictionary, dataEnd, SEEK_SET);
     fread(&nextPtr, sizeof(long), 1, dictionary);
-    fseek(dictionary, prevPtr, SEEK_SET);
-    fwrite(&nextPtr, sizeof(long), 1, dictionary);
+
+    if (prevDataPtr == entity.listDat) 
+    {
+        fseek(dictionary, prevDataPtr, SEEK_SET);
+        fwrite(&nextPtr, sizeof(long), 1, dictionary);
+    } else 
+    {
+        long prevNextPtr = prevDataPtr;
+        fseek(dictionary, prevNextPtr, SEEK_SET);
+        long temp;
+        fread(&temp, sizeof(long), 1, dictionary);
+        while (temp != dataPtr) 
+        {
+            prevNextPtr = temp;
+            fseek(dictionary, prevNextPtr, SEEK_SET);
+            fread(&temp, sizeof(long), 1, dictionary);
+        }
+        fseek(dictionary, prevNextPtr, SEEK_SET);
+        fwrite(&nextPtr, sizeof(long), 1, dictionary);
+    }
 
     printf("Data deleted successfully.\n");
     return 1;
@@ -1644,66 +1648,142 @@ int deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity
 
 void modifyDataInEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity)
 {
+    if (dictionary == NULL)
+    {
+        printf("Error: Couldn't open the file '%s'.\n", dictionaryName);
+        return;
+    }
+
+    if (entity.listDat == empty)
+    {
+        printf("No data found in entity '%s'.\n", entity.name);
+        return;
+    }
+
+    long attrPtr = entity.listAttr;
+    ATTRIBUTES attr;
+    int foundPrimary = 0;
+    long primaryAttrPtr = empty;
+    while (attrPtr != empty) 
+    {
+        fseek(dictionary, attrPtr, SEEK_SET);
+        fread(attr.name, LENGTH, 1, dictionary);
+        fread(&attr.isPrimary, sizeof(int), 1, dictionary);
+        fread(&attr.type, sizeof(int), 1, dictionary);
+        fread(&attr.size, sizeof(int), 1, dictionary);
+        fread(&attrPtr, sizeof(long), 1, dictionary);
+        if (attr.isPrimary == 1) 
+        {
+            foundPrimary = 1;
+            primaryAttrPtr = attrPtr - sizeof(long) - sizeof(int)*3 - LENGTH;
+            break;
+        }
+    }
+    if (!foundPrimary) 
+    {
+        printf("No primary key attribute found. Cannot modify data.\n");
+        return;
+    }
+
+    printf("Enter the value of the primary key (%s): ", attr.name);
+    unsigned char pkBit;
+    int pkInt;
+    double pkFloat;
+    char pkChar;
+    char pkString[LENGTH] = {0};
+    switch (attr.type) 
+    {
+        case BIT:
+            scanf("%hhu", &pkBit);
+            break;
+        case INTEGER:
+            scanf("%d", &pkInt);
+            break;
+        case FLOAT:
+            scanf("%lf", &pkFloat);
+            break;
+        case CHAR:
+            scanf(" %c", &pkChar);
+            break;
+        case STRING:
+            fflush(stdin);
+            fgets(pkString, attr.size+1, stdin);
+            cleanInput(pkString);
+            break;
+    }
+
     if (!deleteDataFromEntity(dictionary, dictionaryName, entity))
     {
         printf("Modification failed. Data not found.\n");
         return;
     }
 
-    // Variables estáticas para nuevos valores
-    struct {
-        unsigned char bitVal;
-        int intVal;
-        double floatVal;
-        char charVal;
-        char stringVal[LENGTH];
-    } newData;
+    printf("Enter the new data for the entity:\n");
+    long listAttributes = entity.listAttr;
+    ATTRIBUTES attribute;
+    unsigned char dataBit;
+    int dataInt;
+    double dataFloat;
+    char dataChar;
+    char dataString[LENGTH];
+    long newDat;
 
-    // Capturar nuevos valores
-    long attrPos = entity.listAttr;
-    while (attrPos != empty)
+    fseek(dictionary, 0, SEEK_END);
+    newDat = ftell(dictionary);
+
+    while (listAttributes != empty)
     {
-        ATTRIBUTES attr;
-        fseek(dictionary, attrPos, SEEK_SET);
-        fread(attr.name, LENGTH, 1, dictionary);
-        fread(&attr.isPrimary, sizeof(int), 1, dictionary);
-        fread(&attr.type, sizeof(int), 1, dictionary);
-        fread(&attr.size, sizeof(int), 1, dictionary);
-        fread(&attrPos, sizeof(long), 1, dictionary);
+        fseek(dictionary, listAttributes, SEEK_SET);
+        fread(attribute.name, LENGTH, 1, dictionary);
+        fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
+        fread(&attribute.type, sizeof(int), 1, dictionary);
+        fread(&attribute.size, sizeof(int), 1, dictionary);
+        fread(&listAttributes, sizeof(long), 1, dictionary);
 
-        printf("Enter new value for %s (%s): ", attr.name, 
-            attr.type == BIT ? "BIT" : 
-            attr.type == INTEGER ? "INTEGER" : 
-            attr.type == FLOAT ? "FLOAT" : 
-            attr.type == CHAR ? "CHAR" : "STRING");
-
-        switch (attr.type)
+        printf("\tEnter the %s: ", attribute.name);
+        switch (attribute.type)
         {
             case BIT:
-                scanf("%hhu", &newData.bitVal);
-                fwrite(&newData.bitVal, sizeof(unsigned char), 1, dictionary);
-                break;
+                do {
+                    printf("\t\nWhich option: \n\t1)True 0)False ");
+                    scanf("%hhu", &dataBit);
+                } while (dataBit > 1);
+                fseek(dictionary, 0, SEEK_END);
+                fwrite(&dataBit, sizeof(unsigned char), 1, dictionary);
+            break;
             case INTEGER:
-                scanf("%d", &newData.intVal);
-                fwrite(&newData.intVal, sizeof(int), 1, dictionary);
-                break;
+                scanf("%d", &dataInt);
+                fseek(dictionary, 0, SEEK_END);
+                fwrite(&dataInt, sizeof(int), 1, dictionary);
+            break;
             case FLOAT:
-                scanf("%lf", &newData.floatVal);
-                fwrite(&newData.floatVal, sizeof(double), 1, dictionary);
-                break;
+                scanf("%lf", &dataFloat);
+                fseek(dictionary, 0, SEEK_END);
+                fwrite(&dataFloat, sizeof(double), 1, dictionary);
+            break;
             case CHAR:
-                scanf(" %c", &newData.charVal);
-                fwrite(&newData.charVal, sizeof(char), 1, dictionary);
-                break;
+                scanf(" %c", &dataChar);
+                toUpperCase(&dataChar);
+                fseek(dictionary, 0, SEEK_END);
+                fwrite(&dataChar, sizeof(char), 1, dictionary);
+            break;
             case STRING:
-                fflush(stdin);
-                fgets(newData.stringVal, LENGTH, stdin);
-                cleanInput(newData.stringVal);
-                toUpperCase(newData.stringVal);
-                fwrite(newData.stringVal, attr.size, 1, dictionary);
-                break;
+                do {
+                    fflush(stdin);
+                    fgets(dataString, LENGTH, stdin);
+                    cleanInput(dataString);
+                    toUpperCase(dataString);
+                    fseek(dictionary, 0, SEEK_END);
+                    fwrite(dataString, sizeof(char), attribute.size, dictionary);
+                    if(strlen(dataString) > (size_t)attribute.size)
+                        printf("The string is too long, please enter a new one less than %d: ", attribute.size);
+                } while (strlen(dataString) > (size_t)attribute.size);
+            break;
         }
     }
+    long next = empty;
+    fwrite(&next, sizeof(long), 1, dictionary);
+    addData(dictionary, dictionaryName, newDat, entity.listDat, entity.listAttr);
 
     printf("Data modified successfully.\n");
 }
