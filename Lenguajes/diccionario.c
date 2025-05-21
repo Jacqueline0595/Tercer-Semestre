@@ -756,7 +756,7 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char
     {
         case PRINT2:
             printf("Printing attributes of entity '%s'...\n", entity.name);
-            printAttributes(dictionary, dictionaryName, entity.name, entity.listAttr, entity.listDat);
+            printAttributes(dictionary, dictionaryName, entity.listAttr);
         break;
 
         case CREATE_ATTRIBUTE:
@@ -1405,15 +1405,15 @@ void addData(FILE *dictionary, char *dictionaryName, long newData, long listData
     }
 }
 
-void printData(FILE *dictionary, long dataHead, long attributeHead)
+void printData(FILE *dictionary, long listData, long listAttri)
 {
-    if (dataHead == empty)
+    if (listData == empty)
     {
         printf("\n\t| No data found for entity.\n");
         return;
     }
 
-    long currentData = dataHead;
+    long currentData = listData;
     long currentAttr;
     ATTRIBUTES attr;
     unsigned char bitValue;
@@ -1424,7 +1424,7 @@ void printData(FILE *dictionary, long dataHead, long attributeHead)
 
     while (currentData != empty)
     {
-        currentAttr = attributeHead;
+        currentAttr = listAttri;
 
         while (currentAttr != empty)
         {
