@@ -1472,22 +1472,238 @@ void printData(FILE *dictionary, long dataHead, long attributeHead)
     printf("\n\n");
 }
 
-int deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity)
+int deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity) 
 {
     if (dictionary == NULL)
     {
         printf("Error: Couldn't open the file '%s'.\n", dictionaryName);
-        return;
+        return 0;
     }
 
-    return 0;
+    // Verificar si hay datos
+    if (entity.listDat == empty)
+    {
+        printf("No data found in entity '%s'.\n", entity.name);
+        return 0;
+    }
+
+    // Buscar primary key
+    long currentAttr = entity.listAttr;
+    ATTRIBUTES primaryAttr;
+    int foundPrimary = 0;
+    
+    while (currentAttr != empty && !foundPrimary)
+    {
+        fseek(dictionary, currentAttr, SEEK_SET);
+        fread(primaryAttr.name, LENGTH, 1, dictionary);
+        fread(&primaryAttr.isPrimary, sizeof(int), 1, dictionary);
+        fread(&primaryAttr.type, sizeof(int), 1, dictionary);
+        fread(&primaryAttr.size, sizeof(int), 1, dictionary);
+        fread(&currentAttr, sizeof(long), 1, dictionary);
+        
+        if (primaryAttr.isPrimary) foundPrimary = 1;
+    }
+
+    if (!foundPrimary)
+    {
+        printf("Error: No primary key in entity '%s'.\n", entity.name);
+        return 0;
+    }
+
+    // Variables estáticas para almacenar el valor de búsqueda
+    union {
+        unsigned char bitVal;
+        int intVal;
+        double floatVal;
+        char charVal;
+        char stringVal[LENGTH];
+    } searchValue;
+
+    // Capturar entrada del usuario
+    printf("Enter primary key value (%s - Type %d): ", primaryAttr.name, primaryAttr.type);
+    switch (primaryAttr.type)
+    {
+        case BIT:
+            printf("[0/1]: ");
+            scanf("%hhu", &searchValue.bitVal);
+            break;
+        case INTEGER:
+            printf("[integer]: ");
+            scanf("%d", &searchValue.intVal);
+            break;
+        case FLOAT:
+            printf("[float]: ");
+            scanf("%lf", &searchValue.floatVal);
+            break;
+        case CHAR:
+            printf("[char]: ");
+            scanf(" %c", &searchValue.charVal);
+            break;
+        case STRING:
+            printf("[string]: ");
+            fflush(stdin);
+            fgets(searchValue.stringVal, LENGTH, stdin);
+            cleanInput(searchValue.stringVal);
+            toUpperCase(searchValue.stringVal);
+            break;
+    }
+
+    // Buscar dato
+    long prevPtr = entity.listDat;
+    long currentPtr;
+    fseek(dictionary, prevPtr, SEEK_SET);
+    fread(&currentPtr, sizeof(long), 1, dictionary);
+    
+    long dataToDelete = empty;
+    
+    while (currentPtr != empty)
+    {
+        long attrPos = entity.listAttr;
+        long dataPos = currentPtr;
+        int match = 0;
+
+        // Buscar posición del primary key en el registro
+        while (attrPos != empty && !match)
+        {
+            ATTRIBUTES attr;
+            fseek(dictionary, attrPos, SEEK_SET);
+            fread(attr.name, LENGTH, 1, dictionary);
+            fread(&attr.isPrimary, sizeof(int), 1, dictionary);
+            fread(&attr.type, sizeof(int), 1, dictionary);
+            fread(&attr.size, sizeof(int), 1, dictionary);
+            fread(&attrPos, sizeof(long), 1, dictionary);
+            
+            if (attr.isPrimary)
+            {
+                // Leer valor del dato
+                fseek(dictionary, dataPos, SEEK_SET);
+                switch (attr.type)
+                {
+                    case BIT: {
+                        unsigned char val;
+                        fread(&val, sizeof(unsigned char), 1, dictionary);
+                        match = (val == searchValue.bitVal);
+                        break;
+                    }
+                    case INTEGER: {
+                        int val;
+                        fread(&val, sizeof(int), 1, dictionary);
+                        match = (val == searchValue.intVal);
+                        break;
+                    }
+                    case FLOAT: {
+                        double val;
+                        fread(&val, sizeof(double), 1, dictionary);
+                        match = (val == searchValue.floatVal);
+                        break;
+                    }
+                    case CHAR: {
+                        char val;
+                        fread(&val, sizeof(char), 1, dictionary);
+                        match = (val == searchValue.charVal);
+                        break;
+                    }
+                    case STRING: {
+                        char val[LENGTH] = {0};
+                        fread(val, attr.size, 1, dictionary);
+                        match = (strcmp(val, searchValue.stringVal) == 0);
+                        break;
+                    }
+                }
+            }
+            dataPos += attr.size; // Avanzar a siguiente atributo
+        }
+
+        if (match)
+        {
+            dataToDelete = currentPtr;
+            break;
+        }
+        
+        prevPtr = currentPtr;
+        fseek(dictionary, currentPtr, SEEK_SET);
+        fread(&currentPtr, sizeof(long), 1, dictionary);
+    }
+
+    if (dataToDelete == empty)
+    {
+        printf("Data not found.\n");
+        return 0;
+    }
+
+    // Actualizar punteros
+    fseek(dictionary, prevPtr, SEEK_SET);
+    long nextPtr;
+    fread(&nextPtr, sizeof(long), 1, dictionary);
+    fseek(dictionary, prevPtr, SEEK_SET);
+    fwrite(&nextPtr, sizeof(long), 1, dictionary);
+
+    printf("Data deleted successfully.\n");
+    return 1;
 }
 
 void modifyDataInEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity)
 {
-    if (dictionary == NULL)
+    if (!deleteDataFromEntity(dictionary, dictionaryName, entity))
     {
-        printf("Error: Couldn't open the file '%s'.\n", dictionaryName);
+        printf("Modification failed. Data not found.\n");
         return;
     }
+
+    // Variables estáticas para nuevos valores
+    struct {
+        unsigned char bitVal;
+        int intVal;
+        double floatVal;
+        char charVal;
+        char stringVal[LENGTH];
+    } newData;
+
+    // Capturar nuevos valores
+    long attrPos = entity.listAttr;
+    while (attrPos != empty)
+    {
+        ATTRIBUTES attr;
+        fseek(dictionary, attrPos, SEEK_SET);
+        fread(attr.name, LENGTH, 1, dictionary);
+        fread(&attr.isPrimary, sizeof(int), 1, dictionary);
+        fread(&attr.type, sizeof(int), 1, dictionary);
+        fread(&attr.size, sizeof(int), 1, dictionary);
+        fread(&attrPos, sizeof(long), 1, dictionary);
+
+        printf("Enter new value for %s (%s): ", attr.name, 
+            attr.type == BIT ? "BIT" : 
+            attr.type == INTEGER ? "INTEGER" : 
+            attr.type == FLOAT ? "FLOAT" : 
+            attr.type == CHAR ? "CHAR" : "STRING");
+
+        switch (attr.type)
+        {
+            case BIT:
+                scanf("%hhu", &newData.bitVal);
+                fwrite(&newData.bitVal, sizeof(unsigned char), 1, dictionary);
+                break;
+            case INTEGER:
+                scanf("%d", &newData.intVal);
+                fwrite(&newData.intVal, sizeof(int), 1, dictionary);
+                break;
+            case FLOAT:
+                scanf("%lf", &newData.floatVal);
+                fwrite(&newData.floatVal, sizeof(double), 1, dictionary);
+                break;
+            case CHAR:
+                scanf(" %c", &newData.charVal);
+                fwrite(&newData.charVal, sizeof(char), 1, dictionary);
+                break;
+            case STRING:
+                fflush(stdin);
+                fgets(newData.stringVal, LENGTH, stdin);
+                cleanInput(newData.stringVal);
+                toUpperCase(newData.stringVal);
+                fwrite(newData.stringVal, attr.size, 1, dictionary);
+                break;
+        }
+    }
+
+    printf("Data modified successfully.\n");
 }
