@@ -108,6 +108,7 @@ enum typeData
 
 int main()
 {
+    system("cls");
     processUserSelection();
     return 0;
 }
@@ -246,7 +247,7 @@ void createNewFile(FILE *dictionary, char *name)
     }
     fwrite(&num, sizeof(long), 1, dictionary);
     fclose(dictionary);
-    printf("File created successfully. Opening the file...\n\n");
+    system("cls");
     processInputDictionary(name);
 }
 
@@ -267,7 +268,7 @@ void openFile(char *name)
     }
 
     fclose(dictionary);
-    printf("File '%s' opened successfully. Opening the file...\n\n", name);
+    system("cls");
     processInputDictionary(name);
 }
 
@@ -399,6 +400,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
         return;
     }
 
+    system("cls");
     printf("\n------- Data Dictionary: %s -------\n", dictionaryName);
     printf("| %-30s | %-10s | %-10s | %-10s |\n", "Entity Name", "List Data", "List Attr", "Next");
 
@@ -449,7 +451,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
             }
             if(entity.listDat == empty)
             {
-                printf("\n\t| No data found for entity '%s'.\n", entity.name);
+                printf("\n\n\t| No data found for entity '%s'.\n", entity.name);
             }
             else
             {
@@ -469,6 +471,8 @@ void createEntity(FILE *dictionary, char *dictionaryName)
         printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
+
+    system("cls");
 
     ENTITIES newEntity;
     long dirEntity;
@@ -584,6 +588,8 @@ int deleteEntity(FILE *dictionary, char *dictionaryName, char *name)
         return 0;
     }
 
+    system("cls");
+
     ENTITIES entity;
     long currentPtr = empty, previousPtr = empty, currentPos = empty;
     long headPtr;
@@ -631,6 +637,8 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
         printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
+
+    system("cls");
 
     rewind(dictionary);
     ENTITIES originalEntity, updatedEntity, checkEntity;
@@ -680,6 +688,8 @@ void selectEntity(FILE *dictionary, char *dictionaryName, char *name)
         printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
+
+    system("cls");
 
     rewind(dictionary);
     ENTITIES entity;
@@ -757,17 +767,14 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char
     switch (userSelec)
     {
         case PRINT2:
-            printf("Printing attributes of entity '%s'...\n", entity.name);
             printAttributes(dictionary, dictionaryName, entity.listAttr);
         break;
 
         case CREATE_ATTRIBUTE:
-            printf("Creating a new attribute for entity '%s'...\n", entity.name );
             createAttribute(dictionary, dictionaryName, entity);
         break;
 
         case DELETE_ATTRIBUTE:
-            printf("Deleting an attribute from entity '%s'...\n", entity.name);
             askAttributeName(name, 1);
             if(deleteAttribute(dictionary, dictionaryName, name, entity.listAttr))
                 printf("Attribute deleted successfully.\n");
@@ -776,7 +783,6 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char
         break;
 
         case MODIFY_ATTRIBUTE:
-            printf("Modifying an attribute of entity '%s'...\n", entity.name);
             askAttributeName(name, 0);
             modifyAttribute(dictionary, dictionaryName, name, entity.listAttr);
         break;
@@ -798,6 +804,8 @@ void printAttributes(FILE *dictionary, char *dictionaryName, long listA)
         printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
+
+    system("cls");
 
     ATTRIBUTES attribute;
     long dir;
@@ -841,6 +849,8 @@ void createAttribute(FILE *dictionary, const char *dictionaryName, ENTITIES curr
         fprintf(stderr, "Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
+
+    system("cls");
 
     ATTRIBUTES newAttribute = {0};
     int stringLength = 0;
@@ -1007,6 +1017,8 @@ int deleteAttribute(FILE *dictionary, const char *dictionaryName, const char *na
         return 0;
     }
 
+    system("cls");
+
     rewind(dictionary);
 
     ATTRIBUTES attribute;
@@ -1094,6 +1106,8 @@ void modifyAttribute(FILE *dictionary, const char *dictionaryName, const char *t
         printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
+
+    system("cls");
 
     rewind(dictionary);
 
@@ -1429,24 +1443,24 @@ void printData(FILE *dictionary, long listData, long listAttri)
             {
                 case BIT:
                     fread(&bitValue, sizeof(unsigned char), 1, dictionary);
-                    printf("| %s : %-20s ", attr.name, bitValue ? "True" : "False");
+                    printf("| %s : %-10s ", attr.name, bitValue ? "True" : "False");
                 break;
                 case INTEGER:
                     fread(&intValue, sizeof(int), 1, dictionary);
-                    printf("| %s : %-20d ", attr.name, intValue);
+                    printf("| %s : %-10d ", attr.name, intValue);
                 break;
                 case FLOAT:
                     fread(&floatValue, sizeof(double), 1, dictionary);
-                    printf("| %s : %-20.2lf ", attr.name, floatValue);
+                    printf("| %s : %-10.2lf ", attr.name, floatValue);
                 break;
                 case CHAR:
                     fread(&charValue, sizeof(char), 1, dictionary);
-                    printf("| %s : %-20c ", attr.name, charValue);
+                    printf("| %s : %-10c ", attr.name, charValue);
                 break;
                 case STRING:
                     fread(stringValue, attr.size, sizeof(char), dictionary);
                     stringValue[attr.size] = '\0'; 
-                    printf("| %s : %-20s ", attr.name, stringValue);
+                    printf("| %s : %-50s ", attr.name, stringValue);
                 break;
             }
 
@@ -1455,6 +1469,7 @@ void printData(FILE *dictionary, long listData, long listAttri)
 
         fread(&currentData, sizeof(long), 1, dictionary);
         printf("|\n");
+        printf("\t\t");
     }
 
     printf("\n\n");
