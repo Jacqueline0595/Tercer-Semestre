@@ -535,7 +535,7 @@ ENTITIES findEntity(FILE *dataDictionary, char *entityName)
     currentEntity.sig = ftell(dataDictionary);
     fread(&aux.sig, sizeof(long), 1, dataDictionary);
 
-    while (aux.sig != -1 && (strcmp(currentEntity.name, entityName)) != 0)
+    while (aux.sig != empty && (strcmp(currentEntity.name, entityName)) != 0)
     {
 
         fseek(dataDictionary, aux.sig, SEEK_SET);
@@ -548,7 +548,7 @@ ENTITIES findEntity(FILE *dataDictionary, char *entityName)
         fread(&aux.sig, sizeof(long), 1, dataDictionary);
     }
 
-    if(aux.sig == -1 && (strcmp(currentEntity.name, entityName)) != 0)
+    if(aux.sig == empty && (strcmp(currentEntity.name, entityName)) != 0)
         currentEntity.sig = 0;
 
     return currentEntity;
@@ -612,7 +612,6 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
 
     rewind(dictionary);
     ENTITIES originalEntity, updatedEntity, checkEntity;
-    // ATTRIBUTES attribute;
     long entityAddress;
 
     originalEntity = findEntity(dictionary, oldName);
@@ -622,16 +621,7 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
         return;
     }
 
-    /* fseek(dictionary, originalEntity.listAttr, SEEK_SET);
-    fread(&dirData, sizeof(long), 1, dictionary);
-    if (dirData != empty)
-    {
-        printf("The entity already has attributes, we couldn't modify it\n");
-        fclose(dictionary);
-        return;
-    } */
-
-    // Correct this part
+    // ignore this part
     /* if(originalEntity.listAttr != empty)
     {
         fseek(dictionary, originalEntity.listAttr, SEEK_SET);
@@ -1254,6 +1244,7 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
     double dataFloat;
     char dataChar;
     char dataString[LENGTH];
+    const char *typeString;
 
     ATTRIBUTES attribute;
 
@@ -1265,6 +1256,7 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
     fread(&listData, sizeof(long), 1, dictionary);
     fread(&listAttr, sizeof(long), 1, dictionary);
     listAttributes = listAttr;
+
     if (listAttributes == empty)
     {
         printf("No attributes found for this entity. Data entry aborted.\n");
@@ -1280,7 +1272,17 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
         fread(&attribute.size, sizeof(int), 1, dictionary);
         fread(&listAttributes, sizeof(long), 1, dictionary);
 
-        printf("\tEnter %s: ", attribute.name);
+        switch (attribute.type)
+        {
+            case 0: typeString = "Bit"; break;
+            case 1: typeString = "Integer"; break;
+            case 2: typeString = "Float"; break;
+            case 3: typeString = "Char"; break;
+            case 4: typeString = "String"; break;
+            default: typeString = "Unknown"; break;
+        }
+
+        printf("\tEnter the %s (Type: %s): ", attribute.name, typeString);
         switch (attribute.type)
         {
             case BIT:
@@ -1440,24 +1442,24 @@ void printData(FILE *dictionary, long listData, long listAttribute)
                 {
                     case BIT:
                         fread(&dataBit, sizeof(unsigned char), 1, dictionary);
-                        printf("| %s: %s ", attribute.name, dataBit ? "True" : "False");
-                        break;
+                        printf("| %s : %-20s ", attribute.name, dataBit ? "True" : "False");
+                    break;
                     case INTEGER:
                         fread(&dataInt, sizeof(int), 1, dictionary);
-                        printf("| %s: %d ", attribute.name, dataInt);
-                        break;
+                        printf("| %s : %-20d ", attribute.name, dataInt);
+                    break;
                     case FLOAT:
                         fread(&dataFloat, sizeof(double), 1, dictionary);
-                        printf("| %s: %.2lf ", attribute.name, dataFloat);
-                        break;
+                        printf("| %s : %-20.2lf ", attribute.name, dataFloat);
+                    break;
                     case CHAR:
                         fread(&dataChar, sizeof(char), 1, dictionary);
-                        printf("| %s: %c ", attribute.name, dataChar);
-                        break;
+                        printf("| %s : %-20c ", attribute.name, dataChar);
+                    break;
                     case STRING:
                         fread(dataString, sizeof(char), attribute.size, dictionary);
-                        printf("| %s: %s ", attribute.name, dataString);
-                        break;
+                        printf("| %s : %-20s ", attribute.name, dataString);
+                    break;
                 }
                 listData = ftell(dictionary);
             }
@@ -1468,20 +1470,192 @@ void printData(FILE *dictionary, long listData, long listAttribute)
     }
 }
 
-void deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity)
+void deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity) 
 {
-    if (dictionary == NULL)
+    if (dictionary == NULL) 
     {
         printf("Error: Couldn't open the file '%s'. Make sure it exists.\n", dictionaryName);
         return;
     }
 
-    if (entity.listDat == empty)
+    if (entity.listDat == empty) 
     {
         printf("No data to delete. The entity has no data records.\n");
         return;
     }
 
-    printf("Printing data of entity '%s'...\n", entity.name);
+    printf("Current data records for entity '%s':\n", entity.name);
     printData(dictionary, entity.listDat, entity.listAttr);
+
+    ATTRIBUTES primaryAttribute;
+    long attrPtr = entity.listAttr;
+    int primaryFound = 0;
+    
+    while (attrPtr != empty && !primaryFound) 
+    {
+        fseek(dictionary, attrPtr, SEEK_SET);
+        fread(primaryAttribute.name, LENGTH, 1, dictionary);
+        fread(&primaryAttribute.isPrimary, sizeof(int), 1, dictionary);
+        fread(&primaryAttribute.type, sizeof(int), 1, dictionary);
+        fread(&primaryAttribute.size, sizeof(int), 1, dictionary);
+        fread(&attrPtr, sizeof(long), 1, dictionary);
+        
+        if (primaryAttribute.isPrimary)
+            primaryFound = 1;
+    }
+    
+    if (!primaryFound) 
+    {
+        printf("Error: No primary key found for this entity. Cannot identify records uniquely.\n");
+        return;
+    }
+    
+    printf("Enter the primary key value of the record you want to delete: ");
+    
+    void *searchValue = NULL;
+    unsigned char searchBit;
+    int searchInt;
+    double searchFloat;
+    char searchChar;
+    char searchString[LENGTH];
+    
+    switch (primaryAttribute.type) 
+    {
+        case BIT:
+            printf("(0 = False, 1 = True): ");
+            scanf("%hhu", &searchBit);
+            searchValue = &searchBit;
+        break;
+        case INTEGER:
+            printf("(Integer number): ");
+            scanf("%d", &searchInt);
+            searchValue = &searchInt;
+        break;
+        case FLOAT:
+            printf("(Floating point number): ");
+            scanf("%lf", &searchFloat);
+            searchValue = &searchFloat;
+        break;
+        case CHAR:
+            printf("(Single character): ");
+            scanf(" %c", &searchChar);
+            searchValue = &searchChar;
+        break;
+        case STRING:
+            printf("(String up to %d chars): ", primaryAttribute.size);
+            fflush(stdin);
+            fgets(searchString, LENGTH, stdin);
+            cleanInput(searchString);
+            toUpperCase(searchString);
+            searchValue = searchString;
+        break;
+    }
+    
+    long prevRecordPos = empty;
+    long currentRecordPos;
+    long nextRecordPos;
+    int found = 0;
+    
+    fseek(dictionary, entity.listDat, SEEK_SET);
+    fread(&currentRecordPos, sizeof(long), 1, dictionary);
+    
+    long prevNextPtrPos = empty;
+    
+    while (currentRecordPos != empty && !found) 
+    {
+        long recordStartPos = currentRecordPos;
+        
+        long currentAttrPos = entity.listAttr;
+        ATTRIBUTES currentAttr;
+        int match = 0;
+        long dataPos = currentRecordPos;
+        
+        while (currentAttrPos != empty && !match) 
+        {
+            fseek(dictionary, currentAttrPos, SEEK_SET);
+            fread(currentAttr.name, LENGTH, 1, dictionary);
+            fread(&currentAttr.isPrimary, sizeof(int), 1, dictionary);
+            fread(&currentAttr.type, sizeof(int), 1, dictionary);
+            fread(&currentAttr.size, sizeof(int), 1, dictionary);
+            fread(&currentAttrPos, sizeof(long), 1, dictionary);
+            
+            if (currentAttr.isPrimary)
+             {
+                fseek(dictionary, dataPos, SEEK_SET);
+                
+                switch (currentAttr.type) 
+                {
+                    case BIT: 
+                    {
+                        unsigned char value;
+                        fread(&value, sizeof(unsigned char), 1, dictionary);
+                        if (value == *(unsigned char*)searchValue) match = 1;
+                        break;
+                    }
+                    case INTEGER: 
+                    {
+                        int value;
+                        fread(&value, sizeof(int), 1, dictionary);
+                        if (value == *(int*)searchValue) match = 1;
+                        break;
+                    }
+                    case FLOAT: 
+                    {
+                        double value;
+                        fread(&value, sizeof(double), 1, dictionary);
+                        if (value == *(double*)searchValue) match = 1;
+                        break;
+                    }
+                    case CHAR: 
+                    {
+                        char value;
+                        fread(&value, sizeof(char), 1, dictionary);
+                        if (value == *(char*)searchValue) match = 1;
+                        break;
+                    }
+                    case STRING: 
+                    {
+                        char value[LENGTH];
+                        fread(value, sizeof(char), currentAttr.size, dictionary);
+                        if (strcmp(value, (char*)searchValue) == 0) match = 1;
+                        break;
+                    }
+                }
+            }
+            
+            dataPos += (currentAttr.type == BIT) ? (size_t)sizeof(unsigned char) :
+                     (currentAttr.type == INTEGER) ? (size_t)sizeof(int) :
+                     (currentAttr.type == FLOAT) ? (size_t)sizeof(double) :
+                     (currentAttr.type == CHAR) ? (size_t)sizeof(char) :
+                     (size_t)currentAttr.size;
+        }
+        
+        fseek(dictionary, dataPos, SEEK_SET);
+        fread(&nextRecordPos, sizeof(long), 1, dictionary);
+        
+        if (match)
+        {
+            found = 1;
+            
+            if (prevRecordPos == empty) 
+            {
+                fseek(dictionary, entity.listDat, SEEK_SET);
+                fwrite(&nextRecordPos, sizeof(long), 1, dictionary);
+            } else 
+            {
+                fseek(dictionary, prevNextPtrPos, SEEK_SET);
+                fwrite(&nextRecordPos, sizeof(long), 1, dictionary);
+            }
+            
+            printf("Record deleted successfully.\n");
+        } else 
+        {
+            prevRecordPos = recordStartPos;
+            prevNextPtrPos = dataPos;
+            currentRecordPos = nextRecordPos;
+        }
+    }
+    
+    if (!found)
+        printf("No record found with the specified primary key value.\n");
 }
