@@ -962,7 +962,6 @@ ATTRIBUTE readAttribute(FILE *state, long address)
 	return attribute;
 }
 
-
 size_t calculateTotalDataSize(Entidades entity, FILE *state)
 {
 	size_t totalSize = 0;

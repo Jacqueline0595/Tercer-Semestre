@@ -26,6 +26,7 @@ typedef struct attribute
 
 void toUpperCase(char *strin);
 void askEntityName(char *name, int band);
+void askEntityName2(char *name);
 void askAttributeName(char *name, int band);
 void cleanInput(char *input);
 
@@ -68,8 +69,6 @@ void modifyAttribute(FILE *dictionary, const char *dictionaryName, const char *t
 void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity);
 void addData(FILE *dictionary, char *dictionaryName, long newData, long listData, long listAttr);
 void printData(FILE *dictionary, long listData, long listAttribute);
-int deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity);
-void modifyDataInEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity);
 
 enum MenuOption 
 { 
@@ -85,7 +84,8 @@ enum EntityOp
     CREATE_ENTITY, 
     DELETE_ENTITY, 
     MODIFY_ENTITY, 
-    SELECT_ENTITY 
+    SELECT_ENTITY,
+    ADD_DATA
 };
 
 enum AttributeOp
@@ -94,10 +94,7 @@ enum AttributeOp
     PRINT2, 
     CREATE_ATTRIBUTE, 
     DELETE_ATTRIBUTE, 
-    MODIFY_ATTRIBUTE,
-    ADD_DATA_ATTRIBUTE,
-    DELETE_DATA_ATTRIBUTE,
-    MODIFY_DATA_ATTRIBUTE
+    MODIFY_ATTRIBUTE
 };
 
 enum typeData
@@ -149,6 +146,15 @@ void askEntityName(char *name, int band)
     toUpperCase(name);
 }
 
+void askEntityName2(char *name)
+{
+    printf("Enter the name of the entity you want to add data: ");
+    fflush(stdin);
+    fgets(name, LENGTH, stdin);
+    cleanInput(name);
+    toUpperCase(name);
+}
+
 void askAttributeName(char *name, int band)
 {
     printf("Enter the name of the attribute you want to %s: ", band ? "delete" : "modify");
@@ -178,7 +184,6 @@ void processUserSelection()
 
         printf("Enter your choice: ");
 
-        // while (getchar() != '\n' && !feof(stdin));
         if (scanf("%d", &userSel) != 1 || userSel < EXIT || userSel > OPEN_FILE)
         {
             printf("Invalid input. Please enter a valid number.\n");
@@ -218,9 +223,11 @@ void executeMenuOption(int userSel)
 void createNewFile(FILE *dictionary, char *name)
 {
     fflush(stdin);
-    printf("Enter the name of the new dictionary: ");
+    printf("Enter the name of the new dictionary (just name): ");
     fgets(name, LENGTH, stdin);
     cleanInput(name);
+    strcat(name, ".dat");
+
     long num = empty;
 
     FILE *existingFile = fopen(name, "rb");
@@ -246,9 +253,11 @@ void createNewFile(FILE *dictionary, char *name)
 void openFile(char *name)
 {
     fflush(stdin);
-    printf("Enter the name of the dictionary to open: ");
+    printf("Enter the name of the dictionary to open (just name): ");
     fgets(name, LENGTH, stdin);
     cleanInput(name);
+
+    strcat(name, ".dat");
 
     FILE *dictionary = fopen(name, "rb+");
     if (!dictionary)
@@ -272,6 +281,7 @@ void printDictionaryMenu(char *dictionary)
     printf("----- %d Delete an entity \n", DELETE_ENTITY);
     printf("----- %d Modify an entity \n", MODIFY_ENTITY);
     printf("----- %d Select an entity \n", SELECT_ENTITY);
+    printf("----- %d Add data to an entity \n", ADD_DATA);
     printf("----- %d Exit \n", RETURN);
 }
 
@@ -297,7 +307,7 @@ void processInputDictionary(char *dictionary)
             continue;
         }
 
-        if(userSelec < RETURN || userSelec > SELECT_ENTITY)
+        if(userSelec < RETURN || userSelec > ADD_DATA)
         {
             printf("Invalid option. Please select a valid menu option.\n");
             continue;
@@ -310,6 +320,7 @@ void processInputDictionary(char *dictionary)
 void executeDictionaryOption(int userSelec, char *dictionaryName)
 {
     FILE *dictionary = fopen(dictionaryName, "rb+");
+    ENTITIES entity;
     char name[LENGTH];
     if (!dictionary)
     {
@@ -343,6 +354,17 @@ void executeDictionaryOption(int userSelec, char *dictionaryName)
         case SELECT_ENTITY:
             askEntityName(name, 2);
             selectEntity(dictionary, dictionaryName, name);
+        break;
+
+        case ADD_DATA:
+            askEntityName2(name);
+            entity = findEntity(dictionary, name);
+            if(entity.sig == 0)
+            {
+                printf("Error: Entity '%s' not found.\n", name);
+                break;
+            }
+            createData(dictionary, dictionaryName, entity);
         break;
 
         case RETURN:
@@ -401,9 +423,9 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
         else
         {
             printf("\n\t ----- Attributes of entity '%s': ----- \n", entity.name);
-            printf("| %-30s | %-10s | %-10s | %-10s | %-10s |\n", "Attribute name", "Is primary", "Type", "Size", "Next");
+            printf("\t| %-30s | %-10s | %-10s | %-10s | %-10s |\n", "Attribute name", "Is primary", "Type", "Size", "Next");
 
-            printf("|------------------------------------------------------------------------------------|\n");
+            printf("\t|------------------------------------------------------------------------------------|\n");
             while (direction2 != empty)
             {
                 fseek(dictionary, direction2, SEEK_SET);
@@ -423,7 +445,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
                 }
                 const char *primaryString = attribute.isPrimary ? "Yes" : "No";
 
-                printf("| %-30s | %-10s | %-10s | %-10d | %-10ld |\n", attribute.name, primaryString, typeString, attribute.size, direction2);
+                printf("\t| %-30s | %-10s | %-10s | %-10d | %-10ld |\n", attribute.name, primaryString, typeString, attribute.size, direction2);
             }
             if(entity.listDat == empty)
             {
@@ -431,7 +453,7 @@ void printDictionary(FILE *dictionary, char *dictionaryName)
             }
             else
             {
-                printf("\n\t ----- Data of entity '%s': ----- \n", entity.name);
+                printf("\n\t\t ----- Data of entity '%s': ----- \n", entity.name);
                 printData(dictionary, entity.listDat, entity.listAttr);
             }
         }
@@ -479,7 +501,6 @@ long writeEntity(FILE *dictionary, ENTITIES newEntity)
     long dirEntity;
     fseek(dictionary, 0, SEEK_END);
     dirEntity = ftell(dictionary);
-    printf("Adding %s | %ld | %ld | %ld \n", newEntity.name, newEntity.listDat, newEntity.listAttr, newEntity.sig);
     fwrite(newEntity.name, 50, 1, dictionary);
     fwrite(&newEntity.listDat, sizeof(long), 1, dictionary);
     fwrite(&newEntity.listAttr, sizeof(long), 1, dictionary);
@@ -622,22 +643,6 @@ void modifyEntity(FILE *dictionary, char *dictionaryName, char *oldName)
         return;
     }
 
-    // ignore this part
-    /* if(originalEntity.listAttr != empty)
-    {
-        fseek(dictionary, originalEntity.listAttr, SEEK_SET);
-        fread(attribute.name, LENGTH, 1, dictionary);
-        fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
-        fread(&attribute.type, sizeof(int), 1, dictionary);
-        fread(&attribute.size, sizeof(int), 1, dictionary);
-        fread(&originalEntity.listAttr, sizeof(long), 1, dictionary);
-        if(attribute.isPrimary == 1)
-        {
-            printf("Error: Cannot modify an entity with primary key attributes.\n");
-            return;
-        }
-    } */
-
     if (!deleteEntity(dictionary, dictionaryName, oldName))
     {
         printf("Error deleting the entity '%s'.\n", oldName);
@@ -690,7 +695,7 @@ void selectEntity(FILE *dictionary, char *dictionaryName, char *name)
     fread(&dirData, sizeof(long), 1, dictionary);
     if (dirData != empty)
     {
-        printf("The entity already has data, we couldn't modify it\n");
+        printf("The entity already has data, we couldn't modify it. \n");
         fclose(dictionary);
         return;
     }
@@ -709,9 +714,6 @@ void printEntityMenu(ENTITIES entity)
     printf("\t----- %d Create an attribute \n", CREATE_ATTRIBUTE);
     printf("\t----- %d Delete an attribute \n", DELETE_ATTRIBUTE);
     printf("\t----- %d Modify an attribute \n", MODIFY_ATTRIBUTE);
-    printf("\t----- %d Add data to the entity \n", ADD_DATA_ATTRIBUTE);
-    printf("\t----- %d Delete data to the entity \n", DELETE_DATA_ATTRIBUTE);
-    printf("\t----- %d Modify data to the entity \n", MODIFY_DATA_ATTRIBUTE);
     printf("\t----- %d Exit \n", RETURN2);
 }
 
@@ -734,7 +736,7 @@ void processInputEntity(char *dictionaryName, ENTITIES entity)
         scanf("%d", &userSelec);
         while (getchar() != '\n'); 
 
-        if(userSelec < RETURN2 || userSelec > MODIFY_DATA_ATTRIBUTE)
+        if(userSelec < RETURN2 || userSelec > MODIFY_ATTRIBUTE)
         {
             printf("Invalid option. Please try again.\n");
             continue;
@@ -777,21 +779,6 @@ void executeEntityOption(int userSelec, FILE *dictionary, ENTITIES entity,  char
             printf("Modifying an attribute of entity '%s'...\n", entity.name);
             askAttributeName(name, 0);
             modifyAttribute(dictionary, dictionaryName, name, entity.listAttr);
-        break;
-
-        case ADD_DATA_ATTRIBUTE:
-            printf("Adding data to entity '%s'...\n", entity.name);
-            createData(dictionary, dictionaryName, entity);
-        break;
-
-        case DELETE_DATA_ATTRIBUTE:
-            printf("Deleting data from entity '%s'...\n", entity.name);
-            deleteDataFromEntity(dictionary, dictionaryName, entity);
-        break;
-
-        case MODIFY_DATA_ATTRIBUTE:
-            printf("Modifying data in entity '%s'...\n", entity.name);
-            modifyDataInEntity(dictionary, dictionaryName, entity);
         break;
 
         case RETURN2:
@@ -858,6 +845,9 @@ void createAttribute(FILE *dictionary, const char *dictionaryName, ENTITIES curr
     ATTRIBUTES newAttribute = {0};
     int stringLength = 0;
 
+    fflush(stdin);
+    fseek(dictionary, currentEntity.listDat, SEEK_SET);
+
     printf("Name of the new attribute: ");
     fflush(stdin);
     fgets(newAttribute.name, LENGTH, stdin);
@@ -866,11 +856,9 @@ void createAttribute(FILE *dictionary, const char *dictionaryName, ENTITIES curr
 
     do
     {
-        // Add validation for empty name (if they put a character)
         printf("Is it a primary key? (1 for yes, 0 for no): ");
     } while (scanf("%d", &newAttribute.isPrimary) != 1 || (newAttribute.isPrimary != 0 && newAttribute.isPrimary != 1));
 
-    // Add validation for type (If they put a character)
     printf("Type of the attribute (%d:BITE, %d:INTEGER, %d:FLOAT, %d:CHAR, %d:STRING): ", BIT, INTEGER, FLOAT, CHAR, STRING);
     while (scanf("%d", &newAttribute.type) != 1 || newAttribute.type < BIT || newAttribute.type > STRING)
     {
@@ -903,7 +891,7 @@ void createAttribute(FILE *dictionary, const char *dictionaryName, ENTITIES curr
                 if (scanf("%d", &stringLength) != 1)
                 {
                     stringLength = 0;
-                    while (getchar() != '\n'); // Clean buffer
+                    while (getchar() != '\n');
                 }
             } while (stringLength <= 0 || stringLength >= LENGTH);
 
@@ -914,6 +902,7 @@ void createAttribute(FILE *dictionary, const char *dictionaryName, ENTITIES curr
     newAttribute.next = empty;
 
     long attrDir = writeAttribute(dictionary, newAttribute);
+
     orderAttribute(dictionary, dictionaryName, currentEntity.listAttr, newAttribute, attrDir);
 }
 
@@ -994,7 +983,6 @@ void orderAttribute(FILE *dictionary, const char *dictionaryName, long currentAt
             }
             else
             {
-                
                 fseek(dictionary, currentAttr, SEEK_SET);
                 fwrite(&newAttrDir, sizeof(long), 1, dictionary);
                 
@@ -1239,7 +1227,7 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
         return;
     }
 
-    long listData, listAttr, listAttributes, next, newDat, possition;
+    long listData, listAttr, listAttributes, next, newDat;
     unsigned char dataBit;
     int dataInt;
     double dataFloat;
@@ -1251,7 +1239,6 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
 
     fseek(dictionary, 0, SEEK_END);
     newDat = ftell(dictionary);
-    printf("Possition: %ld \n", newDat);
 
     fseek(dictionary, currentEntity.listDat, SEEK_SET);
     fread(&listData, sizeof(long), 1, dictionary);
@@ -1325,8 +1312,7 @@ void createData(FILE *dictionary, char *dictionaryName, ENTITIES currentEntity)
                 } while (strlen(dataString) > (size_t)attribute.size);
             break;
         }
-        possition = ftell(dictionary);
-        printf("Possition: %ld \n", possition);
+        // Removed unused variable 'possition'
     }
     next = empty;
     fwrite(&next, sizeof(long), 1, dictionary);
@@ -1342,11 +1328,11 @@ void addData(FILE *dictionary, char *dictionaryName, long newData, long listData
     }
 
     long listAttribute, next, end;
-    unsigned char dataBit;  // BIT - 1 byte
-    int dataInt;            // INTEGER - 4 bytes
-    double dataFloat;       // FLOAT - 8 bytes
-    char dataChar;          // CHAR - 1 byte
-    char dataString[LENGTH]; // STRING - variable
+    unsigned char dataBit;
+    int dataInt;
+    double dataFloat;
+    char dataChar;
+    char dataString[LENGTH];
 
     ATTRIBUTES attribute;
 
@@ -1422,6 +1408,8 @@ void printData(FILE *dictionary, long listData, long listAttri)
     char charValue;
     char stringValue[LENGTH];
 
+    printf("\t\t");
+
     while (currentData != empty)
     {
         currentAttr = listAttri;
@@ -1470,320 +1458,4 @@ void printData(FILE *dictionary, long listData, long listAttri)
     }
 
     printf("\n\n");
-}
-
-int deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity) 
-{
-    if (dictionary == NULL)
-    {
-        printf("Error: Couldn't open the file '%s'.\n", dictionaryName);
-        return 0;
-    }
-
-    if (entity.listDat == empty)
-    {
-        printf("No data found in entity '%s'.\n", entity.name);
-        return 0;
-    }
-
-    long attrPtr = entity.listAttr;
-    ATTRIBUTES attr;
-    int foundPrimary = 0;
-    long primaryAttrPtr = empty;
-    while (attrPtr != empty) {
-        fseek(dictionary, attrPtr, SEEK_SET);
-        fread(attr.name, LENGTH, 1, dictionary);
-        fread(&attr.isPrimary, sizeof(int), 1, dictionary);
-        fread(&attr.type, sizeof(int), 1, dictionary);
-        fread(&attr.size, sizeof(int), 1, dictionary);
-        fread(&attrPtr, sizeof(long), 1, dictionary);
-        if (attr.isPrimary == 1) {
-            foundPrimary = 1;
-            primaryAttrPtr = attrPtr - sizeof(long) - sizeof(int) * 3 - LENGTH;
-            break;
-        }
-    }
-    if (!foundPrimary) {
-        printf("No primary key attribute found. Cannot delete data.\n");
-        return 0;
-    }
-
-    printf("Enter the value of the primary key (%s): ", attr.name);
-    unsigned char pkBit;
-    int pkInt;
-    double pkFloat;
-    char pkChar;
-    char pkString[LENGTH] = {0};
-    switch (attr.type) {
-        case BIT:
-            scanf("%hhu", &pkBit);
-            break;
-        case INTEGER:
-            scanf("%d", &pkInt);
-            break;
-        case FLOAT:
-            scanf("%lf", &pkFloat);
-            break;
-        case CHAR:
-            scanf(" %c", &pkChar);
-            break;
-        case STRING:
-            fflush(stdin);
-            fgets(pkString, attr.size+1, stdin);
-            cleanInput(pkString);
-            break;
-    }
-
-    long prevDataPtr = entity.listDat;
-    long dataPtr;
-    fseek(dictionary, entity.listDat, SEEK_SET);
-    fread(&dataPtr, sizeof(long), 1, dictionary);
-
-    long attrListPtr = entity.listAttr;
-    int found = 0;
-    long dataStart = 0, dataEnd = 0;
-    while (dataPtr != empty) {
-        long tempAttrPtr = attrListPtr;
-        long dataPos = dataPtr;
-        int match = 0;
-        while (tempAttrPtr != empty) 
-        {
-            fseek(dictionary, tempAttrPtr, SEEK_SET);
-            fread(attr.name, LENGTH, 1, dictionary);
-            fread(&attr.isPrimary, sizeof(int), 1, dictionary);
-            fread(&attr.type, sizeof(int), 1, dictionary);
-            fread(&attr.size, sizeof(int), 1, dictionary);
-            fread(&tempAttrPtr, sizeof(long), 1, dictionary);
-
-            fseek(dictionary, dataPos, SEEK_SET);
-            switch (attr.type) 
-            {
-                case BIT: 
-                {
-                    unsigned char val;
-                    fread(&val, sizeof(unsigned char), 1, dictionary);
-                    if (attr.isPrimary && val == pkBit) match = 1;
-                    dataPos += sizeof(unsigned char);
-                    break;
-                }
-                case INTEGER: 
-                {
-                    int val;
-                    fread(&val, sizeof(int), 1, dictionary);
-                    if (attr.isPrimary && val == pkInt) match = 1;
-                    dataPos += sizeof(int);
-                    break;
-                }
-                case FLOAT: 
-                {
-                    double val;
-                    fread(&val, sizeof(double), 1, dictionary);
-                    if (attr.isPrimary && val == pkFloat) match = 1;
-                    dataPos += sizeof(double);
-                    break;
-                }
-                case CHAR: 
-                {
-                    char val;
-                    fread(&val, sizeof(char), 1, dictionary);
-                    if (attr.isPrimary && val == pkChar) match = 1;
-                    dataPos += sizeof(char);
-                    break;
-                }
-                case STRING: 
-                {
-                    char val[LENGTH] = {0};
-                    fread(val, sizeof(char), attr.size, dictionary);
-                    val[attr.size] = '\0';
-                    if (attr.isPrimary && strncmp(val, pkString, attr.size) == 0) match = 1;
-                    dataPos += attr.size;
-                    break;
-                }
-            }
-        }
-        dataEnd = dataPos;
-        if (match) 
-        {
-            found = 1;
-            break;
-        }
-        prevDataPtr = dataPtr;
-        fseek(dictionary, dataPos, SEEK_SET);
-        fread(&dataPtr, sizeof(long), 1, dictionary);
-    }
-
-    if (!found) 
-    {
-        printf("No data found with the given primary key.\n");
-        return 0;
-    }
-
-    long nextPtr;
-    fseek(dictionary, dataEnd, SEEK_SET);
-    fread(&nextPtr, sizeof(long), 1, dictionary);
-
-    if (prevDataPtr == entity.listDat) 
-    {
-        fseek(dictionary, prevDataPtr, SEEK_SET);
-        fwrite(&nextPtr, sizeof(long), 1, dictionary);
-    } else 
-    {
-        long prevNextPtr = prevDataPtr;
-        fseek(dictionary, prevNextPtr, SEEK_SET);
-        long temp;
-        fread(&temp, sizeof(long), 1, dictionary);
-        while (temp != dataPtr) 
-        {
-            prevNextPtr = temp;
-            fseek(dictionary, prevNextPtr, SEEK_SET);
-            fread(&temp, sizeof(long), 1, dictionary);
-        }
-        fseek(dictionary, prevNextPtr, SEEK_SET);
-        fwrite(&nextPtr, sizeof(long), 1, dictionary);
-    }
-
-    printf("Data deleted successfully.\n");
-    return 1;
-}
-
-void modifyDataInEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity)
-{
-    if (dictionary == NULL)
-    {
-        printf("Error: Couldn't open the file '%s'.\n", dictionaryName);
-        return;
-    }
-
-    if (entity.listDat == empty)
-    {
-        printf("No data found in entity '%s'.\n", entity.name);
-        return;
-    }
-
-    long attrPtr = entity.listAttr;
-    ATTRIBUTES attr;
-    int foundPrimary = 0;
-    long primaryAttrPtr = empty;
-    while (attrPtr != empty) 
-    {
-        fseek(dictionary, attrPtr, SEEK_SET);
-        fread(attr.name, LENGTH, 1, dictionary);
-        fread(&attr.isPrimary, sizeof(int), 1, dictionary);
-        fread(&attr.type, sizeof(int), 1, dictionary);
-        fread(&attr.size, sizeof(int), 1, dictionary);
-        fread(&attrPtr, sizeof(long), 1, dictionary);
-        if (attr.isPrimary == 1) 
-        {
-            foundPrimary = 1;
-            primaryAttrPtr = attrPtr - sizeof(long) - sizeof(int)*3 - LENGTH;
-            break;
-        }
-    }
-    if (!foundPrimary) 
-    {
-        printf("No primary key attribute found. Cannot modify data.\n");
-        return;
-    }
-
-    printf("Enter the value of the primary key (%s): ", attr.name);
-    unsigned char pkBit;
-    int pkInt;
-    double pkFloat;
-    char pkChar;
-    char pkString[LENGTH] = {0};
-    switch (attr.type) 
-    {
-        case BIT:
-            scanf("%hhu", &pkBit);
-            break;
-        case INTEGER:
-            scanf("%d", &pkInt);
-            break;
-        case FLOAT:
-            scanf("%lf", &pkFloat);
-            break;
-        case CHAR:
-            scanf(" %c", &pkChar);
-            break;
-        case STRING:
-            fflush(stdin);
-            fgets(pkString, attr.size+1, stdin);
-            cleanInput(pkString);
-            break;
-    }
-
-    if (!deleteDataFromEntity(dictionary, dictionaryName, entity))
-    {
-        printf("Modification failed. Data not found.\n");
-        return;
-    }
-
-    printf("Enter the new data for the entity:\n");
-    long listAttributes = entity.listAttr;
-    ATTRIBUTES attribute;
-    unsigned char dataBit;
-    int dataInt;
-    double dataFloat;
-    char dataChar;
-    char dataString[LENGTH];
-    long newDat;
-
-    fseek(dictionary, 0, SEEK_END);
-    newDat = ftell(dictionary);
-
-    while (listAttributes != empty)
-    {
-        fseek(dictionary, listAttributes, SEEK_SET);
-        fread(attribute.name, LENGTH, 1, dictionary);
-        fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
-        fread(&attribute.type, sizeof(int), 1, dictionary);
-        fread(&attribute.size, sizeof(int), 1, dictionary);
-        fread(&listAttributes, sizeof(long), 1, dictionary);
-
-        printf("\tEnter the %s: ", attribute.name);
-        switch (attribute.type)
-        {
-            case BIT:
-                do {
-                    printf("\t\nWhich option: \n\t1)True 0)False ");
-                    scanf("%hhu", &dataBit);
-                } while (dataBit > 1);
-                fseek(dictionary, 0, SEEK_END);
-                fwrite(&dataBit, sizeof(unsigned char), 1, dictionary);
-            break;
-            case INTEGER:
-                scanf("%d", &dataInt);
-                fseek(dictionary, 0, SEEK_END);
-                fwrite(&dataInt, sizeof(int), 1, dictionary);
-            break;
-            case FLOAT:
-                scanf("%lf", &dataFloat);
-                fseek(dictionary, 0, SEEK_END);
-                fwrite(&dataFloat, sizeof(double), 1, dictionary);
-            break;
-            case CHAR:
-                scanf(" %c", &dataChar);
-                toUpperCase(&dataChar);
-                fseek(dictionary, 0, SEEK_END);
-                fwrite(&dataChar, sizeof(char), 1, dictionary);
-            break;
-            case STRING:
-                do {
-                    fflush(stdin);
-                    fgets(dataString, LENGTH, stdin);
-                    cleanInput(dataString);
-                    toUpperCase(dataString);
-                    fseek(dictionary, 0, SEEK_END);
-                    fwrite(dataString, sizeof(char), attribute.size, dictionary);
-                    if(strlen(dataString) > (size_t)attribute.size)
-                        printf("The string is too long, please enter a new one less than %d: ", attribute.size);
-                } while (strlen(dataString) > (size_t)attribute.size);
-            break;
-        }
-    }
-    long next = empty;
-    fwrite(&next, sizeof(long), 1, dictionary);
-    addData(dictionary, dictionaryName, newDat, entity.listDat, entity.listAttr);
-
-    printf("Data modified successfully.\n");
 }
