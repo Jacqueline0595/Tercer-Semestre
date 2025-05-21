@@ -1405,69 +1405,71 @@ void addData(FILE *dictionary, char *dictionaryName, long newData, long listData
     }
 }
 
-void printData(FILE *dictionary, long listData, long listAttribute)
+void printData(FILE *dictionary, long dataHead, long attributeHead)
 {
-    long listAttributes, next;
-    unsigned char dataBit;
-    int dataInt;
-    double dataFloat;
-    char dataChar;
-    char dataString[LENGTH];
-
-    ATTRIBUTES attribute;
-
-    next = listData;
-
-    if (next == empty)
+    if (dataHead == empty)
     {
         printf("\n\t| No data found for entity.\n");
+        return;
     }
-    else
-    {
-        while (next != empty)
-        {
-            listAttributes = listAttribute;
-            listData = next;
-            while (listAttributes != empty)
-            {
-                fseek(dictionary, listAttributes, SEEK_SET);
-                fread(attribute.name, LENGTH, 1, dictionary);
-                fread(&attribute.isPrimary, sizeof(int), 1, dictionary);
-                fread(&attribute.type, sizeof(int), 1, dictionary);
-                fread(&attribute.size, sizeof(int), 1, dictionary);
-                fread(&listAttributes, sizeof(long), 1, dictionary);
 
-                fseek(dictionary, listData, SEEK_SET);
-                switch (attribute.type)
-                {
-                    case BIT:
-                        fread(&dataBit, sizeof(unsigned char), 1, dictionary);
-                        printf("| %s : %-20s ", attribute.name, dataBit ? "True" : "False");
-                    break;
-                    case INTEGER:
-                        fread(&dataInt, sizeof(int), 1, dictionary);
-                        printf("| %s : %-20d ", attribute.name, dataInt);
-                    break;
-                    case FLOAT:
-                        fread(&dataFloat, sizeof(double), 1, dictionary);
-                        printf("| %s : %-20.2lf ", attribute.name, dataFloat);
-                    break;
-                    case CHAR:
-                        fread(&dataChar, sizeof(char), 1, dictionary);
-                        printf("| %s : %-20c ", attribute.name, dataChar);
-                    break;
-                    case STRING:
-                        fread(dataString, sizeof(char), attribute.size, dictionary);
-                        printf("| %s : %-20s ", attribute.name, dataString);
-                    break;
-                }
-                listData = ftell(dictionary);
+    long currentData = dataHead;
+    long currentAttr;
+    ATTRIBUTES attr;
+    unsigned char bitValue;
+    int intValue;
+    double floatValue;
+    char charValue;
+    char stringValue[LENGTH];
+
+    while (currentData != empty)
+    {
+        currentAttr = attributeHead;
+
+        while (currentAttr != empty)
+        {
+            fseek(dictionary, currentAttr, SEEK_SET);
+            fread(attr.name, LENGTH, 1, dictionary);
+            fread(&attr.isPrimary, sizeof(int), 1, dictionary);
+            fread(&attr.type, sizeof(int), 1, dictionary);
+            fread(&attr.size, sizeof(int), 1, dictionary);
+            fread(&currentAttr, sizeof(long), 1, dictionary);
+
+            fseek(dictionary, currentData, SEEK_SET);
+
+            switch (attr.type)
+            {
+                case BIT:
+                    fread(&bitValue, sizeof(unsigned char), 1, dictionary);
+                    printf("| %s : %-20s ", attr.name, bitValue ? "True" : "False");
+                break;
+                case INTEGER:
+                    fread(&intValue, sizeof(int), 1, dictionary);
+                    printf("| %s : %-20d ", attr.name, intValue);
+                break;
+                case FLOAT:
+                    fread(&floatValue, sizeof(double), 1, dictionary);
+                    printf("| %s : %-20.2lf ", attr.name, floatValue);
+                break;
+                case CHAR:
+                    fread(&charValue, sizeof(char), 1, dictionary);
+                    printf("| %s : %-20c ", attr.name, charValue);
+                break;
+                case STRING:
+                    fread(stringValue, sizeof(char), attr.size, dictionary);
+                    stringValue[attr.size] = '\0'; 
+                    printf("| %s : %-20s ", attr.name, stringValue);
+                break;
             }
-            fread(&next, sizeof(long), 1, dictionary);
-            printf("|\n");
+
+            currentData = ftell(dictionary);
         }
-        printf("\n\n");
+
+        fread(&currentData, sizeof(long), 1, dictionary);
+        printf("|\n");
     }
+
+    printf("\n\n");
 }
 
 void deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entity) 
@@ -1483,9 +1485,6 @@ void deleteDataFromEntity(FILE *dictionary, char *dictionaryName, ENTITIES entit
         printf("No data to delete. The entity has no data records.\n");
         return;
     }
-
-    printf("Current data records for entity '%s':\n", entity.name);
-    printData(dictionary, entity.listDat, entity.listAttr);
 
     ATTRIBUTES primaryAttribute;
     long attrPtr = entity.listAttr;
