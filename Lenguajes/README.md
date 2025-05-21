@@ -26,25 +26,24 @@ This project is a **Data Dictionary Manager** implemented in C, designed to crea
 |   `1`   | INTEGER (int) |
 |   `2`   | FLOAT (double) |
 |   `3`   | CHAR (char) |
-|   `4`   | STRING (char array with custom size) |
+|   `4`   | STRING (char array with custom size MAX 50) |
 
 ## 🧱 Data Structures
 
 ## `ENTITIES`
 
 ```c
-
 typedef struct entity {
     char name[LENGTH];
     long listDat;   // Pointer to list of data records
     long listAttr;  // Pointer to list of attributes
     long sig;       // Pointer to next entity
 } ENTITIES;
-
 ```
 
-### 'ATTRIBUTES'
+## `ATTRIBUTES`
 
+```c
 typedef struct attribute {
     char name[LENGTH];
     int isPrimary;  // 1 if it's a primary key
@@ -52,52 +51,43 @@ typedef struct attribute {
     int size;       // Size in bytes
     long next;      // Pointer to next attribute
 } ATTRIBUTES;
+```
 
 ## 📋 How It Works
 1. Main Menu
 
-- Create a new .dat dictionary file.
+    Create a new .dat dictionary file.
 
-- Open an existing one.
+    Open an existing one.
 
 2. Dictionary Menu
 
-- View all entities and their metadata.
+    View all entities and their metadata.
 
-- Create/modify/delete/select entities.
+    Create/modify/delete/select entities.
 
-- Add data to a selected entity.
+    Add data to a selected entity.
 
 3. Entity Menu (after selection)
 
-- View, add, modify, and delete attributes of the selected entity.
+    View, add, modify, and delete attributes of the selected entity.
 
 4. Data Entry
 
-- Prompts user to enter values for each attribute, based on type.
+    Prompts user to enter values for each attribute, based on type.
 
-- Automatically writes data to the end of the binary file and updates the linked list structure.
+    Automatically writes data to the end of the binary file and updates the linked list structure.
 
 ## 🧑‍💻 How to Compile
 Use any C compiler like gcc:
-
+```bash
 gcc diccionario.c -o diccionario
-
+```
 Then run:
-
+```bash
 ./diccionario
-## 🧩 Project Structure
-The project is organized into several key function categories:
-
-- Main Menu Functions: Navigation and file handling.
-
-- Entity Functions: Managing the list of entities.
-
-- Attribute Functions: Handling the metadata for each entity.
-
-- Data Functions: Input/output and manipulation of data entries.
-
-- Helpers: Input sanitization and utility string functions.
+```
+You can also run it in Visual Studio, you just have to press the button "run code".
 
 ## 📎 Notes
 - All string comparisons are case-insensitive (converted to uppercase).
@@ -116,15 +106,3 @@ The .dat file uses binary structures and offset pointers to simulate linked list
 - Attributes within each entity
 
 - Data entries for each entity
-
-## ✅ To-Do / Improvements
-- Add support for updating/deleting individual data entries.
-
-- Improve error handling and input validation.
-
-- Export/import dictionary structure as a human-readable format.
-
-- GUI front-end (optional, for future development).
-
-## 📬 Contact
-For questions or suggestions, feel free to reach out!
