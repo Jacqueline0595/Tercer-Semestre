@@ -32,12 +32,16 @@ This project is a **Data Dictionary Manager** implemented in C, designed to crea
 
 ## `ENTITIES`
 
+```c
+
 typedef struct entity {
     char name[LENGTH];
     long listDat;   // Pointer to list of data records
     long listAttr;  // Pointer to list of attributes
     long sig;       // Pointer to next entity
 } ENTITIES;
+
+```
 
 ### 'ATTRIBUTES'
 
